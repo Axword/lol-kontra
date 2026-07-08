@@ -81,3 +81,32 @@ export function useSubmitRoster() {
     }
   })
 }
+
+export function useSubmitAnswer() {
+  return useMutation({
+    mutationFn: async (payload: { daily_id: number, slot_id: number, player_slug: string, guest_token?: string }) => {
+      const r = await api.post('/submissions/answer/', payload)
+      return r.data
+    }
+  })
+}
+
+export function useMySubmission(dailyId?: number, guestToken?: string | null) {
+  return useQuery({
+    queryKey: ['submission','me', dailyId, guestToken],
+    queryFn: async () => {
+      if (!dailyId) return null
+      const params:any = { daily_id: dailyId }
+      if (guestToken) params.guest_token = guestToken
+      try {
+        const r = await api.get('/submissions/me/', { params })
+        return r.data
+      } catch (e:any) {
+        if (e?.response?.status === 404) return null
+        throw e
+      }
+    },
+    enabled: !!dailyId,
+    refetchInterval: 5000,
+  })
+}
