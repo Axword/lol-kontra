@@ -2,8 +2,9 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
-from .models import Submission
-from .serializers import SubmissionCreateSerializer, SubmissionOutputSerializer
+from django.db import transaction, IntegrityError
+from .models import Submission, SubmissionAnswer
+from .serializers import SubmissionCreateSerializer, SubmissionOutputSerializer, SubmissionAnswerOutputSerializer, AnswerCreateSerializer
 
 class SubmissionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Submission.objects.prefetch_related('answers__player', 'answers__daily_slot').all()
@@ -12,6 +13,8 @@ class SubmissionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, view
     def get_serializer_class(self):
         if self.action == 'create':
             return SubmissionCreateSerializer
+        if self.action == 'answer':
+            return AnswerCreateSerializer
         return SubmissionOutputSerializer
 
     def create(self, request, *args, **kwargs):
@@ -37,3 +40,19 @@ class SubmissionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, view
             return Response({'detail': 'not found'}, status=404)
         serializer = SubmissionOutputSerializer(obj)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['post'], url_path='answer', permission_classes=[AllowAny])
+    def answer(self, request):
+        """
+        PER-SLOT INSTANT verification.
+        Body: {daily_id, slot_id, player_slug, guest_token?}
+        Returns immediately: is_correct, rarity_tier, points_awarded, is_diamond_pick
+        Slot becomes locked after first answer – cannot change.
+        """
+        serializer = AnswerCreateSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        answer = serializer.save()
+        # serializer.to_representation already called? No, we need output
+        output_data = serializer.to_representation(answer)
+        # status 201 if newly created, 200 if locked existing – simplify 200
+        return Response(output_data, status=status.HTTP_200_OK)
