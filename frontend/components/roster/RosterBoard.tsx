@@ -1,124 +1,120 @@
 'use client'
-import { Daily, DailySlot, useSubmitAnswer, useMySubmission } from '@/lib/api'
+import { Daily, DailySlot } from '@/lib/api'
 import { useRosterStore } from '@/lib/store'
+import { useSubmitRoster } from '@/lib/api'
 import { useEffect, useState, useRef } from 'react'
 import RiftBoard from './RiftBoard'
 import PlayerPickerModal from './PlayerPickerModal'
 import { sound } from '@/lib/sound'
 
 export default function RosterBoard({ daily, onScore }: { daily: Daily, onScore?: (total:number, answers:any[])=>void }) {
-  const { picks, setDaily, setAnswer, guestToken, reset } = useRosterStore()
-  const submitAnswer = useSubmitAnswer()
+  const { picks, setDaily, markSubmitted, submitted, guestToken, reset, clearPick } = useRosterStore()
+  const submit = useSubmitRoster()
+  const [msg, setMsg] = useState<string>('')
   const [pickerSlot, setPickerSlot] = useState<DailySlot | null>(null)
-  const [verifyingSlot, setVerifyingSlot] = useState<number | null>(null)
-  const [toast, setToast] = useState<string>('')
-  const inFlight = useRef<Set<number>>(new Set())
+  const [autoCountdown, setAutoCountdown] = useState<number | null>(null)
+  const autoTimer = useRef<any>(null)
 
   useEffect(() => {
     setDaily(daily.id)
   }, [daily.id, setDaily])
 
-  // hydrate from server – lock already answered slots
-  const mySub = useMySubmission(daily.id, guestToken)
-  useEffect(() => {
-    if (mySub.data?.answers) {
-      mySub.data.answers.forEach((a:any) => {
-        const slotId = a.daily_slot
-        const existing = picks[slotId]
-        if (!existing?.locked) {
-          // @ts-ignore – setPick not exposed here, use setAnswer which also stores player info
-          setAnswer(slotId, {
-            is_correct: a.is_correct,
-            rarity_tier: a.rarity_tier,
-            points_awarded: a.points_awarded,
-            is_diamond_pick: a.is_diamond_pick,
-            locked: true,
-          })
-          // also ensure player info is stored
-          const store = useRosterStore.getState()
-          const p = store.picks[slotId]
-          if (!p?.playerSlug) {
-            // inject player info
-            useRosterStore.setState(s => ({
-              picks: { ...s.picks, [slotId]: { ...(s.picks[slotId]||{slotId}), playerSlug: a.player_slug, playerNickname: a.player_nickname, is_correct: a.is_correct, rarity_tier: a.rarity_tier, points_awarded: a.points_awarded, is_diamond_pick: a.is_diamond_pick, locked: true } }
-            }))
-          }
-        }
-      })
-      if (onScore && mySub.data.total_points != null) {
-        onScore(mySub.data.total_points, mySub.data.answers)
-      }
-    }
-  }, [mySub.data])
+  const filled = daily.slots.filter(s => picks[s.id]?.playerSlug).length
+  const allFilled = filled === daily.slots.length && daily.slots.length === 5
 
-  // PER-SLOT INSTANT verification
+  // --- AUTO-SUBMIT when 5 picks are ready ---
   useEffect(() => {
-    daily.slots.forEach(slot => {
-      const pick = picks[slot.id]
-      if (!pick?.playerSlug) return
-      if (pick.locked) return
-      if (inFlight.current.has(slot.id)) return
-      // fire verification
-      inFlight.current.add(slot.id)
-      setVerifyingSlot(slot.id)
+    if (submitted || !allFilled || submit.isPending) {
+      if (autoTimer.current) { clearTimeout(autoTimer.current); clearInterval(autoTimer.current) }
+      setAutoCountdown(null)
+      return
+    }
+    // start 1.2s countdown – gives a moment to change pick if misclick
+    let left = 3
+    setAutoCountdown(left)
+    sound.pick()
+    const iv = setInterval(() => {
+      left -= 1
+      setAutoCountdown(left > 0 ? left : 0)
+      if (left <= 0) clearInterval(iv)
+    }, 300)
+    autoTimer.current = setTimeout(() => {
+      handleSubmit()
+    }, 1100)
+    return () => {
+      clearTimeout(autoTimer.current)
+      clearInterval(iv)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filled, allFilled, submitted])
+
+  const handleSubmit = async (skipConfirm = true) => {
+    if (submitted) return
+    if (!allFilled) return
+    // ensure guest_token
+    let gToken = guestToken
+    if (!gToken) {
+      gToken = (typeof window !== 'undefined' && localStorage.getItem('guest_token')) ||
+               Math.random().toString(36).slice(2) + Date.now().toString(36)
+      if (typeof window !== 'undefined') localStorage.setItem('guest_token', gToken)
+    }
+    const answers = daily.slots.map(s => {
+      const pick = picks[s.id]
+      if (!pick?.playerSlug) throw new Error('empty slot')
+      return { slot_id: s.id, player_slug: pick.playerSlug }
+    })
+    try {
       sound.submit()
-      const gToken = guestToken || (typeof window !== 'undefined' ? localStorage.getItem('guest_token') || '' : '')
-      submitAnswer.mutate({
-        daily_id: daily.id,
-        slot_id: slot.id,
-        player_slug: pick.playerSlug!,
-        guest_token: gToken,
-      }, {
-        onSuccess: (data:any) => {
-          inFlight.current.delete(slot.id)
-          setVerifyingSlot(null)
-          setAnswer(slot.id, {
-            is_correct: data.is_correct,
-            rarity_tier: data.rarity_tier,
-            points_awarded: data.points_awarded,
-            is_diamond_pick: data.is_diamond_pick,
-            locked: true,
-          })
-          if (data.is_correct) {
-            if (data.is_diamond_pick) sound.diamond()
+      const res = await submit.mutateAsync({ daily_id: daily.id, guest_token: gToken, answers })
+      markSubmitted()
+      const total = res?.total_points ?? 0
+      const ans = res?.answers || []
+      // sounds per answer
+      let correctCount = 0
+      ans.forEach((a:any, idx:number) => {
+        setTimeout(() => {
+          if (a.is_correct) {
+            correctCount++
+            if (a.is_diamond_pick) { sound.diamond() }
             else sound.success()
           } else {
             sound.error()
           }
-          const pts = data.points_awarded || 0
-          const tier = data.rarity_tier || '—'
-          setToast(`${slot.role.toUpperCase()} • ${pick.playerNickname} → ${data.is_correct ? '✓' : '✗'}  ${tier}  ${pts}pkt${data.is_diamond_pick ? ' 💎' : ''}`)
-          setTimeout(()=>setToast(''), 2600)
-          // update total score callback
-          if (data.total_points != null && onScore) {
-            // fetch full answers? use mySub refetch
-            mySub.refetch()
-          }
-        },
-        onError: (e:any) => {
-          inFlight.current.delete(slot.id)
-          setVerifyingSlot(null)
-          sound.error()
-          // if slot already locked server-side, hydrate
-          mySub.refetch()
-        }
+        }, idx * 280)
       })
-    })
-  }, [picks, daily.id, daily.slots])
-
-  const filled = daily.slots.filter(s => picks[s.id]?.playerSlug).length
-  const locked = daily.slots.filter(s => picks[s.id]?.locked).length
-  const correct = daily.slots.filter(s => picks[s.id]?.is_correct).length
-  const totalPoints = daily.slots.reduce((sum, s) => sum + (picks[s.id]?.points_awarded || 0), 0)
-
-  const handlePick = (slot: DailySlot) => {
-    const p = picks[slot.id]
-    if (p?.locked) {
-      // show result again, no change allowed
+      if (onScore) onScore(total, ans)
+      // pretty summary
+      const summary = ans.map((a:any) =>
+        `${(a.slot_role||'').toUpperCase().padEnd(7)} ${a.player_nickname?.padEnd(14,' ')}  ${a.is_correct ? '✓' : '✗'}  ${a.rarity_tier||'-'}  ${a.points_awarded||0}pkt${a.is_diamond_pick?' 💎':''}`
+      ).join('\n')
+      setMsg(`WYNIK: ${total} pkt  •  ${ans.filter((a:any)=>a.is_correct).length}/5 poprawnych\n\n${summary}`)
+      setTimeout(()=> window.scrollTo({top: 520, behavior:'smooth'}), 400)
+    } catch (e:any) {
+      const data = e?.response?.data
+      let txt = 'Błąd wysyłania'
+      if (data) {
+        if (typeof data === 'string') txt = data
+        else if (data.detail) txt = data.detail
+        else txt = JSON.stringify(data, null, 2)
+      }
+      // if already submitted – mark locally
+      if (JSON.stringify(data).includes('Już wysłałeś')) {
+        markSubmitted()
+        txt = 'Ten skład był już wysłany – zobacz wyniki poniżej.'
+      }
+      setMsg(txt)
       sound.error()
-      setToast(`${slot.role.toUpperCase()} ZABLOKOWANE → ${p.playerNickname} ${p.is_correct ? '✓' : '✗'} ${p.points_awarded||0}pkt`)
-      setTimeout(()=>setToast(''), 1800)
-      return
+    } finally {
+      setAutoCountdown(null)
+    }
+  }
+
+  // cancel auto-submit if user changes a pick during countdown
+  const handlePick = (slot: DailySlot) => {
+    if (submitted) return
+    if (autoTimer.current) {
+      clearTimeout(autoTimer.current)
+      setAutoCountdown(null)
     }
     sound.open()
     setPickerSlot(slot)
@@ -128,81 +124,78 @@ export default function RosterBoard({ daily, onScore }: { daily: Daily, onScore?
     return (
       <div className="bg-[#0f141b] border border-amber-900/30 rounded-2xl text-center py-10 px-4">
         <div className="text-amber-400 font-semibold mb-1">Brak slotów w tym Daily</div>
+        <div className="text-[13px] text-zinc-400">
+          Uruchom:<br/>
+          <code className="text-[11px] bg-black px-2 py-1 rounded">docker compose exec api python manage.py create_daily --publish</code>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="space-y-3">
+      {/* MAP */}
       <RiftBoard
         slots={daily.slots}
         onPick={handlePick}
-        disabled={false}
+        disabled={submitted}
       />
 
-      {/* status – per slot instant */}
+      {/* status bar – NO submit button anymore */}
       <div className="bg-[#0f141b] border border-zinc-800 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-[13px]">
-        <div className="flex items-center gap-5 flex-wrap">
+        <div className="flex items-center gap-4">
           <span className="text-zinc-400">
-            Zablokowano: <b className="text-white">{locked}/5</b>
+            Wypełniono: <b className="text-white text-[15px]">{filled}/5</b>
           </span>
-          <span className="text-zinc-400">
-            Trafienia: <b className={correct>0 ? "text-emerald-400":"text-white"}>{correct}/5</b>
-          </span>
-          <span className="text-zinc-400">
-            Punkty: <b className="text-[#C89B3C]">{totalPoints}</b>
-          </span>
-          {verifyingSlot && (
-            <span className="text-amber-300 animate-pulse">⏳ Weryfikuję {daily.slots.find(s=>s.id===verifyingSlot)?.role}…</span>
+          {submitted && <span className="text-[#C89B3C] font-semibold">✓ Skład wysłany – wynik poniżej</span>}
+          {!submitted && allFilled && autoCountdown !== null && (
+            <span className="text-amber-300 font-semibold animate-pulse">
+              Weryfikuję… {autoCountdown > 0 ? autoCountdown : '✓'}
+            </span>
           )}
-          {toast && (
-            <span className="text-[#C89B3C] font-medium">{toast}</span>
+          {!submitted && !allFilled && (
+            <span className="text-zinc-400">Wybierz pozycje na mapie by zgadywać →</span>
           )}
+          {submit.isPending && <span className="text-[#C89B3C]">⏳ Wysyłam…</span>}
         </div>
-        <div className="flex items-center gap-2 text-[11px]">
-          <span className="text-zinc-500">1 próba / slot • wynik natychmiast</span>
-          {locked>0 && (
+
+        <div className="flex items-center gap-2">
+          {!submitted && filled > 0 && (
             <button
-              onClick={()=> { if(confirm('Zresetować lokalnie? Zablokowane sloty wrócą po odświeżeniu z serwera.')) { reset(); } }}
-              className="px-2 py-1 rounded border border-zinc-700 text-zinc-400 hover:text-white"
-            >reset lokalny</button>
+              onClick={()=>{ reset(); setMsg(''); sound.close() }}
+              className="text-[11px] px-3 py-1.5 rounded-full border border-zinc-700 text-zinc-300 hover:border-zinc-500 hover:text-white"
+            >
+              Wyczyść
+            </button>
+          )}
+          {allFilled && !submitted && !submit.isPending && (
+            <div className="text-[11px] text-amber-300">Auto-wysyłka…</div>
+          )}
+          {submitted && (
+            <a href={`#results`} className="text-[11px] text-[#C89B3C] hover:underline">↓ wyniki</a>
           )}
         </div>
       </div>
 
-      {/* per-slot results list */}
-      <div className="bg-[#0b1218] border border-zinc-800 rounded-2xl p-3">
-        <div className="text-[11px] text-zinc-400 mb-2">WYNIKI LIVE — kliknij rolę by wybrać (po wyborze slot jest blokowany):</div>
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 text-[12px] font-mono">
-          {daily.slots.map(s => {
-            const p = picks[s.id]
-            const state = !p?.playerSlug ? 'empty' : p.locked ? (p.is_correct ? 'ok' : 'bad') : 'pending'
-            const color = state==='ok' ? 'text-emerald-400 border-emerald-700/40 bg-emerald-950/20'
-              : state==='bad' ? 'text-red-400 border-red-800/40 bg-red-950/20'
-              : state==='pending' ? 'text-amber-300 border-amber-700/40 bg-amber-950/10'
-              : 'text-zinc-500 border-zinc-800 bg-[#10161f]'
-            return (
-              <div key={s.id} className={`rounded-lg border px-2 py-2 ${color}`}>
-                <div className="text-[10px] uppercase opacity-80">{s.role}</div>
-                <div className="truncate font-semibold">{p?.playerNickname || '—'}</div>
-                <div className="text-[11px] mt-0.5">
-                  {p?.locked ? (
-                    <>{p.is_correct ? '✓' : '✗'} {p.rarity_tier || '—'} {p.points_awarded||0}pkt {p.is_diamond_pick ? '💎':''}</>
-                  ) : p?.playerSlug ? '⏳…' : 'wybierz'}
-                </div>
-              </div>
-            )
-          })}
+      {/* inline result summary – appears immediately after submit */}
+      {msg && (
+        <div id="results" className="bg-[#0b1218] border border-[#C89B3C]/25 rounded-2xl p-4 shadow-[0_0_24px_rgba(200,155,60,0.08)]">
+          <pre className="text-[12px] leading-relaxed whitespace-pre-wrap font-mono text-zinc-200">{msg}</pre>
+          <div className="mt-3 text-[11px] text-zinc-400">
+            Kliknij dowolną rolę na mapie powyżej aby zobaczyć szczegółowy rozkład % dla tej pozycji →
+            <a href={`/results/${daily.id}`} className="ml-2 text-[#C89B3C] hover:underline">pełne wyniki</a>
+          </div>
         </div>
-      </div>
+      )}
 
+      {/* legend – compact */}
       <div className="text-[11px] text-zinc-500 flex flex-wrap gap-x-4 gap-y-1 px-1">
         <span>Common <b className="text-zinc-300">10</b></span>
         <span className="text-[#60a5fa]">Rare <b>25</b></span>
         <span className="text-[#c084fc]">Epic <b>60</b></span>
         <span className="text-[#fbbf24]">Legendary <b>120</b></span>
         <span className="text-[#22d3ee]">💎 <b>+50</b></span>
-        <span className="ml-auto">slot blokowany po wyborze • nie można zmienić</span>
+        <span className="ml-auto text-zinc-500">1 próba / dzień • wynik natychmiast</span>
       </div>
 
       <PlayerPickerModal

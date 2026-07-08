@@ -1,23 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type AnswerResult = {
-  is_correct?: boolean
-  rarity_tier?: 'common' | 'rare' | 'epic' | 'legendary' | null
-  points_awarded?: number
-  is_diamond_pick?: boolean
-  locked?: boolean
-}
-
-type Pick = { slotId: number, playerSlug?: string, playerNickname?: string } & AnswerResult
-
+type Pick = { slotId: number, playerSlug?: string, playerNickname?: string }
 type RosterState = {
   dailyId?: number
   picks: Record<number, Pick>
   submitted: boolean
   guestToken: string
   setPick: (slotId: number, playerSlug: string, playerNickname: string) => void
-  setAnswer: (slotId: number, ans: AnswerResult) => void
   clearPick: (slotId: number) => void
   setDaily: (id: number) => void
   markSubmitted: () => void
@@ -41,23 +31,10 @@ export const useRosterStore = create<RosterState>()(
       picks: {},
       submitted: false,
       guestToken: typeof window !== 'undefined' ? genGuestToken() : '',
-      setPick: (slotId, playerSlug, playerNickname) => set(state => {
-        const prev = state.picks[slotId] || { slotId }
-        // if locked – ignore
-        if (prev.locked) return state
-        return {
-          picks: { ...state.picks, [slotId]: { ...prev, slotId, playerSlug, playerNickname } }
-        }
-      }),
-      setAnswer: (slotId, ans) => set(state => {
-        const prev = state.picks[slotId] || { slotId }
-        return {
-          picks: { ...state.picks, [slotId]: { ...prev, ...ans, locked: true } }
-        }
-      }),
+      setPick: (slotId, playerSlug, playerNickname) => set(state => ({
+        picks: { ...state.picks, [slotId]: { slotId, playerSlug, playerNickname } }
+      })),
       clearPick: (slotId) => set(state => {
-        const prev = state.picks[slotId]
-        if (prev?.locked) return state // cannot clear locked
         const n = { ...state.picks }
         delete n[slotId]
         return { picks: n }
