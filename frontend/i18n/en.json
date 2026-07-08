@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "daily": "Daily",
+    "leaderboard": "Leaderboard",
+    "profile": "Profile"
+  },
+  "game": {
+    "title": "Worlds XI",
+    "subtitle": "Build a 5-man Worlds roster matching the conditions",
+    "submit": "Submit roster",
+    "submitted": "Submitted",
+    "fillAll": "Fill all 5 positions",
+    "oneTry": "One try per day. Submit?",
+    "resultsAfterClose": "Results after close"
+  },
+  "roles": {
+    "top": "Top",
+    "jungle": "Jungle",
+    "mid": "Mid",
+    "adc": "ADC",
+    "support": "Support"
+  },
+  "rarity": {
+    "common": "Common",
+    "rare": "Rare",
+    "epic": "Epic",
+    "legendary": "Legendary",
+    "diamond": "Diamond Pick"
+  }
+}

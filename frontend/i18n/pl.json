@@ -1,0 +1,30 @@
+{
+  "nav": {
+    "daily": "Daily",
+    "leaderboard": "Ranking",
+    "profile": "Profil"
+  },
+  "game": {
+    "title": "Worlds XI",
+    "subtitle": "Ułóż skład 5 zawodników Worlds spełniających warunki",
+    "submit": "Wyślij skład",
+    "submitted": "Wysłane",
+    "fillAll": "Uzupełnij wszystkie 5 pozycji",
+    "oneTry": "Jedna próba dziennie. Wysłać skład?",
+    "resultsAfterClose": "Wyniki po zakończeniu dnia"
+  },
+  "roles": {
+    "top": "Top",
+    "jungle": "Dżungla",
+    "mid": "Środek",
+    "adc": "Strzelec",
+    "support": "Wspierający"
+  },
+  "rarity": {
+    "common": "Common",
+    "rare": "Rare",
+    "epic": "Epic",
+    "legendary": "Legendary",
+    "diamond": "Diamond Pick"
+  }
+}

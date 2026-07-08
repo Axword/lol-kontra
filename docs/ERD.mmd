@@ -1,0 +1,61 @@
+erDiagram
+    PLAYERS ||--o{ PLAYER_TEAM_HISTORY : has
+    PLAYERS ||--o{ TOURNAMENT_APPEARANCE : played
+    TEAMS ||--o{ PLAYER_TEAM_HISTORY : employs
+    COACHES ||--o{ PLAYER_COACH_HISTORY : trained
+    PLAYERS ||--o{ PLAYER_COACH_HISTORY : ""
+    TOURNAMENTS ||--o{ TOURNAMENT_APPEARANCE : ""
+
+    DAILIES ||--o{ DAILY_SLOTS : contains
+    DAILY_SLOTS ||--o{ DAILY_SLOT_CONDITIONS : requires
+    DAILY_SLOTS ||--o{ SUBMISSION_ANSWERS : answered
+    SUBMISSIONS ||--o{ SUBMISSION_ANSWERS : has
+    USERS ||--o{ SUBMISSIONS : creates
+    SUBMISSION_ANSWERS }o--|| PLAYERS : picks
+
+    DAILY_SLOTS ||--o{ ANSWER_STATS_DAILY : aggregates
+    PLAYERS ||--o{ ANSWER_STATS_DAILY : ""
+
+    USERS ||--|| USER_STATS : has
+
+    PLAYERS {
+        bigint id PK
+        string slug UK
+        string nickname
+        string real_name
+        int birth_year
+        string country_code
+        string residency
+        string continent
+        string primary_role
+        string[] secondary_roles
+        jsonb attributes
+        jsonb career_stats
+        int worlds_count
+        int worlds_titles_count
+        boolean is_active
+        tsvector search_vector
+    }
+    DAILIES {
+        int id PK
+        date date UK
+        string status
+        string reveal_mode
+    }
+    DAILY_SLOTS {
+        bigint id PK
+        int daily_id FK
+        int position
+        string role
+    }
+    SUBMISSION_ANSWERS {
+        bigint id PK
+        bigint submission_id FK
+        bigint daily_slot_id FK
+        bigint player_id FK
+        boolean is_correct
+        string rarity_tier
+        float rarity_percent
+        int points_awarded
+        boolean is_diamond_pick
+    }

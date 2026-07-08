@@ -1,0 +1,209 @@
+// League of Legends Esports Roster Challenge
+// Prisma schema mirror – do generowania typów TypeScript
+// Runtime ORM: Django. Ten plik = source of truth dla TS.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../frontend/node_modules/.prisma"
+}
+
+model Player {
+  id                  BigInt   @id @default(autoincrement())
+  slug                String   @unique
+  nickname            String
+  real_name           String?
+  birth_year          Int?
+  country_code        String   @db.VarChar(3)
+  residency           String   @db.VarChar(8)
+  continent           String
+  primary_role        String
+  secondary_roles     String[]
+  is_active           Boolean  @default(true)
+  attributes          Json     @db.JsonB
+  career_stats        Json     @db.JsonB
+  worlds_count        Int      @default(0)
+  worlds_titles_count Int      @default(0)
+  updated_at          DateTime @updatedAt
+
+  answers SubmissionAnswer[]
+  team_history PlayerTeamHistory[]
+  tournament_appearances TournamentAppearance[]
+
+  @@index([primary_role, is_active])
+  @@index([nickname])
+  @@map("players_player")
+}
+
+model Team {
+  slug         String  @id
+  name         String
+  region       String
+  country_code String?
+
+  @@map("players_team")
+}
+
+model Coach {
+  slug String @id
+  name String
+
+  @@map("players_coach")
+}
+
+model PlayerTeamHistory {
+  id         BigInt   @id @default(autoincrement())
+  playerId   BigInt
+  player     Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  team_slug  String
+  start_date DateTime?
+  end_date   DateTime?
+  role       String
+
+  @@map("players_playerteamhistory")
+}
+
+model TournamentAppearance {
+  id              BigInt  @id @default(autoincrement())
+  playerId        BigInt
+  player          Player  @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  tournament_slug String
+  year            Int
+  team_slug       String?
+  role            String
+  placement       Int?
+
+  @@index([year])
+  @@map("players_tournamentappearance")
+}
+
+model Daily {
+  id           Int      @id @default(autoincrement())
+  date         DateTime @unique @db.Date
+  status       String   @default("draft")
+  locale_seed  String
+  reveal_mode  String   @default("after_close")
+  published_at DateTime?
+  closed_at    DateTime?
+
+  slots       DailySlot[]
+  submissions Submission[]
+
+  @@map("dailies_daily")
+}
+
+model DailySlot {
+  id        BigInt @id @default(autoincrement())
+  dailyId   Int
+  daily     Daily  @relation(fields: [dailyId], references: [id], onDelete: Cascade)
+  position  Int
+  role      String
+  label_pl  String?
+  label_en  String?
+
+  conditions DailySlotCondition[]
+  answers    SubmissionAnswer[]
+
+  @@unique([dailyId, position])
+  @@unique([dailyId, role])
+  @@map("dailies_dailyslot")
+}
+
+model DailySlotCondition {
+  id             BigInt    @id @default(autoincrement())
+  slotId         BigInt
+  slot           DailySlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  condition_type String
+  operator       String    @default("eq")
+  value          Json      @db.JsonB
+  label_pl       String
+  label_en       String
+  order          Int       @default(0)
+
+  @@map("dailies_dailyslotcondition")
+}
+
+model Submission {
+  id            BigInt   @id @default(autoincrement())
+  dailyId       Int
+  daily         Daily    @relation(fields: [dailyId], references: [id], onDelete: Cascade)
+  userId        BigInt?
+  guest_token   String?
+  submitted_at  DateTime @default(now())
+  ip_hash       String?
+  is_scored     Boolean  @default(false)
+  total_points  Int      @default(0)
+
+  answers SubmissionAnswer[]
+
+  @@unique([dailyId, userId])
+  @@unique([dailyId, guest_token])
+  @@map("submissions_submission")
+}
+
+model SubmissionAnswer {
+  id                 BigInt   @id @default(autoincrement())
+  submissionId       BigInt
+  submission         Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  daily_slotId       BigInt
+  daily_slot         DailySlot @relation(fields: [daily_slotId], references: [id])
+  playerId           BigInt
+  player             Player   @relation(fields: [playerId], references: [id])
+  is_correct         Boolean  @default(false)
+  rarity_tier        String?
+  rarity_percent     Float?
+  points_awarded     Int      @default(0)
+  is_diamond_pick    Boolean  @default(false)
+  diamond_awarded_at DateTime?
+
+  @@unique([submissionId, daily_slotId])
+  @@map("submissions_submissionanswer")
+}
+
+model AnswerStatsDaily {
+  id             BigInt    @id @default(autoincrement())
+  daily_slotId   BigInt
+  playerId       BigInt
+  pick_count     Int
+  pick_percent   Float
+  rarity_tier    String
+  is_correct     Boolean   @default(true)
+
+  @@unique([daily_slotId, playerId])
+  @@map("scoring_answerstatsdaily")
+}
+
+model ScoringConfig {
+  id                  Int      @id @default(autoincrement())
+  is_active           Boolean  @default(true)
+  points_common       Int      @default(10)
+  points_rare         Int      @default(25)
+  points_epic         Int      @default(60)
+  points_legendary    Int      @default(120)
+  diamond_bonus       Int      @default(50)
+  threshold_rare      Float    @default(20.0)
+  threshold_epic      Float    @default(10.0)
+  threshold_legendary Float    @default(1.0)
+  updated_at          DateTime @updatedAt
+
+  @@map("scoring_scoringconfig")
+}
+
+model UserStats {
+  userId             BigInt @id
+  games_played       Int    @default(0)
+  total_points       Int    @default(0)
+  avg_points         Float  @default(0)
+  best_score         Int    @default(0)
+  legendary_answers  Int    @default(0)
+  diamond_picks      Int    @default(0)
+  current_streak     Int    @default(0)
+  max_streak         Int    @default(0)
+  updated_at         DateTime @updatedAt
+
+  @@map("users_userstats")
+}

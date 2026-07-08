@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --lol-bg: #0A0E13;
+  --lol-gold: #C89B3C;
+}
+
+html, body {
+  background: #0A0E13;
+  color: #E8E6E3;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.card-lol {
+  @apply bg-lol-bg2 border border-zinc-800 rounded-2xl p-4 shadow-lg;
+}
+.btn-gold {
+  @apply bg-lol-gold text-black font-semibold px-5 py-3 rounded-xl hover:brightness-110 transition shadow-gold;
+}
+.pill {
+  @apply text-xs px-3 py-1 rounded-full bg-zinc-800 text-zinc-200 border border-zinc-700;
+}
+.rarity-common { @apply text-rarity-common; }
+.rarity-rare { @apply text-rarity-rare; }
+.rarity-epic { @apply text-rarity-epic; }
+.rarity-legendary { @apply text-rarity-legendary font-bold; }
+.rarity-diamond { @apply text-rarity-diamond font-bold; }
