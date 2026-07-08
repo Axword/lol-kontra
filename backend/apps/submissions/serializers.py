@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.db import transaction
+from django.db.models import Sum
 from .models import Submission, SubmissionAnswer
 from apps.players.models import Player
 from apps.dailies.models import DailySlot
@@ -140,24 +141,34 @@ class AnswerCreateSerializer(serializers.Serializer):
                 guest_token=None if user else guest_token,
                 defaults={'ip_hash': ''}
             )
-            # slot already answered? -> lock
+
             existing = SubmissionAnswer.objects.filter(submission=submission, daily_slot=slot).first()
             if existing:
-                # return existing – locked, cannot change
-                return existing
+                if existing.is_correct:
+                    # locked – cannot change correct answer
+                    return existing
+                # retry allowed: overwrite the wrong answer
+                existing.player = player
+                existing.is_correct = False
+                existing.rarity_tier = None
+                existing.rarity_percent = None
+                existing.points_awarded = 0
+                existing.is_diamond_pick = False
+                existing.save()
+                answer_obj = existing
+            else:
+                try:
+                    answer_obj = SubmissionAnswer.objects.create(
+                        submission=submission,
+                        daily_slot=slot,
+                        player=player,
+                    )
+                except IntegrityError:
+                    answer_obj = SubmissionAnswer.objects.get(submission=submission, daily_slot=slot)
+                    if answer_obj.is_correct:
+                        return answer_obj
 
-            try:
-                answer_obj = SubmissionAnswer.objects.create(
-                    submission=submission,
-                    daily_slot=slot,
-                    player=player,
-                )
-            except IntegrityError:
-                # race – return existing
-                answer_obj = SubmissionAnswer.objects.get(submission=submission, daily_slot=slot)
-                return answer_obj
-
-            # validate instantly
+            # validate instantly (is_correct + diamond)
             validate_and_score_answer(answer_obj)
 
         # FAST kontra scoring – instant, no full score_daily

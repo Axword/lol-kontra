@@ -56,8 +56,17 @@ export const useRosterStore = create<RosterState>()(
         const prev = state.picks[slotId] || { slotId }
         // only block if CORRECTLY locked
         if (prev.locked && prev.is_correct === true) return state
+        // new pick attempt – clear previous verification result
         return {
-          picks: { ...state.picks, [slotId]: { ...prev, slotId, playerSlug, playerNickname } }
+          picks: { 
+            ...state.picks, 
+            [slotId]: { 
+              slotId, 
+              playerSlug, 
+              playerNickname 
+              // is_correct, points_awarded, locked etc cleared for new attempt
+            } 
+          }
         }
       }),
 
