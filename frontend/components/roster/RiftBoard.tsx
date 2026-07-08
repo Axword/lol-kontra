@@ -114,9 +114,11 @@ export default function RiftBoard({ slots, onPick, disabled }: Props) {
           const isHover = hoverRole === pos.role
           // color is based on the ranking (rarity) – per user request
           const nodeState = !pick?.playerSlug ? 'empty'
-            : pick.locked
-              ? (pick.is_correct ? (pick.rarity_tier || 'correct') : 'wrong')
-              : 'pending'
+            : pick.is_correct === true
+              ? (pick.rarity_tier || 'correct')
+              : pick.is_correct === false
+                ? 'wrong'
+                : 'pending'
           return (
             <div
               key={pos.role}
@@ -127,7 +129,7 @@ export default function RiftBoard({ slots, onPick, disabled }: Props) {
             >
               <button
                 onClick={() => !disabled && onPick(slot)}
-                disabled={!!pick?.locked || disabled}
+                disabled={!!(pick?.is_correct === true && pick?.locked) || disabled}
                 className={`group relative flex flex-col items-center transition-transform duration-150 ${pick?.locked ? 'cursor-not-allowed opacity-95' : 'hover:scale-105'} focus:outline-none`}
                 style={{ filter: isHover && !pick?.locked ? 'drop-shadow(0 0 10px rgba(200,155,60,0.45))' : undefined }}
               >
@@ -140,9 +142,14 @@ export default function RiftBoard({ slots, onPick, disabled }: Props) {
                   <div className="text-[11px] text-zinc-200 font-medium max-w-[120px] truncate drop-shadow" style={{ textShadow: '0 1px 3px #000' }}>
                     {pick?.playerNickname || <span className="text-zinc-400">— wybierz —</span>}
                   </div>
-                  {pick?.locked && (
-                    <div className={`text-[10px] font-bold ${pick.is_correct ? 'text-emerald-400' : 'text-red-400'}`} style={{ textShadow: '0 1px 3px #000' }}>
-                      {pick.is_correct ? '✓' : '✗'} {pick.points_awarded || 0}pkt {pick.rarity_tier ? `• ${pick.rarity_tier}` : ''} {pick.is_diamond_pick ? '💎' : ''}
+                  {pick?.locked && pick.is_correct && (
+                    <div className="text-[10px] font-bold text-emerald-400" style={{ textShadow: '0 1px 3px #000' }}>
+                      ✓ {pick.pick_percent?.toFixed(1) || '0'}% → -{pick.points_awarded} {pick.is_diamond_pick ? '💎' : ''}
+                    </div>
+                  )}
+                  {pick?.is_correct === false && (
+                    <div className="text-[10px] font-bold text-red-400" style={{ textShadow: '0 1px 3px #000' }}>
+                      ✗ spróbuj ponownie
                     </div>
                   )}
                   {pick && !pick.locked && (
@@ -173,7 +180,7 @@ export default function RiftBoard({ slots, onPick, disabled }: Props) {
               </button>
 
               {/* clear X – only if NOT locked */}
-              {pick && !disabled && !pick.locked && (
+              {pick && !disabled && !(pick.is_correct === true && pick.locked) && (
                 <button
                   onClick={(e)=>{ e.stopPropagation(); clearPick(slot.id)}}
                   className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#0b0f14] border border-[#C89B3C]/50 text-[#C89B3C] text-[11px] flex items-center justify-center hover:bg-[#C89B3C] hover:text-black transition"
@@ -181,8 +188,11 @@ export default function RiftBoard({ slots, onPick, disabled }: Props) {
                 >×</button>
               )}
               {/* locked badge */}
-              {pick?.locked && (
-                <div className="absolute -top-1 -right-2 text-[9px] bg-zinc-900 border border-zinc-700 text-zinc-300 px-1 rounded">LOCK</div>
+              {pick?.is_correct === true && pick?.locked && (
+                <div className="absolute -top-1 -right-2 text-[9px] bg-emerald-900 border border-emerald-700 text-emerald-300 px-1 rounded">✓ LOCK</div>
+              )}
+              {pick?.is_correct === false && (
+                <div className="absolute -top-1 -right-2 text-[9px] bg-red-900 border border-red-700 text-red-300 px-1 rounded animate-pulse">RETRY</div>
               )}
 
               {/* pulse when empty */}

@@ -1,22 +1,28 @@
-from django.db.models import Count
+from django.db.models import Count, Sum
 from apps.submissions.models import SubmissionAnswer, Submission
 from apps.scoring.models import AnswerStatsDaily, ScoringConfig
 from apps.dailies.models import DailySlot
+from django.db import models
+
+# Kontra.games style scoring
+# Start: 500
+# For each correct answer: deduction = 100 - pick_percent
+# Diamond first pick: deduction = 100
+# Lower total is better. We go down.
+
+START_SCORE = 500.0
 
 def score_daily(daily_id: int):
     cfg = ScoringConfig.get_active()
     daily_slots = DailySlot.objects.filter(daily_id=daily_id)
 
     for slot in daily_slots:
-        # total correct submissions for this slot
         answers_qs = SubmissionAnswer.objects.filter(daily_slot=slot, is_correct=True)
         total = answers_qs.values('submission').distinct().count()
         if total == 0:
             continue
 
-        # aggregate pick counts
         agg = answers_qs.values('player').annotate(pick_count=Count('id'))
-        # clear old stats
         AnswerStatsDaily.objects.filter(daily_slot=slot).delete()
 
         stats_bulk = []
@@ -27,16 +33,14 @@ def score_daily(daily_id: int):
 
             if pick_percent > cfg.threshold_rare:
                 tier = 'common'
-                points = cfg.points_common
             elif pick_percent > cfg.threshold_epic:
                 tier = 'rare'
-                points = cfg.points_rare
             elif pick_percent > cfg.threshold_legendary:
                 tier = 'epic'
-                points = cfg.points_epic
             else:
                 tier = 'legendary'
-                points = cfg.points_legendary
+
+            deduction = round(100.0 - pick_percent, 1)
 
             stats_bulk.append(AnswerStatsDaily(
                 daily_slot=slot,
@@ -47,30 +51,26 @@ def score_daily(daily_id: int):
                 is_correct=True
             ))
 
-            # update SubmissionAnswer
             upd_qs = SubmissionAnswer.objects.filter(daily_slot=slot, player_id=player_id, is_correct=True)
             upd_qs.update(
                 rarity_tier=tier,
                 rarity_percent=pick_percent,
-                points_awarded=points,
+                points_awarded=deduction,   # store deduction
             )
 
         AnswerStatsDaily.objects.bulk_create(stats_bulk)
 
-        # diamond bonus
+        # diamond = flat 100 deduction
         diamond_qs = SubmissionAnswer.objects.filter(daily_slot=slot, is_diamond_pick=True)
-        diamond_qs.update(points_awarded=models.F('points_awarded') + cfg.diamond_bonus)
+        diamond_qs.update(points_awarded=100.0)
 
-    # update submission totals
-    from django.db.models import Sum, F
+    # update submission totals (kontra style: 500 - sum deductions)
     submissions = Submission.objects.filter(daily_id=daily_id)
     for sub in submissions:
-        total_points = sub.answers.aggregate(s=Sum('points_awarded'))['s'] or 0
-        sub.total_points = total_points
+        total_deduction = sub.answers.aggregate(s=Sum('points_awarded'))['s'] or 0
+        final_score = round(START_SCORE - float(total_deduction), 1)
+        sub.total_points = int(final_score * 10)   # store as int*10 for precision
         sub.is_scored = True
         sub.save(update_fields=['total_points', 'is_scored'])
 
     return True
-
-# need models.F import fix
-from django.db import models
