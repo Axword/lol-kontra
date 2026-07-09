@@ -4,21 +4,29 @@ import { persist } from 'zustand/middleware'
 type AnswerResult = {
   is_correct?: boolean
   rarity_tier?: 'common' | 'rare' | 'epic' | 'legendary' | null
-  points_awarded?: number
+  points_awarded?: number   // now = deduction (e.g. 95.8)
+  pick_percent?: number
   is_diamond_pick?: boolean
   locked?: boolean
 }
 
-type Pick = { slotId: number, playerSlug?: string, playerNickname?: string } & AnswerResult
+type Pick = { 
+  slotId: number, 
+  playerSlug?: string, 
+  playerNickname?: string 
+} & AnswerResult
 
 type RosterState = {
   dailyId?: number
   picks: Record<number, Pick>
   submitted: boolean
   guestToken: string
+  errors: number
+  maxErrors: number
   setPick: (slotId: number, playerSlug: string, playerNickname: string) => void
   setAnswer: (slotId: number, ans: AnswerResult) => void
   clearPick: (slotId: number) => void
+  incrementError: () => void
   setDaily: (id: number) => void
   markSubmitted: () => void
   reset: () => void
@@ -41,35 +49,71 @@ export const useRosterStore = create<RosterState>()(
       picks: {},
       submitted: false,
       guestToken: typeof window !== 'undefined' ? genGuestToken() : '',
+      errors: 0,
+      maxErrors: 10,
+
       setPick: (slotId, playerSlug, playerNickname) => set(state => {
         const prev = state.picks[slotId] || { slotId }
-        // if locked – ignore
-        if (prev.locked) return state
+        // only block if CORRECTLY locked
+        if (prev.locked && prev.is_correct === true) return state
+        // new pick attempt – clear previous verification result
         return {
-          picks: { ...state.picks, [slotId]: { ...prev, slotId, playerSlug, playerNickname } }
+          picks: { 
+            ...state.picks, 
+            [slotId]: { 
+              slotId, 
+              playerSlug, 
+              playerNickname 
+              // is_correct, points_awarded, locked etc cleared for new attempt
+            } 
+          }
         }
       }),
+
       setAnswer: (slotId, ans) => set(state => {
         const prev = state.picks[slotId] || { slotId }
+        // LOCK only if correct
+        const isCorrect = !!ans.is_correct
+        const locked = isCorrect
         return {
-          picks: { ...state.picks, [slotId]: { ...prev, ...ans, locked: true } }
+          picks: { 
+            ...state.picks, 
+            [slotId]: { 
+              ...prev, 
+              ...ans, 
+              locked 
+            } 
+          }
         }
       }),
+
       clearPick: (slotId) => set(state => {
         const prev = state.picks[slotId]
-        if (prev?.locked) return state // cannot clear locked
+        // cannot clear a correctly locked slot
+        if (prev?.locked && prev.is_correct === true) return state
         const n = { ...state.picks }
         delete n[slotId]
         return { picks: n }
       }),
+
+      incrementError: () => set(state => ({
+        errors: Math.min(state.errors + 1, state.maxErrors)
+      })),
+
       setDaily: (id) => {
         const s = get()
         if (s.dailyId !== id) {
-          set({ dailyId: id, picks: {}, submitted: false })
+          set({ 
+            dailyId: id, 
+            picks: {}, 
+            submitted: false,
+            errors: 0 
+          })
         }
       },
+
       markSubmitted: () => set({ submitted: true }),
-      reset: () => set({ picks: {}, submitted: false })
+      reset: () => set({ picks: {}, submitted: false, errors: 0 })
     }),
     { name: 'lol-roster-store' }
   )

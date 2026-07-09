@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.db import transaction
+from django.db.models import Sum
 from .models import Submission, SubmissionAnswer
 from apps.players.models import Player
 from apps.dailies.models import DailySlot
@@ -140,58 +141,83 @@ class AnswerCreateSerializer(serializers.Serializer):
                 guest_token=None if user else guest_token,
                 defaults={'ip_hash': ''}
             )
-            # slot already answered? -> lock
+
             existing = SubmissionAnswer.objects.filter(submission=submission, daily_slot=slot).first()
             if existing:
-                # return existing – locked, cannot change
-                return existing
+                if existing.is_correct:
+                    # locked – cannot change correct answer
+                    return existing
+                # retry allowed: overwrite the wrong answer
+                existing.player = player
+                existing.is_correct = False
+                existing.rarity_tier = None
+                existing.rarity_percent = None
+                existing.points_awarded = 0
+                existing.is_diamond_pick = False
+                existing.save()
+                answer_obj = existing
+            else:
+                try:
+                    answer_obj = SubmissionAnswer.objects.create(
+                        submission=submission,
+                        daily_slot=slot,
+                        player=player,
+                    )
+                except IntegrityError:
+                    answer_obj = SubmissionAnswer.objects.get(submission=submission, daily_slot=slot)
+                    if answer_obj.is_correct:
+                        return answer_obj
 
-            try:
-                answer_obj = SubmissionAnswer.objects.create(
-                    submission=submission,
-                    daily_slot=slot,
-                    player=player,
-                )
-            except IntegrityError:
-                # race – return existing
-                answer_obj = SubmissionAnswer.objects.get(submission=submission, daily_slot=slot)
-                return answer_obj
-
-            # validate instantly
+            # validate instantly (is_correct + diamond)
             validate_and_score_answer(answer_obj)
 
-        # instant rarity scoring
-        if daily.reveal_mode == 'instant':
-            try:
-                from apps.scoring.engine import score_daily
-                score_daily(daily_id)
-                answer_obj.refresh_from_db()
-                submission.refresh_from_db()
-            except Exception:
-                pass
+        # FAST kontra scoring – instant, no full score_daily
+        # deduction = 100 - pick_percent (or 100 for diamond)
+        # remaining = 500 - sum deductions
+        try:
+            pick_percent = getattr(answer_obj, 'rarity_percent', None) or 0.0
+            is_dia = answer_obj.is_diamond_pick
+            deduction = 100.0 if is_dia else round(100.0 - pick_percent, 1)
+            answer_obj.points_awarded = deduction
+            answer_obj.save(update_fields=['points_awarded'])
 
-        # attach guest_token for response convenience (not stored on answer)
+            # compute running total from existing answers
+            existing_ded = submission.answers.aggregate(s=Sum('points_awarded'))['s'] or 0
+            remaining = round(500.0 - float(existing_ded), 1)
+            submission.total_points = int(remaining * 10)
+            submission.save(update_fields=['total_points'])
+        except Exception:
+            pass
+
         answer_obj._guest_token = guest_token
         answer_obj._submission_total = submission.total_points
+        answer_obj._pick_percent = getattr(answer_obj, 'rarity_percent', None) or 0.0
+        answer_obj._deduction = answer_obj.points_awarded
         return answer_obj
 
     def to_representation(self, instance):
-        # use normal answer output + submission total
         data = SubmissionAnswerOutputSerializer(instance, context=self.context).data
-        # add total_points if available
+        # kontra fields
+        data['pick_percent'] = round(getattr(instance, '_pick_percent', 0.0) or getattr(instance, 'rarity_percent', 0.0) or 0.0, 1)
+        data['deduction'] = getattr(instance, '_deduction', instance.points_awarded or 0)
         total = getattr(instance, '_submission_total', None)
         if total is not None:
-            data['submission_total_points'] = total
+            data['total_points'] = round(total / 10.0, 1)   # 304.1
+            data['remaining_score'] = data['total_points']
+            data['start_score'] = 500
+        else:
+            data['total_points'] = 500
+            data['remaining_score'] = 500
+            data['start_score'] = 500
+
         gt = getattr(instance, '_guest_token', None)
         if gt:
             data['guest_token'] = gt
-        # also return how many answers left
         try:
             sub = instance.submission
             answered = sub.answers.count()
             data['answered_count'] = answered
             data['submission_id'] = sub.id
-            data['total_points'] = sub.total_points
         except Exception:
             pass
         return data
