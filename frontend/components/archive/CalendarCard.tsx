@@ -3,71 +3,59 @@ import Link from 'next/link'
 import { sound } from '@/lib/sound'
 
 type Props = {
-  id: number,
-  date: string, // YYYY-MM-DD
-  status: string,
-  solved?: boolean,
-  score?: number | null,
-  isToday?: boolean,
+  id: number
+  date: string
+  status: string
+  solved?: boolean
+  score?: number | null
+  isToday?: boolean
 }
 
-const monthsPl = ['STY','LUT','MAR','KWI','MAJ','CZE','LIP','SIE','WRZ','PAŹ','LIS','GRU']
-const weekdaysPl = ['N','Pn','Wt','Śr','Cz','Pt','Sb']
+const monthsPl = ['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru']
+const weekdaysPl = ['nd','pn','wt','śr','cz','pt','sb']
 
 export default function CalendarCard({ id, date, status, solved, score, isToday }: Props) {
   const d = new Date(date + 'T12:00:00')
   const day = d.getDate()
-  const month = monthsPl[d.getMonth()] || ''
-  const weekday = weekdaysPl[d.getDay()] || ''
-  const year = d.getFullYear()
+  const month = monthsPl[d.getMonth()] ?? ''
+  const weekday = weekdaysPl[d.getDay()] ?? ''
 
   return (
     <Link
       href={`/daily/${id}`}
-      onClick={()=>sound.click()}
-      className={`group block relative transition-transform hover:scale-[1.025] focus:outline-none`}
+      onClick={() => sound.click()}
+      className="group block focus:outline-none"
     >
       <div className={`
-        relative bg-[#f7f3e9] text-[#1a1a1a] rounded-[14px] overflow-hidden
-        border border-[#d6c9a8] shadow-[0_2px_10px_rgba(0,0,0,0.35)]
-        ${isToday ? 'ring-2 ring-[#C89B3C] shadow-[0_0_18px_rgba(200,155,60,0.25)]' : ''}
+        relative flex flex-col items-center
+        bg-[#0d1117] border rounded-xl overflow-hidden
+        transition-all duration-150
+        hover:border-[#C89B3C]/60 hover:bg-[#111822]
+        ${isToday
+          ? 'border-[#C89B3C]/70 shadow-[0_0_12px_rgba(200,155,60,0.15)]'
+          : 'border-zinc-800'}
+        ${solved ? 'border-emerald-800/50' : ''}
       `}>
-        {/* top red bar – calendar header */}
-        <div className="bg-[#c0392b] text-white text-center py-[6px] relative">
-          <div className="text-[10px] tracking-widest font-bold">{month} {year}</div>
-          {/* binder rings */}
-          <div className="absolute -top-[5px] left-[22%] w-[10px] h-[10px] bg-[#e8e0d0] rounded-full border border-[#b8a080] shadow-sm" />
-          <div className="absolute -top-[5px] right-[22%] w-[10px] h-[10px] bg-[#e8e0d0] rounded-full border border-[#b8a080] shadow-sm" />
+        {/* month */}
+        <div className={`w-full text-center py-1 text-[10px] font-semibold uppercase tracking-wider
+          ${isToday ? 'bg-[#C89B3C] text-black' : 'bg-zinc-900 text-zinc-400'}`}>
+          {month}
         </div>
 
-        {/* date body */}
-        <div className="text-center py-3 px-2 bg-[#fbf8f0]">
-          <div className="text-[10px] text-zinc-500 uppercase tracking-wider">{weekday}</div>
-          <div className="text-[34px] font-extrabold leading-none tracking-tighter text-[#1e1e1e] mt-0.5">{day}</div>
-          <div className="text-[10px] text-zinc-500 mt-1">Daily #{id}</div>
+        {/* day number */}
+        <div className="py-2 text-center">
+          <div className="text-[10px] text-zinc-500 uppercase">{weekday}</div>
+          <div className={`text-[28px] font-bold leading-none mt-0.5 ${isToday ? 'text-[#C89B3C]' : 'text-zinc-200 group-hover:text-white'}`}>
+            {day}
+          </div>
+          <div className="text-[9px] text-zinc-600 mt-1">#{id}</div>
         </div>
 
-        {/* footer strip */}
-        <div className="bg-[#f1e9d6] border-t border-[#e0d4b8] px-2.5 py-[7px] text-[11px]">
-          {solved ? (
-            <div className="flex items-center justify-between text-[#2d6a2d] font-semibold">
-              <span>✓ rozwiązane</span>
-              <span className="text-[#C89B3C]">{score ?? '—'} pkt</span>
-            </div>
-          ) : isToday ? (
-            <div className="text-[#b67600] font-semibold text-center">▶ zagraj dziś</div>
-          ) : (
-            <div className="text-zinc-600 text-center">
-              {status === 'scored' ? 'zakończone' : status}
-              <span className="text-[#0a7d4a]"> • zagraj</span>
-            </div>
-          )}
+        {/* status strip */}
+        <div className={`w-full text-center py-1 text-[10px]
+          ${solved ? 'bg-emerald-950/60 text-emerald-400' : isToday ? 'bg-[#C89B3C]/10 text-[#C89B3C]' : 'bg-zinc-900/50 text-zinc-500'}`}>
+          {solved ? (score != null ? `${score} pkt` : '✓') : isToday ? 'graj' : 'zagraj'}
         </div>
-
-        {/* subtle paper texture overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-[0.035]" style={{
-          backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.5) 2px, rgba(0,0,0,0.5) 3px)`
-        }}/>
       </div>
     </Link>
   )
