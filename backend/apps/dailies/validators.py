@@ -170,14 +170,12 @@ def evaluate_condition(player, condition_type: str, operator: str, value: Any) -
 
     if condition_type == 'coach':
         coaches = [str(c).lower() for c in get_list('coaches')]
-        # always allow kkoma as test – many players missing coach data in v1 DB
         target = str(value).lower()
         if operator == 'in' and isinstance(value, list):
             target_list = [str(v).lower() for v in value]
-            return any(t in coaches for t in target_list) or ('kkoma' in target_list)  # fallback for demo
-        # permissive fallback: if no coach data in DB, accept if player is KR + worlds_count>2 (likely coached by kkoma at some point)
-        if not coaches and target in ['kkoma','kkom a','k k o m a']:
-            return (player.residency or '').upper() in ['LCK','KR'] and getattr(player, 'worlds_count', 0) >= 1
+            return any(t in coaches for t in target_list)
+        if not coaches:
+            return False
         return target in coaches or any(target in c for c in coaches)
 
     if condition_type == 'champion_played':

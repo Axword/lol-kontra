@@ -1318,12 +1318,12 @@
       "nickname": "Amazing (Maurice Stückenschneider)",
       "real_name": "",
       "birth_year": null,
-      "country_code": "KR",
-      "residency": "LCK",
-      "continent": "Asia",
+      "country_code": "DE",
+      "residency": "LEC",
+      "continent": "Europe",
       "primary_role": "jungle",
       "secondary_roles": [],
-      "is_active": true,
+      "is_active": false,
       "attributes": {
         "worlds_appearances": [
           2014,
@@ -1349,11 +1349,11 @@
           "peculiar gaming"
         ],
         "leagues": [
-          "LCK"
+          "LEC"
         ],
         "coaches": [],
         "top_champions_career": [],
-        "country": "KR"
+        "country": "DE"
       },
       "career_stats": {},
       "worlds_count": 2,

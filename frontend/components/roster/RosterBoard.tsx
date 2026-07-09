@@ -183,9 +183,7 @@ export default function RosterBoard({ daily, onScore }: { daily: Daily, onScore?
           <span className={errors >= 8 ? "text-red-500 font-bold" : errors > 0 ? "text-red-400" : "text-zinc-400"}>
             Błędy: <b>{errors}/{maxErrors}</b>
           </span>
-          {verifyingSlot && (
-            <span className="text-amber-300 animate-pulse">⏳ Weryfikuję {daily.slots.find(s => s.id === verifyingSlot)?.role}…</span>
-          )}
+
           {toast && <span className="text-[#C89B3C] font-medium">{toast}</span>}
           {gameOver && <span className="text-red-500 font-bold">✗ KONIEC GRY</span>}
         </div>
@@ -225,8 +223,6 @@ export default function RosterBoard({ daily, onScore }: { daily: Daily, onScore?
                     <>{p.pick_percent?.toFixed(1) || '0'}% → -{p.points_awarded} {p.is_diamond_pick ? '💎' : ''}</>
                   ) : isWrong ? (
                     '✗ spróbuj ponownie…'
-                  ) : p?.playerSlug ? (
-                    '⏳ weryfikacja…'
                   ) : (
                     'wybierz'
                   )}

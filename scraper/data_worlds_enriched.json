@@ -1024,13 +1024,13 @@
     "slug": "amazing-maurice-stuckenschneider",
     "nickname": "Amazing (Maurice Stückenschneider)",
     "real_name": "",
-    "country_code": "KR",
-    "residency": "LCK",
-    "continent": "Asia",
+    "country_code": "DE",
+    "residency": "LEC",
+    "continent": "Europe",
     "primary_role": "jungle",
     "secondary_roles": [],
     "birth_year": null,
-    "is_active": 1,
+    "is_active": 0,
     "worlds_count": 2,
     "worlds_titles_count": 0,
     "attributes": {
@@ -1044,11 +1044,11 @@
         "TSM"
       ],
       "leagues": [
-        "LCK"
+        "LEC"
       ],
       "coaches": [],
       "top_champions_career": [],
-      "country": "KR"
+      "country": "DE"
     },
     "career_stats": {}
   },

@@ -140,7 +140,12 @@ export default function RiftBoard({ slots, onPick, disabled }: Props) {
                     {pos.label}
                   </div>
                   <div className="text-[11px] text-zinc-200 font-medium max-w-[120px] truncate drop-shadow" style={{ textShadow: '0 1px 3px #000' }}>
-                    {pick?.playerNickname || <span className="text-zinc-400">— wybierz —</span>}
+                    {(pick?.is_correct === true && pick?.playerNickname)
+                      ? pick.playerNickname
+                      : pick?.is_correct === false
+                        ? <span className="text-red-400">✗</span>
+                        : <span className="text-zinc-400">— wybierz —</span>
+                    }
                   </div>
                   {pick?.locked && pick.is_correct && (
                     <div className="text-[10px] font-bold text-emerald-400" style={{ textShadow: '0 1px 3px #000' }}>
@@ -151,9 +156,6 @@ export default function RiftBoard({ slots, onPick, disabled }: Props) {
                     <div className="text-[10px] font-bold text-red-400" style={{ textShadow: '0 1px 3px #000' }}>
                       ✗ spróbuj ponownie
                     </div>
-                  )}
-                  {pick && !pick.locked && (
-                    <div className="text-[10px] text-amber-300 animate-pulse">weryfikuję…</div>
                   )}
                 </div>
 

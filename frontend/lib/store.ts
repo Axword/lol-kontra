@@ -72,18 +72,20 @@ export const useRosterStore = create<RosterState>()(
 
       setAnswer: (slotId, ans) => set(state => {
         const prev = state.picks[slotId] || { slotId }
-        // LOCK only if correct
         const isCorrect = !!ans.is_correct
         const locked = isCorrect
-        return {
-          picks: { 
-            ...state.picks, 
-            [slotId]: { 
-              ...prev, 
-              ...ans, 
-              locked 
-            } 
+        if (isCorrect) {
+          // lock the correct pick with all data
+          return {
+            picks: {
+              ...state.picks,
+              [slotId]: { ...prev, ...ans, locked }
+            }
           }
+        } else {
+          // wrong – clear the player selection so slot is open again
+          const { [slotId]: _, ...rest } = state.picks
+          return { picks: rest }
         }
       }),
 
