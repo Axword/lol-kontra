@@ -34,6 +34,18 @@ każdego dnia bez re-deployu.
 - Start **500 pkt**, każde trafienie odejmuje `100 − pick%`.
   **Niższy wynik = lepszy.** Najrzadszy poprawny pick w slocie = 💎 Diamond (-100).
 - Archiwum – można grać wszystkie poprzednie dni.
+- **Pytania o picki (signature champion):** warunki slotów mogą zawierać
+  „Często grał na X” – dane o najczęściej granych championach pochodzą z bazy
+  (`top_champions_career` w `frontend/data/players.source.json`).
+
+### Jakość danych
+
+- Baza graczy jest **deduplikowana po slugu** przy generacji – ten sam zawodnik
+  zapisywany wielokrotnie ( raz z pełnymi danymi, raz jako „śmieciowy” rekord z
+  pustym wiekiem/błędnym krajem) pojawiał się w wyszukiwarce kilka razy i
+  psuł warunki wiekowo-regionowe. Scalanie zachowuje rekord z największą
+  kompletnością i uzupełnia braki.
+- Nazwy są czyszczone z encji HTML (np. `&amp;nbsp;`).
 
 ## Szybki start (lokalnie)
 

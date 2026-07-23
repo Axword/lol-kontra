@@ -17,7 +17,7 @@ export default function DailyIdPage() {
       error={error}
       showArchive
       backLink={
-        <button onClick={() => router.push('/')} className="text-zinc-400 hover:text-white text-[12px]">
+        <button onClick={() => router.push('/')} className="text-muted hover:text-ink text-[12px] transition-colors">
           ← Dzisiejsza
         </button>
       }

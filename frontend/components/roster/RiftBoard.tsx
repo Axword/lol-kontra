@@ -12,29 +12,24 @@ type Props = {
   disabled?: boolean
 }
 
-// Role icon component – loads SVG from /public/roles/
-function RoleIcon({ role, state = 'empty', size = 44, diamond = false }: { role: string, state?: 'empty' | 'correct' | 'wrong' | 'common' | 'rare' | 'epic' | 'legendary', size?: number, diamond?: boolean }) {
+// Role icon component – loads SVG from /public/roles/ and tints it to warm
+// cream via CSS filter (no colored chrome, no glow).
+function RoleIcon({ role, state = 'empty', size = 44, diamond = false }: { role: string, state?: 'empty' | 'correct' | 'wrong', size?: number, diamond?: boolean }) {
   const src = `/roles/${role}.svg`
-  const colors = {
-    empty:   { bg1: 'rgba(30,35,45,0.9)', bg2: 'rgba(10,14,19,0.95)', border: '#3a3f4a', glow: 'none', filter: 'grayscale(1) brightness(0.75)' },
-    correct: { bg1: 'rgba(16,185,129,0.22)', bg2: 'rgba(6,20,15,0.92)', border: '#10b981', glow: '0 0 22px rgba(16,185,129,0.45), inset 0 0 12px rgba(16,185,129,0.12)', filter: 'brightness(1.15) saturate(1.1) hue-rotate(70deg)' },
-    wrong:   { bg1: 'rgba(239,68,68,0.18)', bg2: 'rgba(20,6,6,0.92)', border: '#ef4444', glow: '0 0 18px rgba(239,68,68,0.35)', filter: 'grayscale(0.2) brightness(0.95) sepia(0.2) hue-rotate(-40deg) saturate(1.3)' },
-    // rarity-based – kolor zależy od rzadkości picku
-    common:    { bg1: 'rgba(148,163,184,0.18)', bg2: 'rgba(10,14,19,0.95)', border: '#94a3b8', glow: '0 0 14px rgba(148,163,184,0.25)', filter: 'brightness(1.0) saturate(0.9)' },
-    rare:      { bg1: 'rgba(59,130,246,0.22)', bg2: 'rgba(10,15,30,0.95)', border: '#60a5fa', glow: '0 0 20px rgba(59,130,246,0.45)', filter: 'brightness(1.15) saturate(1.25) hue-rotate(190deg)' },
-    epic:      { bg1: 'rgba(168,85,247,0.22)', bg2: 'rgba(20,8,28,0.95)', border: '#c084fc', glow: '0 0 22px rgba(168,85,247,0.5)', filter: 'brightness(1.1) saturate(1.3) hue-rotate(260deg)' },
-    legendary: { bg1: 'rgba(251,191,36,0.25)', bg2: 'rgba(28,20,5,0.95)', border: '#fbbf24', glow: '0 0 26px rgba(251,191,36,0.55), inset 0 0 14px rgba(251,191,36,0.12)', filter: 'brightness(1.25) sepia(0.4) saturate(1.5) hue-rotate(-5deg)' },
-  }[state] || { bg1: 'rgba(30,35,45,0.9)', bg2: 'rgba(10,14,19,0.95)', border: '#3a3f4a', glow: 'none', filter: 'grayscale(1) brightness(0.75)' }
+  const styles: Record<string, { border: string, icon: string }> = {
+    empty:   { border: 'var(--line-strong)', icon: 'brightness(0) invert(0.82) sepia(0.16) saturate(0.55)' },
+    correct: { border: 'var(--warn)',        icon: 'brightness(0) invert(0.82) sepia(0.16) saturate(0.55)' },
+    wrong:   { border: 'var(--red)',         icon: 'brightness(0) invert(0.82) sepia(0.16) saturate(0.55)' },
+  }
+  const s = styles[state] || styles.empty
 
   return (
     <div
-      className="relative flex items-center justify-center rounded-full"
+      className="relative flex items-center justify-center rounded-full bg-elevated"
       style={{
         width: size,
         height: size,
-        background: `radial-gradient(circle, ${colors.bg1} 0%, ${colors.bg2} 70%)`,
-        boxShadow: colors.glow,
-        border: `2px solid ${colors.border}`
+        border: `2px solid ${s.border}`,
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -43,24 +38,18 @@ function RoleIcon({ role, state = 'empty', size = 44, diamond = false }: { role:
         alt={role}
         width={size * 0.62}
         height={size * 0.62}
-        style={{
-          filter: colors.filter,
-          opacity: state === 'empty' ? 0.85 : 1
-        }}
+        style={{ filter: s.icon, opacity: state === 'empty' ? 0.8 : 1 }}
         draggable={false}
       />
       {diamond && (
-        <div className="absolute -top-1 -right-1 text-[14px]">💎</div>
+        <div className="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 rounded-full bg-accent border border-accent-ink" title="Diamond pick" />
       )}
-      {(state === 'correct' || state === 'common' || state === 'rare' || state === 'epic' || state === 'legendary') && (
-        <div className="absolute -bottom-1 text-[10px] bg-emerald-600 text-white px-1.5 rounded-full font-bold">✓</div>
+      {state === 'correct' && (
+        <div className="absolute -bottom-1 text-[10px] bg-accent text-accent-ink px-1.5 rounded-full font-bold leading-tight">✓</div>
       )}
       {state === 'wrong' && (
-        <div className="absolute -bottom-1 text-[10px] bg-red-600 text-white px-1.5 rounded-full font-bold">✗</div>
+        <div className="absolute -bottom-1 text-[10px] bg-red text-bg px-1.5 rounded-full font-bold leading-tight">✗</div>
       )}
-      {state === 'rare' && (<div className="absolute top-0 left-0 text-[9px]">🔵</div>)}
-      {state === 'epic' && (<div className="absolute top-0 left-0 text-[9px]">🟣</div>)}
-      {state === 'legendary' && (<div className="absolute top-0 left-0 text-[9px]">🟡</div>)}
     </div>
   )
 }
@@ -80,39 +69,28 @@ export default function RiftBoard({ slots, picks, onPick, onClear, disabled }: P
   ] as const
 
   return (
-    <div className="relative w-full rounded-[20px] border border-[#2a2d35] overflow-hidden bg-[#05070a] shadow-2xl">
-      {/* Map background */}
+    <div className="relative w-full rounded-console border border-line-strong overflow-hidden bg-bg">
       <div className="relative w-full" style={{ aspectRatio: '1 / 1', maxHeight: '680px' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/rift-map-gold.png"
+          src="/rift-map.png"
           alt="Summoner's Rift"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{
-            filter: 'brightness(0.72) contrast(1.05) saturate(0.9)',
-            opacity: 0.95
-          }}
+          style={{ filter: 'brightness(0.7) contrast(1.02) saturate(0.75)', opacity: 0.9 }}
           draggable={false}
         />
-        {/* dark vignette */}
-        <div className="absolute inset-0" style={{
-          background: 'radial-gradient(ellipse at center, transparent 35%, rgba(5,7,10,0.35) 75%, rgba(5,7,10,0.6) 100%)'
-        }} />
-        {/* gold outer glow */}
-        <div className="absolute inset-0 rounded-[20px] pointer-events-none" style={{
-          boxShadow: 'inset 0 0 40px rgba(200,155,60,0.07)'
-        }} />
+        {/* quiet dark vignette (no colored glow) */}
+        <div
+          className="absolute inset-0"
+          style={{ background: 'radial-gradient(ellipse at center, transparent 38%, rgba(8,7,5,0.45) 78%, rgba(8,7,5,0.7) 100%)' }}
+        />
 
-        {/* Role nodes */}
         {positions.map(pos => {
           const slot = byRole[pos.role]
           if (!slot) return null
           const pick = picks[slot.id]
           const isHover = hoverRole === pos.role
-          const nodeState = !pick ? 'empty'
-            : pick.is_correct
-              ? (pick.rarity_tier || 'correct')
-              : 'wrong'
+          const nodeState = !pick ? 'empty' : pick.is_correct ? 'correct' : 'wrong'
           return (
             <div
               key={pos.role}
@@ -124,45 +102,43 @@ export default function RiftBoard({ slots, picks, onPick, onClear, disabled }: P
               <button
                 onClick={() => !disabled && onPick(slot)}
                 disabled={!!(pick?.is_correct && pick?.locked) || disabled}
-                className={`group relative flex flex-col items-center transition-transform duration-150 ${pick?.locked ? 'cursor-not-allowed opacity-95' : 'hover:scale-105'} focus:outline-none`}
-                style={{ filter: isHover && !pick?.locked ? 'drop-shadow(0 0 10px rgba(200,155,60,0.45))' : undefined }}
+                className={`group relative flex flex-col items-center transition-transform duration-150 ${pick?.locked ? 'cursor-not-allowed' : 'hover:scale-105'} focus:outline-none`}
               >
                 <RoleIcon role={pos.role} state={nodeState as any} size={68} diamond={!!pick?.is_diamond_pick} />
-                {/* role label */}
                 <div className="mt-1.5 text-center">
-                  <div className="text-[10px] tracking-widest text-[#C8AC6E] font-semibold drop-shadow" style={{ textShadow: '0 1px 4px #000' }}>
+                  <div className="text-[10px] tracking-widest text-accent font-semibold" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
                     {pos.label}
                   </div>
-                  <div className="text-[11px] text-zinc-200 font-medium max-w-[120px] truncate drop-shadow" style={{ textShadow: '0 1px 3px #000' }}>
-                    {pick?.playerNickname || <span className="text-zinc-400">— wybierz —</span>}
+                  <div className="text-[11px] text-ink font-medium max-w-[120px] truncate" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
+                    {pick?.playerNickname || <span className="text-muted">— wybierz —</span>}
                   </div>
                   {pick?.is_correct && (
-                    <div className="text-[10px] font-bold text-emerald-400" style={{ textShadow: '0 1px 3px #000' }}>
-                      ✓ {pick.pick_percent.toFixed(1)}% → -{pick.deduction} {pick.is_diamond_pick ? '💎' : ''}
+                    <div className="text-[10px] font-semibold text-warn" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
+                      ✓ {pick.pick_percent.toFixed(1)}% → -{pick.deduction}{pick.is_diamond_pick ? ' ◆' : ''}
                     </div>
                   )}
                   {pick && !pick.is_correct && (
-                    <div className="text-[10px] font-bold text-red-400" style={{ textShadow: '0 1px 3px #000' }}>
+                    <div className="text-[10px] font-semibold text-red" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.6)' }}>
                       ✗ spróbuj ponownie
                     </div>
                   )}
                 </div>
 
                 {/* tooltip with conditions on hover */}
-                <div className={`absolute left-1/2 -translate-x-1/2 ${pos.top?.includes('7') || pos.top?.includes('8') ? 'bottom-[100%] mb-2' : 'top-[100%] mt-2'} 
-                  ${isHover ? 'opacity-100' : 'opacity-0 pointer-events-none'} 
+                <div className={`absolute left-1/2 -translate-x-1/2 ${pos.top?.includes('7') || pos.top?.includes('8') ? 'bottom-[100%] mb-2' : 'top-[100%] mt-2'}
+                  ${isHover ? 'opacity-100' : 'opacity-0 pointer-events-none'}
                   transition-opacity duration-150 z-30 w-64`}>
-                  <div className="bg-[#0f141b]/95 border border-[#C89B3C]/30 rounded-xl px-3 py-2 backdrop-blur text-left shadow-xl">
-                    <div className="text-[11px] text-[#C8AC6E] font-semibold mb-1">
+                  <div className="bg-surface border border-line-strong rounded-console px-3 py-2 text-left">
+                    <div className="text-[11px] text-accent font-semibold mb-1">
                       {roleNamesPl[pos.role as keyof typeof roleNamesPl]} – warunki:
                     </div>
                     <ul className="space-y-0.5">
                       {slot.conditions.map(c => (
-                        <li key={c.id} className="text-[11px] text-zinc-300">• {c.label_pl}</li>
+                        <li key={c.id} className="text-[11px] text-ink/90">• {c.label_pl}</li>
                       ))}
                     </ul>
                     {pick && (
-                      <div className="mt-1.5 pt-1.5 border-t border-zinc-800 text-[10px] text-emerald-400">
+                      <div className="mt-1.5 pt-1.5 border-t border-line text-[10px] text-warn">
                         Wybrany: {pick.playerNickname}
                       </div>
                     )}
@@ -170,39 +146,32 @@ export default function RiftBoard({ slots, picks, onPick, onClear, disabled }: P
                 </div>
               </button>
 
-              {/* clear X – only if wrong (correct picks stay locked) */}
               {pick && !disabled && !(pick.is_correct && pick.locked) && (
                 <button
                   onClick={(e) => { e.stopPropagation(); onClear(slot.id) }}
-                  className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#0b0f14] border border-[#C89B3C]/50 text-[#C89B3C] text-[11px] flex items-center justify-center hover:bg-[#C89B3C] hover:text-black transition"
+                  className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-bg border border-line-strong text-muted text-[11px] flex items-center justify-center hover:border-red hover:text-red transition-colors"
                   title="Usuń wybór"
                 >×</button>
               )}
-              {/* locked badge */}
               {pick?.is_correct && pick?.locked && (
-                <div className="absolute -top-1 -right-2 text-[9px] bg-emerald-900 border border-emerald-700 text-emerald-300 px-1 rounded">✓ LOCK</div>
+                <div className="absolute -top-1 -right-2 text-[9px] bg-surface border border-line-strong text-warn px-1 rounded">✓ LOCK</div>
               )}
               {pick && !pick.is_correct && (
-                <div className="absolute -top-1 -right-2 text-[9px] bg-red-900 border border-red-700 text-red-300 px-1 rounded animate-pulse">RETRY</div>
-              )}
-
-              {/* pulse when empty */}
-              {!pick && !disabled && (
-                <div className="absolute inset-0 rounded-full pointer-events-none animate-ping opacity-[0.07]" style={{ background: '#C89B3C' }} />
+                <div className="absolute -top-1 -right-2 text-[9px] bg-surface border border-line-strong text-red px-1 rounded">RETRY</div>
               )}
             </div>
           )
         })}
 
-        {/* Top bar – title */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-black/55 border border-[#C89B3C]/25 backdrop-blur text-center">
-          <div className="text-[10px] tracking-[0.2em] text-[#C8AC6E]">WORLDS XI</div>
-          <div className="text-[11px] text-zinc-300">Kliknij ikonę roli → wybierz zawodnika</div>
+        {/* title strip */}
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-bg/70 border border-line text-center">
+          <div className="text-[10px] tracking-[0.2em] text-accent">WORLDS XI</div>
+          <div className="text-[11px] text-muted">Kliknij ikonę roli → wybierz zawodnika</div>
         </div>
       </div>
 
-      {/* Bottom conditions strip – desktop */}
-      <div className="hidden md:block bg-[#0a0e13]/95 border-t border-zinc-800 px-4 py-3">
+      {/* bottom conditions strip – desktop */}
+      <div className="hidden md:block bg-panel border-t border-line px-4 py-3">
         <div className="grid grid-cols-5 gap-3 text-[11px]">
           {(['top', 'jungle', 'mid', 'adc', 'support'] as const).map(r => {
             const slot = byRole[r]
@@ -210,15 +179,15 @@ export default function RiftBoard({ slots, picks, onPick, onClear, disabled }: P
             if (!slot) return <div key={r} />
             return (
               <div key={r} className="min-w-0">
-                <div className="text-[#C8AC6E] uppercase tracking-wider text-[10px] mb-0.5">
+                <div className="text-accent uppercase tracking-wider text-[10px] mb-0.5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/roles/${r}.svg`} alt="" className="inline w-3 h-3 mr-1 opacity-80 align-[-2px]" style={{ filter: 'brightness(1.1)' }} />
+                  <img src={`/roles/${r}.svg`} alt="" className="inline w-3 h-3 mr-1 align-[-2px]" style={{ filter: 'brightness(0) invert(0.82) sepia(0.16) saturate(0.55)' }} />
                   {r}
                 </div>
-                <div className="text-zinc-200 truncate font-medium">
-                  {pick?.playerNickname || <span className="text-zinc-500">—</span>}
+                <div className="text-ink truncate font-medium">
+                  {pick?.playerNickname || <span className="text-muted">—</span>}
                 </div>
-                <div className="text-zinc-500 truncate">
+                <div className="text-muted truncate">
                   {slot.conditions.map(c => c.label_pl).join(' • ')}
                 </div>
               </div>

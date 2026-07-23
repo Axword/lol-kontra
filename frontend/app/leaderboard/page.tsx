@@ -18,50 +18,50 @@ export default function LeaderboardPage() {
     .sort((a, b) => a.score - b.score)
 
   return (
-    <div className="min-h-screen bg-[#06080c] text-[#E8E6E3] px-4 py-8 max-w-3xl mx-auto space-y-4">
+    <div className="min-h-screen bg-bg text-ink px-4 py-8 max-w-3xl mx-auto space-y-4">
       <div className="flex items-baseline justify-between">
         <h1 className="text-2xl font-bold">Moje wyniki</h1>
-        <Link href="/" className="text-[#C89B3C] hover:underline text-sm">← wróć do gry</Link>
+        <Link href="/" className="text-accent hover:underline text-sm">← wróć do gry</Link>
       </div>
-      <div className="card-lol">
+      <div className="panel">
         {rows.length === 0 ? (
-          <div className="py-8 text-center text-zinc-500">
+          <div className="py-8 text-center text-muted">
             Brak zakończonych gier – zagraj pierwsze Daily!<br />
-            <Link href="/" className="text-[#C89B3C] hover:underline text-sm mt-2 inline-block">Zagraj teraz →</Link>
+            <Link href="/" className="text-accent hover:underline text-sm mt-2 inline-block">Zagraj teraz →</Link>
           </div>
         ) : (
           <table className="w-full text-sm">
-            <thead className="text-zinc-400 text-[11px] border-b border-zinc-800">
+            <thead className="text-muted text-[11px] border-b border-line">
               <tr className="[&>th]:py-2 [&>th]:text-left">
                 <th>#</th><th>Daily</th><th>Data</th>
                 <th className="text-right">Wynik</th>
                 <th className="text-center">✓</th>
                 <th className="text-center">✗</th>
-                <th className="text-center">💎</th>
-                <th className="text-center">⭐</th>
+                <th className="text-center">◆</th>
+                <th className="text-center">★</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r, i) => (
-                <tr key={r.id} className="border-t border-zinc-900 hover:bg-zinc-900/40">
-                  <td className="py-2 text-zinc-500">{i + 1}</td>
+                <tr key={r.id} className="border-t border-line hover:bg-surface/60">
+                  <td className="py-2 text-muted">{i + 1}</td>
                   <td className="font-medium">
-                    <Link href={`/daily/${r.id}`} className="hover:text-[#C89B3C]">#{r.id}</Link>
+                    <Link href={`/daily/${r.id}`} className="hover:text-accent transition-colors">{r.id}</Link>
                   </td>
-                  <td className="text-zinc-400">{r.date}</td>
-                  <td className="text-right font-semibold text-[#C89B3C]">{r.score}</td>
-                  <td className="text-center text-emerald-400">{r.correct}</td>
-                  <td className="text-center text-red-400">{r.errors}</td>
-                  <td className="text-center text-[#22D3EE]">{r.diamonds || ''}</td>
-                  <td className="text-center text-[#F59E0B]">{r.legendary || ''}</td>
+                  <td className="text-muted">{r.date}</td>
+                  <td className="text-right font-semibold text-accent mono">{r.score}</td>
+                  <td className="text-center text-warn">{r.correct}</td>
+                  <td className="text-center text-red">{r.errors}</td>
+                  <td className="text-center text-ink">{r.diamonds || ''}</td>
+                  <td className="text-center text-warn">{r.legendary || ''}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
       </div>
-      <div className="text-[11px] text-zinc-500">
-        Niższy wynik = lepszy (start 500, każde trafienie odejmuje punkty) • 💎 Diamond Picks • ⭐ Legendary • wyniki zapisywane lokalnie w Twojej przeglądarce
+      <div className="text-[11px] text-muted">
+        Niższy wynik = lepszy (start 500, każde trafienie odejmuje punkty) • ◆ Diamond Picks • ★ Legendary • wyniki zapisywane lokalnie w Twojej przeglądarce
       </div>
     </div>
   )

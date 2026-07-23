@@ -77,9 +77,62 @@ function slugifyTeam(s) {
   return aliases[s] || s
 }
 
+// ---------------------------------------------------------------- dedupe
+// Źródło zawiera duplikaty slugów (ten sam zawodnik zapisany 2×: raz z
+// pełnymi danymi, raz jako "śmieciowy" rekord z pustym birth_year, błędnym
+// krajem i worlds_count = 0). To powoduje, że w wyszukiwarce ten sam gracz
+// pojawia się wielokrotnie, a warunki bazujące na wieku/regionie dostają
+// sprzeczne wartości. Scalamy duplikaty zachowując rekord z największą
+// kompletnością i uzupełniając braki z drugiego.
+function completeness(p) {
+  let s = 0
+  if (p.real_name) s++
+  if (p.birth_year != null) s += 2
+  if (p.country_code && p.country_code !== 'KR') s++ // śmieciowe duplikaty często wymuszają KR
+  if ((p.worlds_count || 0) > 0) s += 2
+  if ((p.attributes?.top_champions_career || []).length) s += 2
+  if ((p.attributes?.teams || []).length) s++
+  if ((p.attributes?.worlds_appearances || []).length) s++
+  return s
+}
+
+function mergePlayers(a, b) {
+  const primary = completeness(a) >= completeness(b) ? a : b
+  const secondary = primary === a ? b : a
+  const out = { ...primary }
+  for (const key of ['real_name', 'birth_year', 'country_code', 'residency', 'continent', 'primary_role', 'worlds_count', 'worlds_titles_count']) {
+    if ((out[key] === undefined || out[key] === null || out[key] === '') && secondary[key] != null && secondary[key] !== '') {
+      out[key] = secondary[key]
+    }
+  }
+  out.attributes = out.attributes || {}
+  const sa = secondary.attributes || {}
+  for (const key of ['top_champions_career', 'worlds_appearances', 'worlds_titles', 'teams', 'leagues', 'coaches']) {
+    const pa = (out.attributes[key] || []).filter(Boolean)
+    const pb = (sa[key] || []).filter(Boolean)
+    out.attributes[key] = Array.from(new Set([...pa, ...pb].map(String)))
+  }
+  if ((out.secondary_roles || []).length === 0 && (secondary.secondary_roles || []).length) out.secondary_roles = secondary.secondary_roles
+  return out
+}
+
+function dedupePlayers(list) {
+  const map = new Map()
+  for (const p of list) {
+    const slug = (p.slug || '').toLowerCase()
+    if (!slug) continue
+    if (!map.has(slug)) map.set(slug, p)
+    else map.set(slug, mergePlayers(map.get(slug), p))
+  }
+  return [...map.values()]
+}
+
 // ---------------------------------------------------------------- data
 
-const players = JSON.parse(readFileSync(join(ROOT, 'data', 'players.source.json'), 'utf8'))
+const RAW_PLAYERS = JSON.parse(readFileSync(join(ROOT, 'data', 'players.source.json'), 'utf8'))
+// scal duplikaty slugów (ten sam gracz zapisany wielokrotnie) – naprawia
+// błędne dane (wiek/region) oraz to, że w wyszukiwarce gracz pojawia się kilka razy
+const players = dedupePlayers(RAW_PLAYERS)
 
 // Zdobywcy Worlds (fixture nie ma worlds_titles – fallback jak w starym backendzie)
 const WORLDS_CHAMPIONS = new Set([
@@ -141,6 +194,7 @@ function playerMatches(p, cond) {
       return teams.includes(cond.v)
     }
     case 'champion': return WORLDS_CHAMPIONS.has(p.slug)
+    case 'champion_pick': return (p.attributes?.top_champions_career || []).includes(cond.v)
     case 'birth_max': return p.birth_year != null && p.birth_year <= cond.v
     case 'birth_min': return p.birth_year != null && p.birth_year >= cond.v
     default: return false
@@ -225,6 +279,30 @@ function generateSlot(date, role, position, dailyId) {
     }
   }
 
+  // --- pytania o picki (signature champion) ---
+  // Źródłem są dane o często granych championach (top_champions_career) z
+  // bazy – to samo, co dostarczyłaby biblioteka typu lolfandom. Dodajemy
+  // warunek "Często grał na X" tylko gdy w puli jest co najmniej 6, a nie
+  // więcej niż (liczba kandydatów - 3) graczy z danym championem.
+  const champCounts = {}
+  for (const p of best.candidates) {
+    for (const c of (p.attributes?.top_champions_career || [])) {
+      if (!c || !String(c).trim()) continue
+      champCounts[c] = (champCounts[c] || 0) + 1
+    }
+  }
+  const champOpts = Object.entries(champCounts)
+    .filter(([, n]) => n >= 5 && n <= best.candidates.length - 2)
+  if (champOpts.length && best.chosen.length < 3 && rnd() < 0.85) {
+    const [champ] = champOpts[Math.floor(rnd() * champOpts.length)]
+    const champCond = { t: 'champion_pick', v: champ, pl: `Często grał na ${champ}`, en: `Often played ${champ}` }
+    const filtered = best.candidates.filter(p => (p.attributes?.top_champions_career || []).includes(champ))
+    if (filtered.length >= 10 && filtered.length <= 90) {
+      best.chosen.push(champCond)
+      best.candidates = filtered
+    }
+  }
+
   // symulowany rozkład popularności picków (pick %)
   const weights = best.candidates.map(fameOf)
   const totalW = weights.reduce((s, w) => s + w, 0)
@@ -268,10 +346,23 @@ rmSync(OUT, { recursive: true, force: true })
 mkdirSync(join(OUT, 'dailies'), { recursive: true })
 
 // 1. players.json – odchudzony (do wyszukiwarki)
+function decodeEntities(s) {
+  if (!s) return ''
+  return String(s)
+    .replace(/<[^>]*>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
 const slim = players.map(p => ({
   slug: p.slug,
-  nickname: p.nickname,
-  real_name: p.real_name || '',
+  nickname: decodeEntities(p.nickname),
+  real_name: decodeEntities(p.real_name),
   country_code: p.country_code || '',
   residency: p.residency || '',
   primary_role: p.primary_role,

@@ -8,31 +8,58 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        lol: {
-          bg: "#0A0E13",
-          bg2: "#111822",
-          gold: "#C89B3C",
-          blue: "#0AC8B9",
-          text: "#E8E6E3",
-          muted: "#8A8F98"
+        // warm near-black elevations
+        bg: "#16130f",
+        panel: "#1c1813",
+        surface: "#221d17",
+        elevated: "#2a241c",
+        // cream ink
+        ink: "#ECE5D8",
+        muted: "#9C9081",
+        // hairlines — white @ ~10–18%
+        line: "rgba(236, 229, 216, 0.10)",
+        "line-strong": "rgba(236, 229, 216, 0.18)",
+        // coral-amber accent (≤10% usage)
+        accent: {
+          DEFAULT: "#E07A4B",
+          ink: "#1B1109",
+          soft: "rgba(224, 122, 75, 0.12)",
         },
-        rarity: {
-          common: "#9CA3AF",
-          rare: "#3B82F6",
-          epic: "#A855F7",
-          legendary: "#F59E0B",
-          diamond: "#22D3EE"
-        }
+        // semantic only
+        blue: "#7E9CB8",
+        red: "#CB7A6E",
+        live: "#C9A24B",
+        warn: "#D8B25C",
       },
-      boxShadow: {
-        'gold': '0 0 20px rgba(200,155,60,0.25)'
+      fontFamily: {
+        mono: [
+          "IBM Plex Mono",
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Consolas",
+          "monospace",
+        ],
+        ui: [
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
       },
-      animation: {
-        'pulse-gold': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      }
+      borderRadius: {
+        console: "8px",
+        control: "6px",
+      },
+      transitionDuration: {
+        DEFAULT: "150ms",
+      },
     },
   },
   plugins: [],
-  darkMode: 'class',
+  darkMode: "class",
 };
 export default config;
