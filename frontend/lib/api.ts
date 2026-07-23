@@ -43,6 +43,7 @@ export type Player = {
   country_code: string
   residency: string
   primary_role: Role
+  secondary_roles: Role[]
   worlds_count: number
   is_active: boolean
 }
@@ -130,20 +131,36 @@ export function useArchive() {
 
 // ------------------------------------------------------------------ wyszukiwarka (lokalna)
 
+/**
+ * Szuka graczy po contiguous substring w nicku lub real_name.
+ * Wymaga minimum 2 znaków. Zwraca wyniki posortowane:
+ * 1. exact match (nick === query)
+ * 2. starts with query
+ * 3. contains query (w nicku)
+ * 4. contains query (w real_name)
+ */
 export function searchPlayers(players: Player[] | undefined, q: string, limit = 60): Player[] {
   if (!players) return []
   const needle = q.trim().toLowerCase()
-  if (!needle) return []
+  if (needle.length < 2) return []
+  const exact: Player[] = []
   const starts: Player[] = []
-  const contains: Player[] = []
+  const containsNick: Player[] = []
+  const containsReal: Player[] = []
   for (const p of players) {
     const nick = p.nickname.toLowerCase()
     const real = (p.real_name || '').toLowerCase()
-    if (nick.startsWith(needle)) starts.push(p)
-    else if (nick.includes(needle) || real.includes(needle)) contains.push(p)
-    if (starts.length >= limit) break
+    if (nick === needle) {
+      exact.push(p)
+    } else if (nick.startsWith(needle)) {
+      starts.push(p)
+    } else if (nick.includes(needle)) {
+      containsNick.push(p)
+    } else if (real.includes(needle)) {
+      containsReal.push(p)
+    }
   }
-  return [...starts, ...contains].slice(0, limit)
+  return [...exact, ...starts, ...containsNick, ...containsReal].slice(0, limit)
 }
 
 // ------------------------------------------------------------------ weryfikacja (lokalna)

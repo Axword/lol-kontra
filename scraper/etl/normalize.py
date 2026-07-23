@@ -18,13 +18,18 @@ def normalize_player(raw: dict) -> dict:
     nick = raw.get('nickname') or raw.get('player') or 'unknown'
     roles = raw.get('roles', [])
     primary_role = 'mid'
+    secondary_roles = []
     if roles:
-        # pick first known
+        # pick first known as primary, rest as secondary
+        mapped_roles = []
         for r in roles:
             pr = ROLE_MAP.get(r, None)
             if pr:
-                primary_role = pr
-                break
+                mapped_roles.append(pr)
+        if mapped_roles:
+            primary_role = mapped_roles[0]
+            # Deduplicate and exclude primary from secondary
+            secondary_roles = list(dict.fromkeys(r for r in mapped_roles[1:] if r != primary_role))
     return {
         'slug': slugify_nick(nick),
         'nickname': nick,
@@ -33,7 +38,7 @@ def normalize_player(raw: dict) -> dict:
         'residency': raw.get('residency', 'LCK'),
         'continent': raw.get('continent', 'Asia'),
         'primary_role': primary_role,
-        'secondary_roles': [],
+        'secondary_roles': secondary_roles,
         'birth_year': raw.get('birth_year'),
         'is_active': raw.get('is_active', True),
         'worlds_count': len(raw.get('worlds_appearances', [])),

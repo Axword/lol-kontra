@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Player, Team, Coach, TournamentAppearance, PlayerTeamHistory
+from .models import Player, Team, Coach, TournamentAppearance, PlayerTeamHistory, CareerChampionStat
 
 @admin.register(Player)
 class PlayerAdmin(admin.ModelAdmin):
@@ -10,7 +10,8 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    list_display = ('slug', 'name', 'region', 'country_code')
+    list_display = ('slug', 'name', 'region', 'country_code', 'is_active', 'is_worlds_champion')
+    list_filter = ('region', 'is_active', 'is_worlds_champion')
     search_fields = ('name', 'slug')
 
 @admin.register(Coach)
@@ -22,4 +23,14 @@ class TournamentAppearanceAdmin(admin.ModelAdmin):
     list_display = ('player', 'tournament_slug', 'year', 'team', 'role', 'placement')
     list_filter = ('year', 'role')
 
-admin.site.register(PlayerTeamHistory)
+@admin.register(PlayerTeamHistory)
+class PlayerTeamHistoryAdmin(admin.ModelAdmin):
+    list_display = ('player', 'team', 'role', 'start_date', 'end_date')
+    list_filter = ('role',)
+    search_fields = ('player__nickname', 'team__name')
+
+@admin.register(CareerChampionStat)
+class CareerChampionStatAdmin(admin.ModelAdmin):
+    list_display = ('player', 'champion_name', 'games_played', 'win_ratio', 'kda', 'source')
+    list_filter = ('source', 'champion_name')
+    search_fields = ('player__nickname', 'champion_name')

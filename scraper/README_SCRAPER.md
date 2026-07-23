@@ -75,9 +75,59 @@ docker compose exec api python manage.py seed_players --full
 - Coaches – do uzupełnienia (obecnie puste, poza seed sample)
 - Top champions – z FavChamps (Players.FavChamps) – OK dla ~687 graczy
 
+## Nowe scrapery (v2)
+
+### `scraper/leaguepedia/career_stats.py`
+Pobiera statystyki karierowe per-champion z lol.fandom.com.
+
+```bash
+# Pobierz statystyki dla konkretnego gracza
+python -c "from scraper.leaguepedia.career_stats import fetch_player_career_stats; print(fetch_player_career_stats('Faker'))"
+
+# Pobierz statystyki dla wielu graczy i zapisz do JSON
+python -c "from scraper.leaguepedia.career_stats import fetch_all_players_stats; fetch_all_players_stats(['Faker', 'Caps'], 'output.json')"
+```
+
+URL źródłowy:
+`https://lol.fandom.com/wiki/Special:RunQuery/TournamentStatistics?TS%5Bpreload%5D=PlayerByChampion&TS%5Blink%5D=Faker&_run=`
+
+### `scraper/leaguepedia/teams.py`
+Pobiera dane drużyn Worlds z Cargo API:
+- Nazwa drużyny i slug
+- Region (LCK/LPL/LEC/LCS/...)
+- Czy drużyna wygrała Worlds (i w jakich latach)
+- Czy drużyna jest aktywna
+
+```bash
+python -c "from scraper.leaguepedia.teams import fetch_worlds_teams; print(len(fetch_worlds_teams()))"
+```
+
+## Management commands
+
+### `import_career_stats`
+Importuje statystyki per-champion z lol.fandom.com do bazy.
+```bash
+python manage.py import_career_stats --player Faker
+python manage.py import_career_stats --all-worlds-players --limit 50
+python manage.py import_career_stats --from-json career_stats.json
+```
+
+### `import_team_history`
+Importuje historyczne dane drużyn i relacji gracz-drużyna z JSON fixture.
+```bash
+python manage.py import_team_history
+python manage.py import_team_history --from-json scraper/data/worlds_teams.json
+python manage.py import_team_history --teams-only
+python manage.py import_team_history --dry-run
+```
+
 ## Następne kroki
 - [ ] Import worlds_titles z TournamentResults Cargo
 - [ ] Import coaches z PlayerLeagueHistory
 - [ ] gol.gg – top 3 champions per season + games count
 - [ ] Incremental weekly cron (Celery Beat)
 - [ ] Walidacja: sprawdź czy każdy gracz ma primary_role, country_code, residency
+- [x] Statystyki per-champion z lol.fandom.com
+- [x] Historyczne drużyny (region, mistrzostwa, aktywność)
+- [x] Relacje gracz-drużyna (rola, okres czasu)
+- [x] Warunek "grał na innej roli" w generatorze

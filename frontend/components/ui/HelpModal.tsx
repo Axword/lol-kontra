@@ -21,26 +21,42 @@ export default function HelpModal({ open, onClose }: { open: boolean, onClose: (
         <div className="p-5 space-y-4 text-[13.5px] leading-relaxed text-ink/90 max-h-[70vh] overflow-y-auto">
           <p><b className="text-ink">Cel:</b> Ułóż skład 5 zawodników League of Legends spełniających warunki na danej pozycji (Top / Jungle / Mid / ADC / Support).</p>
           <ol className="list-decimal pl-5 space-y-1">
-            <li>Kliknij ikonę roli na mapie Rift.</li>
-            <li>Wyszukaj zawodnika – zobaczysz flagę kraju i region.</li>
+            <li>Kliknij kartę roli – zobaczysz warunki, jakie musi spełniać zawodnik.</li>
+            <li>Wyszukaj zawodnika – wpisz min. 2 litery nicku.</li>
             <li>Wybór jest weryfikowany <b>natychmiast</b>. Trafienie blokuje slot.</li>
-            <li>Błędny wybór zabiera jedno z <b>10 żyć</b> – możesz próbować dalej.</li>
+            <li>Błędny wybór zabiera jedno z <b>10 żyć</b> – możesz próbować dalej (retry).</li>
             <li>Gra kończy się po skompletowaniu 5 poprawnych picków lub po 10 błędach.</li>
           </ol>
+
           <div className="bg-bg border border-line rounded-console p-3">
-            <div className="font-semibold text-accent mb-1">Punktacja (styl kontra.games)</div>
+            <div className="font-semibold text-accent mb-2">Punktacja</div>
+            <p className="text-[13px] mb-2">
+              Startujesz z <b>500 pkt</b>. Każde trafienie <b>odejmuje</b> punkty –
+              im rzadszy pick, tym więcej odejmiesz (<b className="text-accent">niższy wynik = lepszy</b>).
+            </p>
             <ul className="text-ink/90 space-y-0.5 text-[13px]">
-              <li>Startujesz z <b>500 pkt</b> – każde trafienie <b>odejmuje</b> punkty.</li>
-              <li>Strata = <b>100 − pick%</b> (im rzadszy pick, tym więcej odejmiesz).</li>
-              <li>Common &gt;20% picków – np. 25% → <b>-75</b></li>
-              <li><span className="r-rare">Rare 10–20%</span> – np. 15% → <b>-85</b></li>
-              <li><span className="r-epic">Epic 1–10%</span> – np. 3% → <b>-97</b></li>
-              <li><span className="r-legendary">Legendary &lt;1%</span> – np. 0.3% → <b>-99.7</b></li>
+              <li>Strata = <b>100 − pick%</b> (np. pick 25% → -75 pkt)</li>
+              <li><span className="r-common">Common</span> &gt;20% picków – np. 25% → <b>-75</b></li>
+              <li><span className="r-rare">Rare</span> 10–20% – np. 15% → <b>-85</b></li>
+              <li><span className="r-epic">Epic</span> 1–10% – np. 3% → <b>-97</b></li>
+              <li><span className="r-legendary">Legendary</span> &lt;1% – np. 0.3% → <b>-99.7</b></li>
               <li><span className="text-ink font-semibold">◆ Diamond Pick</span> – najrzadszy poprawny pick w slocie → pełne <b>-100</b></li>
             </ul>
-            <div className="text-[11px] text-muted mt-1.5"><b className="text-ink">Niższy wynik = lepszy.</b> Idealna gra = 5×◆ = 0 pkt.</div>
+            <div className="text-[11px] text-muted mt-2">
+              <b className="text-ink">Idealna gra</b> = 5×◆ = 0 pkt. Niższy wynik = lepszy.
+            </div>
           </div>
-          <p className="text-muted">Im mniej oczywisty pick – tym lepszy wynik. Faker odejmie mało. Zapomniany zawodnik z 2015 w tych samych warunkach może dać Legendary.</p>
+
+          <div className="bg-bg border border-line rounded-console p-3">
+            <div className="font-semibold text-ink mb-1">💡 Wskazówki</div>
+            <ul className="text-[12.5px] text-ink/80 space-y-0.5">
+              <li>• Im mniej oczywisty pick – tym lepszy wynik.</li>
+              <li>• Faker odejmie mało (popularny). Zapomniany zawodnik z 2015 = Legendary.</li>
+              <li>• Sprawdź historię drużyn i lata Worlds – tam są ukryte perełki.</li>
+              <li>• Warunki na karcie roli <b>zawsze są widoczne</b> – czytaj je przed wyborem.</li>
+            </ul>
+          </div>
+
           <p className="text-[11px] text-muted">Dane: Leaguepedia • Nieoficjalny fanowski projekt • Not affiliated with Riot Games</p>
         </div>
         <div className="px-5 py-3 border-t border-line bg-surface/50 text-right">

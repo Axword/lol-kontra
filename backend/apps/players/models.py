@@ -55,6 +55,12 @@ class Team(models.Model):
     name = models.CharField(max_length=128)
     region = models.CharField(max_length=8, blank=True)
     country_code = models.CharField(max_length=3, null=True, blank=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+    is_worlds_champion = models.BooleanField(default=False, db_index=True,
+        help_text='Czy drużyna kiedykolwiek wygrała Worlds')
+    worlds_titles_years = models.JSONField(default=list, blank=True,
+        help_text='Lista lat, w których drużyna wygrała Worlds, np. [2013, 2015, 2016]')
+    logo_url = models.URLField(max_length=512, blank=True, default='')
 
     def __str__(self):
         return self.name
@@ -96,3 +102,35 @@ class PlayerCoachHistory(models.Model):
     class Meta:
         verbose_name_plural = 'Player coach history'
         unique_together = [('player', 'coach', 'year')]
+
+
+class CareerChampionStat(models.Model):
+    """
+    Statystyki gracza na konkretnym championie w karierze.
+    Dane pobierane z lol.fandom.com (Special:RunQuery/TournamentStatistics).
+    """
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='champion_stats')
+    champion_name = models.CharField(max_length=64, db_index=True)
+    games_played = models.IntegerField(default=0)
+    games_won = models.IntegerField(default=0)
+    games_lost = models.IntegerField(default=0)
+    win_ratio = models.FloatField(null=True, blank=True)
+    kills = models.FloatField(null=True, blank=True)
+    deaths = models.FloatField(null=True, blank=True)
+    assists = models.FloatField(null=True, blank=True)
+    kda = models.FloatField(null=True, blank=True)
+    cs_per_min = models.FloatField(null=True, blank=True)
+    dmg_per_min = models.FloatField(null=True, blank=True)
+    source = models.CharField(max_length=32, default='lolwiki', db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = [('player', 'champion_name', 'source')]
+        ordering = ['-games_played']
+        indexes = [
+            models.Index(fields=['player', '-games_played']),
+            models.Index(fields=['champion_name']),
+        ]
+
+    def __str__(self):
+        return f"{self.player.nickname} – {self.champion_name} ({self.games_played}G)"
