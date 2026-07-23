@@ -1,116 +1,74 @@
 # League of Legends Esports Roster Challenge – Worlds XI
 
-Codzienna gra LoL Esports inspirowana Kontra.games „Mundialowa Jedenastka”.
+Codzienna gra LoL Esports inspirowana [kontra.games „Mundialowa Jedenastka”](https://kontra.games/pl/graj/mundialowa-jedenastka/7).
 
-**Stack:** Next.js 14 + TypeScript + Tailwind / Django 5 + DRF + PostgreSQL 16 + Redis 7
+**Stack:** Next.js 14 + TypeScript + Tailwind — **100% frontend, zero backendu.**
 
-Dokumentacja techniczna: [`docs/TECHNICAL_SPEC.md`](docs/TECHNICAL_SPEC.md)
+Wszystkie dane gry (baza 876 graczy Worlds + codzienne zagadki) są generowane
+**podczas builda** do statycznych plików JSON. Weryfikacja odpowiedzi i punktacja
+odbywają się lokalnie w przeglądarce, a postępy zapisywane są w `localStorage`.
 
-## Szybki start
+## Jak to działa
+
+```
+frontend/
+├── data/players.source.json      # źródłowa baza 876 graczy Worlds S1–S15
+├── scripts/generate-data.mjs     # generator – uruchamiany w prebuild/predev
+└── public/data/                  # (generowane, w .gitignore)
+    ├── players.json              # odchudzona baza do wyszukiwarki
+    ├── index.json                # lista dostępnych dni (archiwum + przyszłość)
+    └── dailies/<id>.json         # 1 plik = 1 zagadka: 5 slotów, warunki,
+                                  # poprawne odpowiedzi + pick% + diamond
+```
+
+Generator jest **deterministyczny względem daty** (seedowany PRNG) – każdy build
+tworzy identyczne zagadki dla tych samych dni. Jeden build zawiera ~60 dni
+archiwum + ~200 dni w przód, więc aplikacja „sama” serwuje nową zagadkę
+każdego dnia bez re-deployu.
+
+## Zasady gry (styl kontra.games)
+
+- 5 slotów (Top / Jungle / Mid / ADC / Support), każdy z 2–3 warunkami
+  (np. „Koreańczyk” + „Wygrał Worlds”).
+- Wybór weryfikowany **natychmiast** – trafienie blokuje slot, błąd zabiera życie (max 10).
+- Start **500 pkt**, każde trafienie odejmuje `100 − pick%`.
+  **Niższy wynik = lepszy.** Najrzadszy poprawny pick w slocie = 💎 Diamond (-100).
+- Archiwum – można grać wszystkie poprzednie dni.
+
+## Szybki start (lokalnie)
 
 ```bash
-cp .env.example .env
-docker compose up --build
-# ⏳ pierwszy start ~60-90s:
-#   - PostgreSQL init
-#   - Django makemigrations + migrate
-#   - AUTO-SEED: 876 graczy Worlds (via entrypoint.sh)
-#   - AUTO-DAILY: create_daily --publish
-# -> http://localhost   (frontend + mapa Rift)
-# -> http://localhost/api/docs/  (Swagger)
-# -> http://localhost/admin/  (admin / admin)
+cd frontend
+npm install
+npm run dev        # predev automatycznie generuje public/data/
+# -> http://localhost:3000
 ```
 
-**Entrypoint** (`backend/entrypoint.sh`) robi automatycznie przy każdym starcie kontenera:
-1. czeka na PostgreSQL + Redis
-2. `makemigrations && migrate`
-3. **sprawdza `Player.objects.count()`**
-   - `< 100` → `loaddata worlds_players_django` → **876 graczy**
-   - `> 700` → skip (2s)
-4. tworzy `ScoringConfig` jeśli brak
-5. `create_daily --publish` – dzisiejszy Daily z 5 slotami
-6. wyświetla podsumowanie:
-```
-====================================================
-  PLAYERS: 876
-  ACTIVE : 612
-  TODAY  : Daily #1 – 2026-07-07 – published – slots:5
-====================================================
-```
-7. `exec "$@"` → uruchamia `runserver` / `gunicorn` / `celery`
+## Deploy na Vercel
 
+1. Zaimportuj repozytorium w [vercel.com/new](https://vercel.com/new).
+2. Ustaw **Root Directory: `frontend`** (framework: Next.js wykryje się sam).
+3. Deploy — `npm run build` sam wygeneruje dane gry (hook `prebuild`).
+
+Nic więcej nie jest potrzebne – brak bazy danych, env vars i backendu.
+
+Ewentualne odświeżenie danych: wystarczy re-deploy (np. cron w Vercel
+„Deploy Hooks” raz w miesiącu), by wydłużyć okno wygenerowanych dni.
 
 ## Komendy
 
-```
-make up          # docker compose up --build
-make down
-make logs
-make migrate     # python manage.py migrate
-make createsuperuser
-make seed        # seed 50 top graczy
-make scrape      # scraper full Worlds S1-S15
-make test
-make shell
-```
-
-## Struktura
-
-- `frontend/` – Next.js 14 App Router, PL/EN
-- `backend/` – Django 5 + DRF
-- `scraper/` – Leaguepedia + gol.gg ETL
-- `worker/` – Celery
-
-## Etapy
-
-- [x] Etap 0 – Dokumentacja techniczna
-- [x] Etap 0.5 – Monorepo + Docker scaffold
-- [x] Etap 1 – Modele DB + Admin + seed (36 graczy)
-- [x] Etap 2 – Scraper MVP (Leaguepedia Cargo + gol.gg stub)
-- [x] Etap 3 – API Daily + Submissions + Condition Evaluator + Diamond Pick
-- [x] Etap 4 – Scoring Engine + Rarity + Celery
-- [x] Etap 5 – Frontend core (RosterBoard, PlayerSearch, Results)
-- [x] Etap 6 – Auth scaffolding + UserStats + Leaderboard API
-- [x] Etap 7 – Admin API + Daily Generator
-- [ ] Etap 8 – OAuth Google/Discord keys, Admin SPA, E2E, deploy produkcyjny
-
-Szczegóły: [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md)
-
-## Uruchomienie – krok po kroku
-
 ```bash
-cp .env.example .env
-make up
-# pierwsze uruchomienie:
-# - automatycznie: makemigrations + migrate
-# - automatycznie: seed_players --full  → 876 graczy Worlds
-# - automatycznie: create_daily --publish
-# poczekaj ~30-60s na pierwszy seed (jednorazowo)
-# Otwórz http://localhost
+npm run dev            # dev server (z generacją danych)
+npm run build          # produkcyjny build (z generacją danych)
+npm run generate-data  # sama generacja public/data/
+npm run lint
 ```
 
-**Dane w bazie po starcie:**
-- **876 zawodników Worlds S1–S15** – auto-ładowane z `backend/apps/players/fixtures/worlds_players_full.json`
-- 1 Daily wygenerowany automatycznie
-- ScoringConfig, UserStats – gotowe
+## Struktura repo
 
-Ręczne komendy:
-```bash
-make seed              # seed_players --full  (876 graczy, idempotentny)
-make seed-sample       # tylko 36 top graczy
-make seed-clear        # wyczyść + załaduj pełną bazę
-# lub Django fixtures:
-docker compose exec api python manage.py loaddata worlds_players_django
-# -> Installed 876 object(s)
+- `frontend/` – cała aplikacja (Next.js 14 App Router)
+- `backend/`, `scraper/`, `worker/` – **legacy** – stary stack Django/Celery,
+  niepotrzebny do działania gry; źródło danych (`worlds_players_full.json`)
+  zostało skopiowane do `frontend/data/players.source.json`
 
-# stwórz nowy Daily:
-docker compose exec api python manage.py create_daily --publish
-```
-
-Test API:
-- http://localhost/api/docs/ – Swagger
-- http://localhost/api/v1/dailies/today/
-- http://localhost/api/v1/players/?search=faker
-- http://localhost/admin/ – Django Admin
-
-Licencja: MIT (do ustalenia)
+Licencja: MIT (do ustalenia) • Dane: Leaguepedia • Not affiliated with Riot Games

@@ -23,21 +23,24 @@ export default function HelpModal({ open, onClose }: { open: boolean, onClose: (
           <ol className="list-decimal pl-5 space-y-1">
             <li>Kliknij ikonę roli na mapie Rift.</li>
             <li>Wyszukaj zawodnika – zobaczysz flagę kraju, region, liczbę występów na Worlds.</li>
-            <li>Wybierz – możesz zmienić do momentu wysłania całego składu.</li>
-            <li><b>1 skład dziennie.</b> Masz 10 “żyć” – błędny wybór zabiera życie (UI).</li>
-            <li>Po wysłaniu – wynik natychmiastowy (tryb instant).</li>
+            <li>Wybór jest weryfikowany <b>natychmiast</b>. Trafienie blokuje slot.</li>
+            <li>Błędny wybór zabiera jedno z <b>10 żyć</b> – możesz próbować dalej.</li>
+            <li>Gra kończy się po skompletowaniu 5 poprawnych picków lub po 10 błędach.</li>
           </ol>
           <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-3">
-            <div className="font-semibold text-[#C89B3C] mb-1">Punktacja za rzadkość</div>
+            <div className="font-semibold text-[#C89B3C] mb-1">Punktacja (styl kontra.games)</div>
             <ul className="text-zinc-300 space-y-0.5 text-[13px]">
-              <li>Common &gt;20% – <b>10 pkt</b></li>
-              <li><span className="text-[#3B82F6]">Rare 10–20%</span> – <b>25 pkt</b></li>
-              <li><span className="text-[#A855F7]">Epic 1–10%</span> – <b>60 pkt</b></li>
-              <li><span className="text-[#F59E0B]">Legendary &lt;1%</span> – <b>120 pkt</b></li>
-              <li><span className="text-[#22D3EE]">💎 Diamond Pick</span> – <b>+50 pkt</b> – pierwszy na świecie dany zawodnik danego dnia</li>
+              <li>Startujesz z <b>500 pkt</b> – każde trafienie <b>odejmuje</b> punkty.</li>
+              <li>Strata = <b>100 − pick%</b> (im rzadszy pick, tym więcej odejmiesz).</li>
+              <li>Common &gt;20% picków – np. 25% → <b>-75</b></li>
+              <li><span className="text-[#3B82F6]">Rare 10–20%</span> – np. 15% → <b>-85</b></li>
+              <li><span className="text-[#A855F7]">Epic 1–10%</span> – np. 3% → <b>-97</b></li>
+              <li><span className="text-[#F59E0B]">Legendary &lt;1%</span> – np. 0.3% → <b>-99.7</b></li>
+              <li><span className="text-[#22D3EE]">💎 Diamond Pick</span> – najrzadszy poprawny pick w slocie → pełne <b>-100</b></li>
             </ul>
+            <div className="text-[11px] text-zinc-500 mt-1.5"><b className="text-zinc-300">Niższy wynik = lepszy.</b> Idealna gra = 5×💎 = 0 pkt.</div>
           </div>
-          <p className="text-zinc-400">Im mniej oczywisty pick – tym więcej punktów. Faker da Ci Common 10 pkt. Duke w tych samych warunkach może dać Legendary 120 pkt.</p>
+          <p className="text-zinc-400">Im mniej oczywisty pick – tym lepszy wynik. Faker odejmie mało. Zapomniany zawodnik z 2015 w tych samych warunkach może dać Legendary.</p>
           <p className="text-[11px] text-zinc-500">Dane: Leaguepedia • Nieoficjalny fanowski projekt • Not affiliated with Riot Games</p>
         </div>
         <div className="px-5 py-3 border-t border-zinc-800 bg-zinc-950/50 text-right">

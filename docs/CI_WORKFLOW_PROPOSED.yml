@@ -1,0 +1,24 @@
+# Proponowany .github/workflows/ci.yml (frontend-only).
+# Bot nie może modyfikować plików workflow (brak uprawnienia `workflows`),
+# więc podmień zawartość ręcznie.
+name: CI
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install
+        run: cd frontend && npm ci
+      - name: Build (generuje dane gry + next build)
+        run: cd frontend && npm run build

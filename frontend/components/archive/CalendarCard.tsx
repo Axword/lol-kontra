@@ -5,16 +5,15 @@ import { sound } from '@/lib/sound'
 type Props = {
   id: number,
   date: string, // YYYY-MM-DD
-  status: string,
   solved?: boolean,
   score?: number | null,
   isToday?: boolean,
 }
 
-const monthsPl = ['STY','LUT','MAR','KWI','MAJ','CZE','LIP','SIE','WRZ','PAŹ','LIS','GRU']
-const weekdaysPl = ['N','Pn','Wt','Śr','Cz','Pt','Sb']
+const monthsPl = ['STY', 'LUT', 'MAR', 'KWI', 'MAJ', 'CZE', 'LIP', 'SIE', 'WRZ', 'PAŹ', 'LIS', 'GRU']
+const weekdaysPl = ['N', 'Pn', 'Wt', 'Śr', 'Cz', 'Pt', 'Sb']
 
-export default function CalendarCard({ id, date, status, solved, score, isToday }: Props) {
+export default function CalendarCard({ id, date, solved, score, isToday }: Props) {
   const d = new Date(date + 'T12:00:00')
   const day = d.getDate()
   const month = monthsPl[d.getMonth()] || ''
@@ -24,7 +23,7 @@ export default function CalendarCard({ id, date, status, solved, score, isToday 
   return (
     <Link
       href={`/daily/${id}`}
-      onClick={()=>sound.click()}
+      onClick={() => sound.click()}
       className={`group block relative transition-transform hover:scale-[1.025] focus:outline-none`}
     >
       <div className={`
@@ -52,14 +51,13 @@ export default function CalendarCard({ id, date, status, solved, score, isToday 
           {solved ? (
             <div className="flex items-center justify-between text-[#2d6a2d] font-semibold">
               <span>✓ rozwiązane</span>
-              <span className="text-[#C89B3C]">{score ?? '—'} pkt</span>
+              <span className="text-[#b67600]">{score ?? '—'} pkt</span>
             </div>
           ) : isToday ? (
             <div className="text-[#b67600] font-semibold text-center">▶ zagraj dziś</div>
           ) : (
             <div className="text-zinc-600 text-center">
-              {status === 'scored' ? 'zakończone' : status}
-              <span className="text-[#0a7d4a]"> • zagraj</span>
+              <span className="text-[#0a7d4a]">• zagraj</span>
             </div>
           )}
         </div>
@@ -67,7 +65,7 @@ export default function CalendarCard({ id, date, status, solved, score, isToday 
         {/* subtle paper texture overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.035]" style={{
           backgroundImage: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.5) 2px, rgba(0,0,0,0.5) 3px)`
-        }}/>
+        }} />
       </div>
     </Link>
   )
