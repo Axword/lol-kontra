@@ -26,7 +26,7 @@ export type DailySlot = {
   conditions: DailySlotCondition[]
   /** [slug, pick_percent] – posortowane malejąco wg popularności */
   answers: [string, number][]
-  /** slug najrzadszego poprawnego picku – 💎 */
+  /** slug najrzadszego poprawnego picku (diamond) */
   diamond: string
 }
 

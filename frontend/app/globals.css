@@ -2,28 +2,157 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Late-night research console
+   Warm Anthropic charcoal · Apple-quiet chrome · cream ink
+   ============================================================ */
+
 :root {
-  --lol-bg: #0A0E13;
-  --lol-gold: #C89B3C;
+  /* warm near-black elevations */
+  --bg:        #16130f;
+  --panel:     #1c1813;
+  --surface:   #221d17;
+  --elevated:  #2a241c;
+
+  /* cream ink */
+  --ink:       #ECE5D8;
+  --muted:     #9C9081;
+
+  /* hairlines — white @ ~10–18% (never hard gray slabs) */
+  --line:          rgba(236, 229, 216, 0.10);
+  --line-strong:   rgba(236, 229, 216, 0.18);
+
+  /* coral-amber accent — used ≤10% (CTA / focus / active tool) */
+  --accent:        #E07A4B;
+  --accent-ink:    #1B1109;
+  --accent-soft:   rgba(224, 122, 75, 0.12);
+
+  /* semantic only */
+  --blue:  #7E9CB8;   /* teams */
+  --red:   #CB7A6E;   /* errors / wrong */
+  --live:  #C9A24B;   /* objectives */
+  --warn:  #D8B25C;   /* gold lead / spotted */
+
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 }
+
+* { border-color: var(--line); }
 
 html, body {
-  background: #0A0E13;
-  color: #E8E6E3;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-.card-lol {
-  @apply bg-lol-bg2 border border-zinc-800 rounded-2xl p-4 shadow-lg;
+::selection { background: var(--accent-soft); color: var(--ink); }
+
+/* data / clock / gold — IBM Plex Mono */
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
 }
-.btn-gold {
-  @apply bg-lol-gold text-black font-semibold px-5 py-3 rounded-xl hover:brightness-110 transition shadow-gold;
+
+/* ---- surfaces (radius: 8px console) ---- */
+.console {
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
 }
-.pill {
-  @apply text-xs px-3 py-1 rounded-full bg-zinc-800 text-zinc-200 border border-zinc-700;
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
 }
-.rarity-common { @apply text-rarity-common; }
-.rarity-rare { @apply text-rarity-rare; }
-.rarity-epic { @apply text-rarity-epic; }
-.rarity-legendary { @apply text-rarity-legendary font-bold; }
-.rarity-diamond { @apply text-rarity-diamond font-bold; }
+.elevated {
+  background: var(--elevated);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+/* ---- hairlines (internal only) ---- */
+.hair-t { border-top: 1px solid var(--line); }
+.hair-b { border-bottom: 1px solid var(--line); }
+.hair-r { border-right: 1px solid var(--line); }
+.hair-l { border-left: 1px solid var(--line); }
+
+/* ---- text tokens ---- */
+.t-ink   { color: var(--ink); }
+.t-muted { color: var(--muted); }
+.t-accent{ color: var(--accent); }
+.t-warn  { color: var(--warn); }
+.t-live  { color: var(--live); }
+.t-blue  { color: var(--blue); }
+.t-red   { color: var(--red); }
+
+/* ---- controls (radius: 6px) ---- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .4rem;
+  border-radius: 6px; padding: .55rem .9rem; font-size: .8125rem; line-height: 1;
+  border: 1px solid var(--line-strong); color: var(--ink); background: transparent;
+  transition: border-color .15s ease, background-color .15s ease, color .15s ease;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--muted); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+.btn-primary { background: var(--ink); color: var(--bg); border-color: var(--ink); font-weight: 600; }
+.btn-primary:hover { background: #fff; }
+
+.btn-coral { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.btn-coral:hover { filter: brightness(1.07); }
+
+.btn-ghost { background: transparent; border-color: var(--line); color: var(--muted); }
+.btn-ghost:hover { color: var(--ink); border-color: var(--muted); }
+
+/* tonal — active tool wash */
+.tonal { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+/* ---- underline tabs in cream ---- */
+.tab {
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  padding: .35rem .1rem;
+  transition: color .15s ease, border-color .15s ease;
+}
+.tab:hover { color: var(--ink); }
+.tab-active { color: var(--ink); border-bottom-color: var(--accent); }
+
+/* ---- inputs ---- */
+.field {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  padding: .65rem .8rem;
+  width: 100%;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.field::placeholder { color: var(--muted); }
+.field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* ---- rarity scale: restrained, warm — no neon / no purple ---- */
+.r-common    { color: #9C9081; }
+.r-rare      { color: #C7A98C; }
+.r-epic      { color: var(--accent); }
+.r-legendary { color: var(--warn); font-weight: 600; }
+.r-diamond   { color: var(--ink); font-weight: 700; }
+
+/* ---- focus ring (functional, not decoration) ---- */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---- motion: 150ms state only ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: .001ms !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
