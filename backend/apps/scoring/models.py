@@ -1,8 +1,17 @@
 from django.db import models
 
 class AnswerStatsDaily(models.Model):
-    daily_slot = models.ForeignKey('dailies.DailySlot', on_delete=models.CASCADE)
-    player = models.ForeignKey('players.Player', on_delete=models.CASCADE)
+    daily_slot = models.ForeignKey(
+        'dailies.DailySlot',
+        on_delete=models.CASCADE,
+        related_name='answer_stats',
+        db_index=True,
+    )
+    player = models.ForeignKey(
+        'players.Player',
+        on_delete=models.CASCADE,
+        related_name='answer_stats',
+    )
     pick_count = models.IntegerField(default=0)
     pick_percent = models.FloatField(default=0)
     rarity_tier = models.CharField(max_length=16)
@@ -10,6 +19,10 @@ class AnswerStatsDaily(models.Model):
 
     class Meta:
         unique_together = [('daily_slot', 'player')]
+        indexes = [
+            # For fetching all stats for a daily (across all slots)
+            models.Index(fields=['daily_slot'], name='idx_stats_slot'),
+        ]
 
     def __str__(self):
         return f"{self.daily_slot} – {self.player} {self.pick_percent:.2f}% {self.rarity_tier}"

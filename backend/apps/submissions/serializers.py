@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.db.models import Sum
 from .models import Submission, SubmissionAnswer
 from apps.players.models import Player
@@ -182,9 +182,10 @@ class AnswerCreateSerializer(serializers.Serializer):
             answer_obj.save(update_fields=['points_awarded'])
 
             # compute running total from existing answers
+            # FIX: total_points is now FloatField — store actual score directly
             existing_ded = submission.answers.aggregate(s=Sum('points_awarded'))['s'] or 0
             remaining = round(500.0 - float(existing_ded), 1)
-            submission.total_points = int(remaining * 10)
+            submission.total_points = remaining
             submission.save(update_fields=['total_points'])
         except Exception:
             pass
@@ -200,9 +201,10 @@ class AnswerCreateSerializer(serializers.Serializer):
         # kontra fields
         data['pick_percent'] = round(getattr(instance, '_pick_percent', 0.0) or getattr(instance, 'rarity_percent', 0.0) or 0.0, 1)
         data['deduction'] = getattr(instance, '_deduction', instance.points_awarded or 0)
+        # FIX: total_points is now FloatField — no more /10 decoding
         total = getattr(instance, '_submission_total', None)
         if total is not None:
-            data['total_points'] = round(total / 10.0, 1)   # 304.1
+            data['total_points'] = round(float(total), 1)
             data['remaining_score'] = data['total_points']
             data['start_score'] = 500
         else:

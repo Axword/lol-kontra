@@ -1,5 +1,6 @@
 from celery import shared_task
 from django.utils import timezone
+from datetime import timedelta
 from apps.dailies.models import Daily
 from .engine import score_daily
 
@@ -17,7 +18,7 @@ def nightly_scoring():
             daily.save(update_fields=['status', 'closed_at'])
     except Daily.DoesNotExist:
         pass
-    yesterday = today - timezone.timedelta(days=1)
+    yesterday = today - timedelta(days=1)
     try:
         daily = Daily.objects.get(date=yesterday)
         score_daily(daily.id)

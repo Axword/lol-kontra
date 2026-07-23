@@ -12,6 +12,12 @@ const games = [
 
 export default function Sidebar({ open, onClose }: { open: boolean, onClose: () => void }) {
   const pathname = usePathname()
+  // BUG FIX: Close sidebar when navigating on mobile
+  const handleLinkClick = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      onClose()
+    }
+  }
   return (
     <>
       <div
@@ -34,7 +40,7 @@ export default function Sidebar({ open, onClose }: { open: boolean, onClose: () 
               <Link
                 key={g.id}
                 href={g.active ? '/' : '#'}
-                onClick={e => { if(!g.active) e.preventDefault() }}
+                onClick={e => { if(!g.active) e.preventDefault(); else handleLinkClick() }}
                 className={`flex items-center gap-3 px-3 py-[10px] rounded-control border transition-colors
                   ${g.active
                     ? 'tonal'
@@ -64,7 +70,7 @@ export default function Sidebar({ open, onClose }: { open: boolean, onClose: () 
             Not affiliated with Riot
           </div>
           <div className="flex gap-3 pt-1 text-muted">
-            <a href="/leaderboard" className="hover:text-ink transition-colors">Ranking</a>
+            <a href="/leaderboard" onClick={handleLinkClick} className="hover:text-ink transition-colors">Ranking</a>
             <a href="#" className="hover:text-ink transition-colors">Regulamin</a>
             <a href="#" className="hover:text-ink transition-colors">Kontakt</a>
           </div>

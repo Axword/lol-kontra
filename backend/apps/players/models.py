@@ -74,13 +74,16 @@ class Coach(models.Model):
 
 class PlayerTeamHistory(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='team_history')
-    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='player_histories')
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     role = models.CharField(max_length=16, choices=ROLES, blank=True)
 
     class Meta:
         verbose_name_plural = 'Player team history'
+        # FIX: Prevent duplicate entries for same player+team+start_date
+        unique_together = [('player', 'team', 'start_date')]
+        ordering = ['-start_date']
 
 class TournamentAppearance(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='tournament_appearances')

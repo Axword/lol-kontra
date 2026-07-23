@@ -10,6 +10,9 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret-change-me')
 DEBUG = os.getenv('DJANGO_DEBUG', 'true').lower() == 'true'
 ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
+# CSRF trusted origins for production
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',') if os.getenv('CSRF_TRUSTED_ORIGINS') else []
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -33,8 +36,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.discord',
     'dj_rest_auth',
     'dj_rest_auth.registration',
-    'django_celery_beat',
-    'django_celery_results',
 
     # local
     'apps.players',
@@ -45,9 +46,14 @@ INSTALLED_APPS = [
     'apps.admin_tools',
 ]
 
+# Conditionally add celery apps only if not on Render (no Redis available on free tier)
+if not os.getenv('RENDER'):
+    INSTALLED_APPS += ['django_celery_beat', 'django_celery_results']
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # for static files on Render
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,25 +84,31 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
-# Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'lolroster'),
-        'USER': os.getenv('POSTGRES_USER', 'lolroster'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'lolroster'),
-        'HOST': os.getenv('POSTGRES_HOST', 'db'),
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
-    }
-}
+# Database – Neon.tech PostgreSQL (free tier) or local Docker Postgres
+# DATABASE_URL takes priority (Neon provides this format)
+import dj_database_url
 
-# Allow DATABASE_URL override
-if os.getenv('DATABASE_URL'):
-    try:
-        import dj_database_url
-        DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
-    except ImportError:
-        pass
+DATABASE_URL = os.getenv('DATABASE_URL', '')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require='neon.tech' in DATABASE_URL or os.getenv('DB_SSL_REQUIRE', 'false').lower() == 'true',
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DB', 'lolroster'),
+            'USER': os.getenv('POSTGRES_USER', 'lolroster'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'lolroster'),
+            'HOST': os.getenv('POSTGRES_HOST', 'db'),
+            'PORT': os.getenv('POSTGRES_PORT', '5432'),
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -115,6 +127,13 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# WhiteNoise for static files
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -148,9 +167,15 @@ REST_FRAMEWORK = {
     }
 }
 
-# CORS
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
+# CORS – allow Vercel frontend and local dev
+CORS_ALLOWED_ORIGINS = os.getenv(
+    'CORS_ALLOWED_ORIGINS',
+    'http://localhost:3000'
+).split(',')
 CORS_ALLOW_CREDENTIALS = True
+# Also allow all origins in dev
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
 
 # drf-spectacular
 SPECTACULAR_SETTINGS = {
@@ -160,7 +185,7 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
 }
 
-# Celery
+# Celery – optional, only when Redis is available
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/1')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/2')
 CELERY_TIMEZONE = TIME_ZONE
@@ -176,13 +201,21 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = False
 
-# Redis cache
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': os.getenv('REDIS_URL', 'redis://redis:6379/0'),
+# Redis cache – fallback to local memory when Redis is unavailable
+REDIS_URL = os.getenv('REDIS_URL', '')
+if REDIS_URL:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+        }
     }
-}
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        }
+    }
 
 # Scoring config – can be overridden in DB
 SCORING = {
@@ -196,18 +229,14 @@ SCORING = {
     'THRESHOLD_LEGENDARY': 1.0,
 }
 
-# Logging – structlog
+# Logging – structlog (simplified for Render)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'json': {
-            '()': 'structlog.stdlib.ProcessorFormatter',
-            'processor': 'structlog.processors.JSONRenderer',
-        },
         'console': {
-            '()': 'structlog.stdlib.ProcessorFormatter',
-            'processor': 'structlog.dev.ConsoleRenderer',
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{',
         },
     },
     'handlers': {

@@ -2,7 +2,6 @@ from django.db.models import Count, Sum
 from apps.submissions.models import SubmissionAnswer, Submission
 from apps.scoring.models import AnswerStatsDaily, ScoringConfig
 from apps.dailies.models import DailySlot
-from django.db import models
 
 # Kontra.games style scoring
 # Start: 500
@@ -18,6 +17,7 @@ def score_daily(daily_id: int):
 
     for slot in daily_slots:
         answers_qs = SubmissionAnswer.objects.filter(daily_slot=slot, is_correct=True)
+        # Count distinct submissions that answered this slot correctly
         total = answers_qs.values('submission').distinct().count()
         if total == 0:
             continue
@@ -51,25 +51,27 @@ def score_daily(daily_id: int):
                 is_correct=True
             ))
 
+            # FIX: points_awarded is now FloatField — no truncation
             upd_qs = SubmissionAnswer.objects.filter(daily_slot=slot, player_id=player_id, is_correct=True)
             upd_qs.update(
                 rarity_tier=tier,
                 rarity_percent=pick_percent,
-                points_awarded=deduction,   # store deduction
+                points_awarded=deduction,
             )
 
         AnswerStatsDaily.objects.bulk_create(stats_bulk)
 
-        # diamond = flat 100 deduction
+        # Diamond pick: flat 100 deduction
         diamond_qs = SubmissionAnswer.objects.filter(daily_slot=slot, is_diamond_pick=True)
         diamond_qs.update(points_awarded=100.0)
 
-    # update submission totals (kontra style: 500 - sum deductions)
+    # Update submission totals
+    # FIX: total_points is now FloatField — store actual score directly (no *10 encoding)
     submissions = Submission.objects.filter(daily_id=daily_id)
     for sub in submissions:
         total_deduction = sub.answers.aggregate(s=Sum('points_awarded'))['s'] or 0
         final_score = round(START_SCORE - float(total_deduction), 1)
-        sub.total_points = int(final_score * 10)   # store as int*10 for precision
+        sub.total_points = final_score
         sub.is_scored = True
         sub.save(update_fields=['total_points', 'is_scored'])
 

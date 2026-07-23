@@ -60,7 +60,7 @@ PY
 # --- Django setup ---
 echo ""
 echo "📦 Django setup..."
-python manage.py makemigrations --noinput || true
+# BUG FIX: Never run makemigrations in production – only apply existing migrations
 python manage.py migrate --noinput
 
 # --- Fixtures: players ---

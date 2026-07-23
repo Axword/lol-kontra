@@ -79,8 +79,12 @@ export const useGameStore = create<Store>()(
         const prev = game.picks[slotId]
         if (prev?.locked && prev.is_correct) return state
         const picks = { ...game.picks }
+        // BUG FIX: decrement errors when clearing a wrong pick
+        const errors = (prev && !prev.is_correct)
+          ? Math.max(0, game.errors - 1)
+          : game.errors
         delete picks[slotId]
-        return { games: { ...state.games, [dailyId]: { ...game, picks } } }
+        return { games: { ...state.games, [dailyId]: { ...game, picks, errors } } }
       }),
 
       resetGame: (dailyId) => set(state => {
