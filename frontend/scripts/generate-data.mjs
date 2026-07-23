@@ -197,6 +197,21 @@ function playerMatches(p, cond) {
     case 'champion_pick': return (p.attributes?.top_champions_career || []).includes(cond.v)
     case 'birth_max': return p.birth_year != null && p.birth_year <= cond.v
     case 'birth_min': return p.birth_year != null && p.birth_year >= cond.v
+    case 'secondary_role': {
+      // Gracz grał na innej roli niż primary (np. na supporcie ale primary mid)
+      const secs = (p.secondary_roles || []).map(String)
+      return secs.includes(cond.v)
+    }
+    case 'played_in_championship_team': {
+      // Gracz grał w drużynie, która wygrała Worlds (niekoniecznie sam jest mistrzem)
+      const teams = (a.teams || []).map(slugifyTeam)
+      const championshipTeams = [
+        't1', 'samsung-galaxy', 'ssg', 'damwon-gaming', 'dwg',
+        'invictus-gaming', 'ig', 'funplus-phoenix', 'fpx',
+        'edward-gaming', 'edg', 'drx',
+      ]
+      return teams.some(t => championshipTeams.includes(t))
+    }
     default: return false
   }
 }
@@ -231,6 +246,14 @@ const CONDITION_POOL = [
     ['jdg', 'JD Gaming'], ['bilibiligaming', 'Bilibili Gaming'], ['rng', 'RNG'],
     ['hanwhalifeesports', 'Hanwha Life'], ['flyquest', 'FlyQuest'],
   ].map(([slug, name]) => ({ t: 'team', v: slug, pl: `Grał w ${name}`, en: `Played for ${name}` })),
+  // Gracze którzy grali na innej roli niż ich primary
+  { t: 'secondary_role', v: 'top', pl: 'Grał też na Top', en: 'Also played Top' },
+  { t: 'secondary_role', v: 'jungle', pl: 'Grał też w Jungle', en: 'Also played Jungle' },
+  { t: 'secondary_role', v: 'mid', pl: 'Grał też na Mid', en: 'Also played Mid' },
+  { t: 'secondary_role', v: 'adc', pl: 'Grał też na ADC', en: 'Also played ADC' },
+  { t: 'secondary_role', v: 'support', pl: 'Grał też na Support', en: 'Also played Support' },
+  // Drużyna zdobyła mistrzostwo (gracz grał w niej, ale niekoniecznie jest mistrzem)
+  { t: 'played_in_championship_team', v: true, pl: 'Grał w drużynie mistrzów Worlds', en: 'Played for a Worlds champion team' },
 ]
 
 const ROLE_ORDER = ['top', 'jungle', 'mid', 'adc', 'support']
@@ -366,6 +389,7 @@ const slim = players.map(p => ({
   country_code: p.country_code || '',
   residency: p.residency || '',
   primary_role: p.primary_role,
+  secondary_roles: p.secondary_roles || [],
   worlds_count: p.worlds_count || 0,
   is_active: !!p.is_active,
 }))

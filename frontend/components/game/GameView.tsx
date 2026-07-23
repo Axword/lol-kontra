@@ -67,9 +67,19 @@ export default function GameView({
   )
 
   const rightTop = (
-    <div className="text-right">
-      <div className="text-[11px] text-muted">Trafione</div>
-      <div className="text-[15px] font-bold text-ink">{correct}<span className="text-muted">/{daily.slots.length}</span></div>
+    <div className="text-right flex items-center gap-4">
+      {/* Compact stats */}
+      {finishedGames.length > 0 && (
+        <div className="hidden sm:flex items-center gap-3 text-[11px] text-muted">
+          <span>Średni: <b className="text-ink">{avg}</b></span>
+          <span>Best: <b className="text-accent">{best}</b></span>
+          <span>◆ <b className="text-ink">{totalDiamonds}</b></span>
+        </div>
+      )}
+      <div>
+        <div className="text-[11px] text-muted">Trafione</div>
+        <div className="text-[15px] font-bold text-ink">{correct}<span className="text-muted">/{daily.slots.length}</span></div>
+      </div>
     </div>
   )
 
@@ -81,28 +91,28 @@ export default function GameView({
       rightTopSlot={rightTop}
       errorsLeft={Math.max(0, MAX_ERRORS - game.errors)}
     >
-      <div className="space-y-6">
-        {/* Match console – map | roster in one instrument */}
+      <div className="space-y-5">
+        {/* Role cards + status bar */}
         <RosterBoard daily={daily} />
 
-        {/* info under map */}
-        <div className="text-center text-[13px] text-muted -mt-2">
-          {game.finished
-            ? `✓ Gra zakończona – wynik ${game.score} pkt`
-            : 'Wybierz pozycje na mapie by zgadywać'}
-        </div>
+        {/* Game finished message */}
+        {game.finished && (
+          <div className="text-center text-[13px] text-warn font-medium">
+            ✓ Gra zakończona – wynik <b className="mono">{game.score} pkt</b>
+          </div>
+        )}
 
-        {/* Results – show after finish */}
+        {/* Post-game results */}
         {game.finished && (
           <div className="space-y-4">
-            <div className="grid md:grid-cols-3 gap-3 text-[12px]">
+            <div className="grid grid-cols-3 gap-2 text-[12px]">
               {[
                 { k: 'Poprawne', v: `${correct}/${daily.slots.length}`, c: 'text-warn' },
                 { k: 'Legendary', v: `${legendary}`, c: 'text-warn' },
                 { k: 'Diamond', v: `${diamonds}`, c: 'text-ink' },
               ].map(x => (
                 <div key={x.k} className="bg-panel border border-line rounded-console px-3 py-2 text-center">
-                  <div className="text-muted text-[11px]">{x.k}</div>
+                  <div className="text-muted text-[10px] uppercase">{x.k}</div>
                   <div className={`text-lg font-bold ${x.c}`}>{x.v}</div>
                 </div>
               ))}
@@ -110,37 +120,6 @@ export default function GameView({
             <AnswerStats daily={daily} />
           </div>
         )}
-
-        {/* Stats + tips */}
-        <div className="grid lg:grid-cols-3 gap-4">
-          <div className="lg:col-span-2 panel">
-            <div className="text-[11px] text-muted uppercase mb-2">Jak liczony jest wynik?</div>
-            <div className="text-sm text-ink/90 leading-relaxed">
-              Startujesz z <b className="text-ink">500 pkt</b>. Każde trafienie <b>odejmuje</b> punkty –
-              im rzadszy pick, tym więcej odejmiesz (<b className="text-accent">niższy wynik = lepszy</b>).<br />
-              <span className="text-muted text-[13px]">
-                Przykład: pick wybierany przez 20% graczy → -80 pkt. Pick wybierany przez 0.5% → -99.5 pkt.
-                Najrzadszy poprawny pick w slocie to <span className="text-ink font-semibold">◆ Diamond</span> – pełne -100.
-              </span>
-            </div>
-          </div>
-          <div className="space-y-3">
-            <div className="panel">
-              <div className="text-[11px] text-muted uppercase mb-1">Twoje staty</div>
-              <div className="text-sm space-y-1 text-ink/90">
-                <div>Rozegrane: <b>{finishedGames.length}</b></div>
-                <div>Średni wynik: <b>{avg ?? '—'}</b></div>
-                <div>Najlepszy: <b className="text-accent">{best ?? '—'}</b></div>
-                <div>Diamond Picks: <b className="text-ink">{totalDiamonds} ◆</b></div>
-              </div>
-              <div className="text-[10px] text-muted mt-2">zapisywane lokalnie w przeglądarce</div>
-            </div>
-            <div className="panel text-[11px] text-muted leading-relaxed">
-              <b className="text-ink">Tip:</b> Rzadkie picki = lepszy wynik.<br />
-              Sprawdź historię drużyn, lata Worlds – tam są ukryte perełki.
-            </div>
-          </div>
-        </div>
 
         {/* Archive */}
         {showArchive && <ArchiveList currentId={daily.id} />}

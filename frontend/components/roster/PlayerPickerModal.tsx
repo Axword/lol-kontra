@@ -23,16 +23,13 @@ export default function PlayerPickerModal({
 
   useEffect(() => { if (open) setQ('') }, [open, slot?.id])
 
+  const trimmed = q.trim()
+  const hasQuery = trimmed.length >= 2
+
   const list: Player[] = useMemo(() => {
-    if (!players) return []
-    if (q.length === 0) {
-      const rolePlayers = players
-        .filter(p => p.primary_role === slot?.role)
-        .sort((a, b) => (b.worlds_count - a.worlds_count) || a.nickname.localeCompare(b.nickname))
-      return rolePlayers.slice(0, 30)
-    }
-    return searchPlayers(players, q)
-  }, [q, players, slot?.role])
+    if (!players || !hasQuery) return []
+    return searchPlayers(players, trimmed)
+  }, [trimmed, players, hasQuery])
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
@@ -72,7 +69,11 @@ export default function PlayerPickerModal({
             className="field text-base"
           />
           <div className="text-[11px] text-muted mt-2">
-            {q ? `Wyniki dla "${q}" — ${list.length}` : `Sugestie dla roli ${slot.role.toUpperCase()} – wpisz nick aby wyszukać w całej bazie.`}
+            {hasQuery
+              ? `Znaleziono ${list.length} ${list.length === 1 ? 'wynik' : list.length < 5 ? 'wyniki' : 'wyników'} dla „${trimmed}"`
+              : trimmed.length > 0
+                ? 'Wpisz co najmniej 2 znaki aby wyszukać…'
+                : 'Wpisz co najmniej 2 litery nicku aby wyszukać gracza.'}
           </div>
         </div>
 
@@ -84,8 +85,13 @@ export default function PlayerPickerModal({
             </div>
           )}
           {isLoading && <div className="p-4 text-center text-muted text-sm">Ładowanie bazy graczy…</div>}
-          {!isLoading && list.length === 0 && q.length > 0 && (
-            <div className="p-6 text-center text-muted">Brak wyników</div>
+          {!isLoading && hasQuery && list.length === 0 && (
+            <div className="p-6 text-center text-muted">Brak wyników dla „{trimmed}"</div>
+          )}
+          {!isLoading && !hasQuery && (
+            <div className="p-6 text-center text-muted text-sm">
+              {trimmed.length > 0 ? 'Wpisz jeszcze jedną literę…' : 'Zacznij pisać nick aby wyszukać.'}
+            </div>
           )}
           <ul className="divide-y divide-line">
             {list.map(p => (
