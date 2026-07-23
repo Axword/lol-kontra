@@ -34,6 +34,9 @@ yarn-error.log*
 /.next/
 /out/
 
+# Generated game data (built by frontend/scripts/generate-data.mjs)
+frontend/public/data/
+
 # Env
 .env
 .env.*.local

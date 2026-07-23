@@ -54,11 +54,11 @@ export default function TopBar({
 
         {/* right: login */}
         <div className="flex items-center gap-2 sm:gap-3">
-          <a href="/profile" className="text-[12px] sm:text-[13px] text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-zinc-900 transition">
-            Zaloguj
+          <a href="/leaderboard" className="text-[12px] sm:text-[13px] text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg hover:bg-zinc-900 transition">
+            Moje wyniki
           </a>
           <a href="/profile" className="text-[12px] sm:text-[13px] bg-[#1a2330] border border-[#C89B3C]/30 text-[#E8C467] px-3 py-1.5 rounded-lg hover:bg-[#202b3a] transition hidden sm:inline-block">
-            Rejestracja
+            Profil
           </a>
         </div>
       </div>

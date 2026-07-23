@@ -1,120 +1,99 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { MAX_ERRORS, START_SCORE, RarityTier } from './api'
 
-type AnswerResult = {
-  is_correct?: boolean
-  rarity_tier?: 'common' | 'rare' | 'epic' | 'legendary' | null
-  points_awarded?: number   // now = deduction (e.g. 95.8)
-  pick_percent?: number
-  is_diamond_pick?: boolean
-  locked?: boolean
+export type Pick = {
+  slotId: number
+  playerSlug: string
+  playerNickname: string
+  is_correct: boolean
+  rarity_tier: RarityTier | null
+  /** odjęcie od 500 (tylko dla trafień) */
+  deduction: number
+  pick_percent: number
+  is_diamond_pick: boolean
+  locked: boolean
 }
 
-type Pick = { 
-  slotId: number, 
-  playerSlug?: string, 
-  playerNickname?: string 
-} & AnswerResult
-
-type RosterState = {
-  dailyId?: number
+export type GameState = {
   picks: Record<number, Pick>
-  submitted: boolean
-  guestToken: string
   errors: number
-  maxErrors: number
-  setPick: (slotId: number, playerSlug: string, playerNickname: string) => void
-  setAnswer: (slotId: number, ans: AnswerResult) => void
-  clearPick: (slotId: number) => void
-  incrementError: () => void
-  setDaily: (id: number) => void
-  markSubmitted: () => void
-  reset: () => void
+  finished: boolean
+  /** wynik końcowy: 500 - suma odjęć (niższy = lepszy) */
+  score: number | null
+  finishedAt?: string
+  date?: string
 }
 
-function genGuestToken() {
-  if (typeof window === 'undefined') return 'srv'
-  let t = localStorage.getItem('guest_token')
-  if (!t) {
-    t = Math.random().toString(36).slice(2) + Date.now().toString(36)
-    localStorage.setItem('guest_token', t)
-  }
-  return t
+const emptyGame = (): GameState => ({
+  picks: {},
+  errors: 0,
+  finished: false,
+  score: null,
+})
+
+type Store = {
+  games: Record<number, GameState>
+  applyPick: (dailyId: number, pick: Pick, totalSlots: number, date?: string) => void
+  clearPick: (dailyId: number, slotId: number) => void
+  resetGame: (dailyId: number) => void
 }
 
-export const useRosterStore = create<RosterState>()(
+function computeScore(game: GameState): number {
+  const total = Object.values(game.picks)
+    .filter(p => p.is_correct)
+    .reduce((s, p) => s + p.deduction, 0)
+  return Math.round((START_SCORE - total) * 10) / 10
+}
+
+export const useGameStore = create<Store>()(
   persist(
-    (set, get) => ({
-      dailyId: undefined,
-      picks: {},
-      submitted: false,
-      guestToken: typeof window !== 'undefined' ? genGuestToken() : '',
-      errors: 0,
-      maxErrors: 10,
+    (set) => ({
+      games: {},
 
-      setPick: (slotId, playerSlug, playerNickname) => set(state => {
-        const prev = state.picks[slotId] || { slotId }
-        // only block if CORRECTLY locked
-        if (prev.locked && prev.is_correct === true) return state
-        // new pick attempt – clear previous verification result
-        return {
-          picks: { 
-            ...state.picks, 
-            [slotId]: { 
-              slotId, 
-              playerSlug, 
-              playerNickname 
-              // is_correct, points_awarded, locked etc cleared for new attempt
-            } 
-          }
+      applyPick: (dailyId, pick, totalSlots, date) => set(state => {
+        const game = state.games[dailyId] ?? emptyGame()
+        if (game.finished) return state
+        const prev = game.picks[pick.slotId]
+        if (prev?.locked && prev.is_correct) return state
+
+        const picks = { ...game.picks, [pick.slotId]: pick }
+        const errors = pick.is_correct ? game.errors : Math.min(game.errors + 1, MAX_ERRORS)
+        const correct = Object.values(picks).filter(p => p.is_correct).length
+        const finished = correct >= totalSlots || errors >= MAX_ERRORS
+        const next: GameState = {
+          ...game,
+          picks,
+          errors,
+          finished,
+          date: date ?? game.date,
+          score: finished ? computeScore({ ...game, picks }) : game.score,
+          finishedAt: finished ? new Date().toISOString() : game.finishedAt,
         }
+        return { games: { ...state.games, [dailyId]: next } }
       }),
 
-      setAnswer: (slotId, ans) => set(state => {
-        const prev = state.picks[slotId] || { slotId }
-        // LOCK only if correct
-        const isCorrect = !!ans.is_correct
-        const locked = isCorrect
-        return {
-          picks: { 
-            ...state.picks, 
-            [slotId]: { 
-              ...prev, 
-              ...ans, 
-              locked 
-            } 
-          }
-        }
+      clearPick: (dailyId, slotId) => set(state => {
+        const game = state.games[dailyId]
+        if (!game || game.finished) return state
+        const prev = game.picks[slotId]
+        if (prev?.locked && prev.is_correct) return state
+        const picks = { ...game.picks }
+        delete picks[slotId]
+        return { games: { ...state.games, [dailyId]: { ...game, picks } } }
       }),
 
-      clearPick: (slotId) => set(state => {
-        const prev = state.picks[slotId]
-        // cannot clear a correctly locked slot
-        if (prev?.locked && prev.is_correct === true) return state
-        const n = { ...state.picks }
-        delete n[slotId]
-        return { picks: n }
+      resetGame: (dailyId) => set(state => {
+        const games = { ...state.games }
+        delete games[dailyId]
+        return { games }
       }),
-
-      incrementError: () => set(state => ({
-        errors: Math.min(state.errors + 1, state.maxErrors)
-      })),
-
-      setDaily: (id) => {
-        const s = get()
-        if (s.dailyId !== id) {
-          set({ 
-            dailyId: id, 
-            picks: {}, 
-            submitted: false,
-            errors: 0 
-          })
-        }
-      },
-
-      markSubmitted: () => set({ submitted: true }),
-      reset: () => set({ picks: {}, submitted: false, errors: 0 })
     }),
-    { name: 'lol-roster-store' }
+    { name: 'worlds-xi-games-v2' }
   )
 )
+
+export function useGame(dailyId?: number): GameState {
+  const game = useGameStore(s => (dailyId != null ? s.games[dailyId] : undefined))
+  return game ?? emptyGame()
+}
