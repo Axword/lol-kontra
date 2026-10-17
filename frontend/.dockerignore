@@ -1,0 +1,20 @@
+# Zależności i artefakty budowania – instalowane / generowane w obrazie
+node_modules
+.next
+out
+dist
+
+# Dane gry są generowane podczas builda (prebuild -> generate-data.mjs).
+# Kopiowanie ich z hosta groziłoby wgraniem nieaktualnego okna dni.
+public/data
+
+# Lokalne i deweloperskie
+.env
+.env.*.local
+npm-debug.log*
+.DS_Store
+.vscode
+.idea
+Dockerfile
+.dockerignore
+README.md

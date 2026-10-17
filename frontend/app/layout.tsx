@@ -8,17 +8,16 @@ export const metadata: Metadata = {
   description: 'Codzienna gra LoL Esports – ułóż skład, zbieraj rzadkie picki',
 }
 
+/*
+  IBM Plex Mono nie jest już pobierany z Google Fonts: build zależał od sieci,
+  a strona wysyłała żądanie do zewnętrznego serwera przy każdym wejściu.
+  Stos w globals.css schodzi na systemową czcionkę o stałej szerokości znaku
+  (SF Mono / Consolas / Menlo), która wszędzie wygląda poprawnie. Żeby wrócić
+  do Plex Mono, wrzuć woff2 do /public/fonts i dodaj @font-face.
+*/
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="pl" className="dark" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
-          rel="stylesheet"
-        />
-      </head>
       <body className="bg-bg text-ink antialiased">
         <Providers>
           {children}

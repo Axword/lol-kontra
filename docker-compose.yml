@@ -1,117 +1,34 @@
-version: "3.9"
+# ---------------------------------------------------------------------------
+# Worlds XI – uruchomienie aplikacji
+#
+# Gra nie ma backendu: baza zawodników i codzienne zagadki są generowane do
+# statycznych plików JSON podczas budowania obrazu. Nie ma tu bazy danych,
+# Redisa, workerów ani zmiennych środowiskowych do ustawienia.
+#
+#   docker compose up --build        -> http://localhost:3000
+#
+# Stary stos (Django + PostgreSQL + Redis + Celery + nginx) leży w
+# docker-compose.legacy.yml. Nie jest potrzebny do działania gry.
+# ---------------------------------------------------------------------------
 
 services:
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-lolroster}
-      POSTGRES_USER: ${POSTGRES_USER:-lolroster}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lolroster}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lolroster}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes
-    volumes:
-      - redisdata:/data
-
-  api:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    # entrypoint.sh does: migrate + seed fixtures + create_daily
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./backend:/app
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: postgres://${POSTGRES_USER:-lolroster}:${POSTGRES_PASSWORD:-lolroster}@db:5432/${POSTGRES_DB:-lolroster}
-      REDIS_URL: redis://redis:6379/0
-      # auto-seed dev
-      DJANGO_DEBUG: "true"
-    ports:
-      - "8000:8000"
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_started
-    restart: unless-stopped
-
-  worker:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    command: celery -A config worker -l info
-    volumes:
-      - ./backend:/app
-    env_file:
-      - .env
-    depends_on:
-      - api
-      - redis
-      - db
-    restart: unless-stopped
-
-  beat:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    command: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
-    volumes:
-      - ./backend:/app
-    env_file:
-      - .env
-    depends_on:
-      - api
-      - redis
-      - db
-    restart: unless-stopped
-
-  frontend:
+  web:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api/v1}
-    env_file:
-      - .env
-    environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost/api/v1}
+    image: worlds-xi:latest
+    container_name: worlds-xi
     ports:
-      - "3000:3000"
-    depends_on:
-      - api
+      - "${PORT:-3000}:3000"
     restart: unless-stopped
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./infra/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on:
-      - frontend
-      - api
-    restart: unless-stopped
-
-volumes:
-  pgdata:
-  redisdata:
+    # Obraz uruchamia się jako użytkownik bez uprawnień roota i nie zapisuje
+    # niczego na dysku – cały stan gry siedzi w localStorage przeglądarki.
+    read_only: true
+    tmpfs:
+      - /tmp
+      # Next zapisuje tu cache renderowania na żądanie – przy systemie plików
+      # tylko do odczytu bez tego katalogu serwer wywala się przy pierwszym
+      # wejściu na /daily/<id>.
+      - /app/.next/cache
+    security_opt:
+      - no-new-privileges:true

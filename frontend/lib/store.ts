@@ -93,6 +93,26 @@ export const useGameStore = create<Store>()(
   )
 )
 
+/**
+ * Preferencje interfejsu. Wcześniej język siedział w lokalnym `useState`
+ * każdej strony – po przejściu do archiwum wracał do polskiego, a wybór
+ * nie przeżywał odświeżenia.
+ */
+type PrefsStore = {
+  locale: 'pl' | 'en'
+  setLocale: (l: 'pl' | 'en') => void
+}
+
+export const usePrefs = create<PrefsStore>()(
+  persist(
+    (set) => ({
+      locale: 'pl',
+      setLocale: (locale) => set({ locale }),
+    }),
+    { name: 'worlds-xi-prefs' }
+  )
+)
+
 export function useGame(dailyId?: number): GameState {
   const game = useGameStore(s => (dailyId != null ? s.games[dailyId] : undefined))
   return game ?? emptyGame()

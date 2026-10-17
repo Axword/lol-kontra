@@ -47,7 +47,37 @@ każdego dnia bez re-deployu.
   kompletnością i uzupełnia braki.
 - Nazwy są czyszczone z encji HTML (np. `&amp;nbsp;`).
 
-## Szybki start (lokalnie)
+## Szybki start
+
+### Docker (nic poza Dockerem nie jest potrzebne)
+
+```bash
+docker compose up --build
+# -> http://localhost:3000
+```
+
+Obraz jest wielostopniowy: instaluje zależności, generuje dane gry
+(`prebuild` → `generate-data.mjs`), buduje Next.js w trybie `standalone`
+i kopiuje do finalnego obrazu wyłącznie serwer, `public/` oraz statyki –
+bez `node_modules` z etapu budowania. Kontener startuje jako użytkownik bez
+uprawnień roota, na systemie plików tylko do odczytu, bez żadnych zmiennych
+środowiskowych i bez bazy danych.
+
+Inny port: `PORT=8080 docker compose up --build`.
+
+**Ważne:** obraz zawiera zagadki na ~60 dni wstecz i ~200 dni w przód od dnia,
+w którym został zbudowany. Po tym oknie trzeba go przebudować
+(`docker compose build --no-cache && docker compose up -d`), inaczej gra
+przestanie mieć nowe dni.
+
+Sam obraz, bez compose:
+
+```bash
+docker build -t worlds-xi ./frontend
+docker run --rm -p 3000:3000 worlds-xi
+```
+
+### Lokalnie, bez Dockera
 
 ```bash
 cd frontend
@@ -70,15 +100,26 @@ Ewentualne odświeżenie danych: wystarczy re-deploy (np. cron w Vercel
 ## Komendy
 
 ```bash
+# w katalogu frontend/
 npm run dev            # dev server (z generacją danych)
 npm run build          # produkcyjny build (z generacją danych)
 npm run generate-data  # sama generacja public/data/
 npm run lint
+
+# w katalogu głównym – skróty do Dockera
+make up                # build + start w tle -> http://localhost:3000
+make down              # zatrzymaj
+make logs              # podgląd logów
+make data              # przegeneruj public/data lokalnie (nowe okno dni)
+make clean             # zatrzymaj i usuń obraz
 ```
 
 ## Struktura repo
 
 - `frontend/` – cała aplikacja (Next.js 14 App Router)
+- `frontend/Dockerfile` – produkcyjny obraz gry (multi-stage, `output: standalone`)
+- `docker-compose.yml` – jedna usługa: gra
+- `docker-compose.legacy.yml` – stary stos Django/PostgreSQL/Redis/Celery/nginx
 - `backend/`, `scraper/`, `worker/` – **legacy** – stary stack Django/Celery,
   niepotrzebny do działania gry; źródło danych (`worlds_players_full.json`)
   zostało skopiowane do `frontend/data/players.source.json`

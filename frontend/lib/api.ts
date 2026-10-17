@@ -130,13 +130,26 @@ export function useArchive() {
 
 // ------------------------------------------------------------------ wyszukiwarka (lokalna)
 
-export function searchPlayers(players: Player[] | undefined, q: string, limit = 60): Player[] {
+/**
+ * Wyszukiwarka zawodników.
+ *
+ * `role` zawęża wyniki do pozycji slotu. Bez tego panel wyboru dla topa
+ * podpowiadał supportów, których i tak nie dało się poprawnie wskazać –
+ * każdy taki wybór kosztował życie.
+ */
+export function searchPlayers(
+  players: Player[] | undefined,
+  q: string,
+  role?: Role,
+  limit = 60
+): Player[] {
   if (!players) return []
   const needle = q.trim().toLowerCase()
   if (!needle) return []
+  const pool = role ? players.filter(p => p.primary_role === role) : players
   const starts: Player[] = []
   const contains: Player[] = []
-  for (const p of players) {
+  for (const p of pool) {
     const nick = p.nickname.toLowerCase()
     const real = (p.real_name || '').toLowerCase()
     if (nick.startsWith(needle)) starts.push(p)

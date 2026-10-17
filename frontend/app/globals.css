@@ -156,3 +156,47 @@ html, body {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ---- kod kraju zamiast emotikonowej flagi ---- */
+.cc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  padding: 2px 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: var(--muted);
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+}
+
+/* ---- nadkreślenie sekcji (zamiast nagłówków z ikonkami) ---- */
+.eyebrow {
+  font-size: 10px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  color: var(--muted);
+}
+
+/* ---- węzeł roli na mapie: ośmiokąt, nie kółko ---- */
+.node {
+  position: relative;
+  display: block;
+  width: var(--node);
+  height: var(--node);
+}
+.node-shape {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(32% 0, 68% 0, 100% 32%, 100% 68%, 68% 100%, 32% 100%, 0 68%, 0 32%);
+}
+
+/* ---- pasek postępu / udziału ---- */
+.meter { height: 3px; background: var(--line); }
+.meter > span { display: block; height: 100%; }
+
+/* ---- znaczniki żyć ---- */
+.tick { width: 3px; display: inline-block; }

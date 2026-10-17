@@ -44,14 +44,14 @@ export default function CalendarCard({ id, date, solved, score, isToday }: Props
         {/* footer */}
         <div className="border-t border-line px-2.5 py-[7px] text-[11px]">
           {solved ? (
-            <div className="flex items-center justify-between text-warn font-semibold">
-              <span>✓ rozwiązane</span>
-              <span className="text-ink">{score ?? '—'} pkt</span>
+            <div className="flex items-center justify-between">
+              <span className="text-muted">rozegrane</span>
+              <span className="mono text-ink">{score ?? '—'}</span>
             </div>
           ) : isToday ? (
-            <div className="text-accent font-semibold text-center tracking-wide">ZAGRAJ DZIŚ</div>
+            <div className="text-accent text-center uppercase tracking-[0.14em] text-[10px]">Dziś</div>
           ) : (
-            <div className="text-muted text-center">zagraj</div>
+            <div className="text-muted text-center text-[10px] uppercase tracking-[0.14em]">Zagraj</div>
           )}
         </div>
       </div>

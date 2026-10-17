@@ -1,22 +1,24 @@
 'use client'
-import { Daily, rarityForPercent } from '@/lib/api'
-import { useGame } from '@/lib/store'
-import { useState } from 'react'
-
-const tierColor: Record<string, string> = {
-  common: 'r-common',
-  rare: 'r-rare',
-  epic: 'r-epic',
-  legendary: 'r-legendary',
-}
+import { useMemo, useState } from 'react'
+import { Daily, rarityForPercent, usePlayers } from '@/lib/api'
+import { rarityClass, roleLabel } from '@/lib/flags'
+import { useGame, usePrefs } from '@/lib/store'
 
 /**
  * Po zakończeniu gry – pokazuje wszystkie poprawne odpowiedzi
  * dla każdego slotu wraz z pick % (dane z pliku daily JSON).
  */
 export default function AnswerStats({ daily }: { daily: Daily }) {
+  const locale = usePrefs(s => s.locale)
   const game = useGame(daily.id)
+  const { data: players } = usePlayers()
   const [selectedRole, setSelectedRole] = useState(daily.slots[0]?.role || 'top')
+
+  // Tabela pokazywała surowe slugi ("ning", "jackeylove") zamiast nicków.
+  const nameOf = useMemo(() => {
+    const map = new Map((players || []).map(p => [p.slug, p.nickname]))
+    return (slug: string) => map.get(slug) || slug
+  }, [players])
 
   if (!game.finished) return null
 
@@ -28,7 +30,9 @@ export default function AnswerStats({ daily }: { daily: Daily }) {
   return (
     <div className="panel">
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-        <h3 className="font-bold text-ink">Wszystkie poprawne odpowiedzi</h3>
+        <h3 className="text-[15px] font-semibold text-ink">
+          {locale === 'pl' ? 'Wszystkie poprawne odpowiedzi' : 'All correct answers'}
+        </h3>
         <div className="flex gap-1.5">
           {daily.slots.map(s => (
             <button
@@ -37,13 +41,14 @@ export default function AnswerStats({ daily }: { daily: Daily }) {
               className={`px-2.5 py-1 rounded-control border text-[11px] uppercase transition-colors ${selectedRole === s.role
                 ? 'tonal'
                 : 'border-line text-muted hover:border-muted hover:text-ink'}`}
-            >{s.role}</button>
+            >{roleLabel(s.role, locale)}</button>
           ))}
         </div>
       </div>
 
       <div className="text-[11px] text-muted mb-2">
-        {slot.conditions.map(c => c.label_pl).join(' • ')} — {slot.answers.length} poprawnych odpowiedzi
+        {slot.conditions.map(c => (locale === 'pl' ? c.label_pl : c.label_en)).join(' · ')} — {slot.answers.length}{' '}
+        {locale === 'pl' ? 'poprawnych odpowiedzi' : 'correct answers'}
       </div>
 
       <div className="max-h-[340px] overflow-y-auto pr-1">
@@ -51,10 +56,9 @@ export default function AnswerStats({ daily }: { daily: Daily }) {
           <thead className="text-[11px] text-muted border-b border-line sticky top-0 bg-panel">
             <tr className="[&>th]:py-2 [&>th]:font-medium [&>th]:text-left">
               <th className="w-8">#</th>
-              <th>Zawodnik</th>
+              <th>{locale === 'pl' ? 'Zawodnik' : 'Player'}</th>
               <th className="text-right">pick %</th>
-              <th className="text-right">strata</th>
-              <th className="text-center w-10">◆</th>
+              <th className="text-right">{locale === 'pl' ? 'strata' : 'deduction'}</th>
             </tr>
           </thead>
           <tbody>
@@ -65,13 +69,21 @@ export default function AnswerStats({ daily }: { daily: Daily }) {
               return (
                 <tr key={slug} className={`border-b border-line last:border-0 ${isMine ? 'bg-accent-soft' : 'hover:bg-surface/60'}`}>
                   <td className="py-[8px] text-muted">{i + 1}</td>
-                  <td className={`py-[8px] font-medium ${tierColor[tier]}`}>
-                    {slug}
-                    {isMine && <span className="ml-2 text-[10px] text-accent font-bold">← TY</span>}
+                  <td className={`py-[8px] font-medium ${rarityClass[tier]}`}>
+                    {nameOf(slug)}
+                    {isDiamond && (
+                      <span className="ml-2 text-[10px] r-diamond uppercase tracking-[0.1em]">
+                        {locale === 'pl' ? 'najrzadszy' : 'rarest'}
+                      </span>
+                    )}
+                    {isMine && (
+                      <span className="ml-2 text-[10px] text-accent uppercase tracking-[0.1em]">
+                        {locale === 'pl' ? 'twój wybór' : 'your pick'}
+                      </span>
+                    )}
                   </td>
                   <td className="py-[8px] text-right text-ink/90">{pct.toFixed(1)}%</td>
                   <td className="py-[8px] text-right text-muted">-{isDiamond ? '100.0' : (100 - pct).toFixed(1)}</td>
-                  <td className="py-[8px] text-center">{isDiamond ? '◆' : ''}</td>
                 </tr>
               )
             })}
@@ -80,10 +92,9 @@ export default function AnswerStats({ daily }: { daily: Daily }) {
       </div>
 
       <div className="text-[10px] text-muted mt-2">
-        pick % = szacowana popularność wyboru • ◆ = diamond pick (najrzadszy, -100) •
-        <span className="r-rare"> rare</span> •
-        <span className="r-epic"> epic</span> •
-        <span className="r-legendary"> legendary</span>
+        {locale === 'pl'
+          ? 'pick % = szacowana popularność wyboru; najrzadsza poprawna odpowiedź daje pełne −100'
+          : 'pick % = estimated popularity; the rarest correct answer gives the full −100'}
       </div>
     </div>
   )
