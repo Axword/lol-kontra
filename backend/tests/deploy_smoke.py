@@ -72,7 +72,14 @@ def main():
                 cursor.execute(sql.SQL('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT,INSERT,UPDATE,DELETE ON TABLES TO {}').format(sql.Identifier(role)))
                 cursor.execute(sql.SQL('ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE,SELECT ON SEQUENCES TO {}').format(sql.Identifier(role)))
         uri_parameters = {key: value for key, value in parameters.items() if key != 'dbname'}
-        environment = {**os.environ, 'DATABASE_URL': 'postgresql:///' + quote(database, safe='') + '?' + urlencode(uri_parameters),
+        test_url = 'postgresql:///' + quote(database, safe='') + '?' + urlencode(uri_parameters)
+        runtime_url = 'postgresql:///' + quote(database, safe='') + '?' + urlencode({
+            **uri_parameters, 'user': role, 'password': password,
+        })
+        # Root .env may contain production Neon URLs. Explicit values prevent
+        # dotenv from restoring them in any disposable-database child process.
+        environment = {**os.environ, 'DATABASE_URL': test_url,
+            'DATABASE_RUNTIME_URL': runtime_url, 'DATABASE_URL_UNPOOLED': test_url,
             'POSTGRES_DB': database, 'POSTGRES_APP_USER': role, 'POSTGRES_APP_PASSWORD': password,
             'DJANGO_SETTINGS_MODULE': 'config.settings', 'DJANGO_DEBUG': 'true',
             'DJANGO_ALLOWED_HOSTS': 'localhost,127.0.0.1,testserver', 'DAILY_TIMEZONE': 'Europe/Warsaw',

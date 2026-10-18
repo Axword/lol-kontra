@@ -1,0 +1,32 @@
+FROM python:3.12-slim AS builder
+
+ENV PIP_NO_CACHE_DIR=1
+WORKDIR /build
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+COPY requirements.lock .
+RUN pip wheel --require-hashes --wheel-dir=/wheels -r requirements.lock
+
+FROM python:3.12-slim AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends libpq5 ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --gid 10001 app \
+    && useradd --uid 10001 --gid app --no-create-home app \
+    && mkdir -p /app/staticfiles /app/media \
+    && chown -R app:app /app
+COPY --from=builder /wheels /wheels
+# Source artifacts were hash-verified before locally building these wheels.
+RUN pip install --no-deps --no-index /wheels/*.whl && rm -rf /wheels
+COPY --chown=app:app . .
+USER app
+
+# Render's Free web service has no separate pre-deploy command. The existing
+# entrypoint serializes migrations and checks release data before serving.
+ENTRYPOINT ["/bin/sh", "/app/entrypoint.sh"]
+EXPOSE 10000
+CMD ["/bin/sh", "-c", "exec gunicorn config.wsgi:application --bind \"0.0.0.0:${PORT:-10000}\" --workers \"${WEB_CONCURRENCY:-1}\" --timeout 60 --access-logfile - --error-logfile -"]

@@ -124,6 +124,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -166,13 +167,14 @@ DATABASES = {
     }
 }
 
-# Allow DATABASE_URL override
-if os.getenv('DATABASE_URL'):
+# Application credentials can be separate from the owner's deployment URL.
+database_url_name = 'DATABASE_RUNTIME_URL' if os.getenv('DATABASE_RUNTIME_URL') else 'DATABASE_URL'
+if os.getenv(database_url_name):
     from .database import postgres_config
     try:
-        DATABASES['default'] = postgres_config(os.environ['DATABASE_URL'])
+        DATABASES['default'] = postgres_config(os.environ[database_url_name])
     except ValueError:
-        raise ImproperlyConfigured('DATABASE_URL must be a valid PostgreSQL connection URL') from None
+        raise ImproperlyConfigured(f'{database_url_name} must be a valid PostgreSQL connection URL') from None
 
 if not DEBUG:
     database = DATABASES['default']
@@ -196,6 +198,15 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {
+        'BACKEND': (
+            'django.contrib.staticfiles.storage.StaticFilesStorage' if DEBUG
+            else 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+        ),
+    },
+}
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

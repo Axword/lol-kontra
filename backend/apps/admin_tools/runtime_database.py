@@ -2,6 +2,7 @@
 import os
 import psycopg2
 from psycopg2 import sql
+from config.database import postgres_config
 
 
 _ROLE_ISOLATION_QUERY = """
@@ -28,6 +29,21 @@ SELECT candidate.oid, EXISTS (
 
 def check_runtime_database(owner_connection):
     user, password = os.getenv('POSTGRES_APP_USER'), os.getenv('POSTGRES_APP_PASSWORD')
+    runtime_url = os.getenv('DATABASE_RUNTIME_URL')
+    if runtime_url is not None:
+        try:
+            runtime = postgres_config(runtime_url)
+        except ValueError:
+            raise ValueError('DATABASE_RUNTIME_URL must be a valid PostgreSQL connection URL') from None
+        runtime_user, runtime_password = runtime['USER'], runtime['PASSWORD']
+        if user is not None or password is not None:
+            if not user or not password:
+                raise ValueError('Both runtime database credentials must be configured')
+            if (user, password) != (runtime_user, runtime_password):
+                raise ValueError('Runtime database credentials must match DATABASE_RUNTIME_URL')
+        # The URL is what the application uses. Do not silently skip its role
+        # checks or validate a different role supplied only in legacy variables.
+        user, password = runtime_user, runtime_password
     if user is None and password is None:
         return
     if not user or not password:

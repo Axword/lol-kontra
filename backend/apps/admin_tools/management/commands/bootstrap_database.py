@@ -1,9 +1,11 @@
 """Serialize deployment initialization on PostgreSQL itself."""
+import os
 from time import monotonic, sleep
 from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
-from django.db import connections, OperationalError
+from django.db import OperationalError
 from django.utils import timezone
+from config.database import bootstrap_connection
 from apps.admin_tools.release_checks import check_release_data
 from apps.admin_tools.runtime_database import check_runtime_database
 from apps.dailies.generator import validate_daily
@@ -22,11 +24,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         alias, timeout = options['database'], options['timeout']
-        connection = connections[alias]
-        if connection.vendor != 'postgresql' or timeout < 1:
+        if timeout < 1:
             raise CommandError('Bootstrap requires PostgreSQL and a positive timeout')
         if alias != 'default' and not options['skip_today']:
             raise CommandError('Use --skip-today when initializing another database alias')
+        # An explicit alternative alias must never be redirected to the default
+        # Neon deployment by an unrelated environment variable.
+        direct_url = os.getenv('DATABASE_URL_UNPOOLED') if alias == 'default' else None
+        try:
+            with bootstrap_connection(alias, database_url=direct_url) as connection:
+                self.initialize(connection, alias, timeout, options)
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            raise CommandError(f'Database initialization stopped: {error}') from error
+
+    def initialize(self, connection, alias, timeout, options):
         connection.settings_dict.setdefault('OPTIONS', {}).setdefault('connect_timeout', min(timeout, 10))
         deadline = monotonic() + timeout
         while True:
@@ -58,8 +69,6 @@ class Command(BaseCommand):
                 elif today.status != 'draft':
                     validate_daily(today)
             self.stdout.write(self.style.SUCCESS(f"Database ready: {report['players']} identities, {report['verified']} verified players, {report['boards']} October boards"))
-        except (OSError, ValueError, KeyError, TypeError) as error:
-            raise CommandError(f'Database initialization stopped: {error}') from error
         finally:
             if locked and connection.connection is not None:
                 with connection.cursor() as cursor:

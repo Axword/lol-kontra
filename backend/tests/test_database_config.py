@@ -18,6 +18,21 @@ def test_database_url_preserves_connection_options():
     assert database['OPTIONS'] == {'sslmode': 'require', 'connect_timeout': '5'}
 
 
+def test_neon_pooler_disables_named_cursors_and_preserves_channel_binding():
+    database = postgres_config(
+        'postgresql://app:pass@ep-game-pooler.eu-central-1.aws.neon.tech/roster'
+        '?sslmode=require&channel_binding=require'
+    )
+    assert database['DISABLE_SERVER_SIDE_CURSORS'] is True
+    assert database['OPTIONS'] == {'sslmode': 'require', 'channel_binding': 'require'}
+
+
+@pytest.mark.parametrize('host', ['ep-game.eu-central-1.aws.neon.tech', 'db-pooler.example.com'])
+def test_direct_and_other_provider_hosts_keep_django_cursor_defaults(host):
+    database = postgres_config(f'postgresql://app:pass@{host}/roster')
+    assert 'DISABLE_SERVER_SIDE_CURSORS' not in database
+
+
 def test_ssl_certificates_and_blank_options_are_not_discarded():
     database = postgres_config(
         'postgresql://user:pass@db.example/roster?sslmode=verify-full'

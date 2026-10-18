@@ -79,7 +79,7 @@ Nie używaj `docker compose down -v` ani poleceń czyszczących dane do aktualiz
 
 ## Frontend na Vercelu
 
-Projekt Vercel publikuje frontend z katalogu `frontend`. Django API, PostgreSQL, Redis oraz procesy Celery muszą działać na osobnym hostingu, przygotowanym według sekcji powyżej. W repozytorium nie ma publicznego adresu wdrożonego API; lokalny `localhost:8000` nie jest adresem dostępnym dla odwiedzających stronę.
+Projekt Vercel publikuje frontend z katalogu `frontend`. Django API, PostgreSQL, Redis oraz procesy Celery wymagają osobnego hostingu. Dla istniejącego frontendu `https://lol-kontra.vercel.app` ustawiono w Production i Preview `NEXT_PUBLIC_API_URL=https://lol-kontra.onrender.com/api/v1`. Nowe wdrożenie Rendera pozostaje w toku, a procesów Celery jeszcze tam nie uruchomiono. Ustawienia tych usług i kontrolę po wdrożeniu opisuje [RENDER.md](RENDER.md). Lokalny `localhost:8000` nie jest adresem dostępnym dla odwiedzających stronę.
 
 W ustawieniach projektu Vercel wybierz:
 
@@ -108,6 +108,14 @@ python manage.py collectstatic --noinput
 
 Ustaw jednocześnie `POSTGRES_APP_USER` i `POSTGRES_APP_PASSWORD`, aby krok wydania zweryfikował osobną rolę aplikacji. W procesach API/Celery ustaw już jej własny `DATABASE_URL` albo `POSTGRES_USER`/`POSTGRES_PASSWORD`. Migracje i blokada sesyjna wymagają połączenia bez puli w trybie transakcyjnym. Parser `DATABASE_URL` zachowuje opcje TLS dostawcy, w tym `sslmode` i certyfikaty. Dla połączenia zewnętrznego ustaw TLS zgodnie z wymaganiami dostawcy. Konfiguracja `DEBUG=false` wymaga jawnych sekretów, hostów i danych połączenia.
 
+## Neon
+
+Projekt jest połączony z Neon (`hidden-math-61798935`, gałąź `production`). Kontekst CLI oraz główny `.env` są ignorowane przez Git. Szczegóły inicjalizacji i poleceń z katalogu głównego znajdują się w [NEON.md](NEON.md).
+
+Neon zapisuje w głównym `.env` `DATABASE_URL` (pooled), `DATABASE_URL_UNPOOLED` (direct) i `NEON_BRANCH`. Zachowaj te klucze oraz pozostałe lokalne ustawienia podczas następnego `neon env pull`. API i Celery korzystają z osobnego `DATABASE_RUNTIME_URL` z ograniczoną rolą. Migracje oraz `bootstrap_database` wymagają bezpośredniego połączenia właściciela z `DATABASE_URL_UNPOOLED`; sesyjna blokada wdrożenia nie może korzystać z transaction poolera. Sekrety i wcześniejsze kopie `.env` pozostają prywatne.
+
+`npm run build`, `npm test` i `npm run lint` można wykonywać z katalogu głównego. Delegują one do frontendu; krok migracji i uruchomienie Django/Celery wykonuje się osobno. Architektura pozostaje bez zmian: przeglądarka → Django API → PostgreSQL. Kod przeglądarki nie dostaje żadnego `DATABASE_*` ani hasła Neon.
+
 ## Weryfikacja przed commitem
 
 ```sh
@@ -118,6 +126,8 @@ pytest -q
 ```
 
 Test wdrożenia wymaga lokalnego PostgreSQL i konta z `CREATEDB`/`CREATEROLE`. Tworzy osobną losową bazę i rolę, sprawdza prawdziwe migracje od zera, ponowne wdrożenie, zachowanie postępu, ukrywanie przyszłych plansz i faktyczny brak praw DDL konta aplikacji. Usuwa tylko własną bazę i rolę testową; nie migruje bazy aplikacji.
+
+Po podłączeniu Neon ustaw dla tego lokalnego testu `DATABASE_URL` jawnie na lokalny PostgreSQL. Główny `.env` zawiera już połączenie Neon; nie polegaj na jego domyślnych wartościach przy uruchamianiu testów administracyjnych.
 
 Zmiany zależności zapisuj najpierw w `requirements.txt`, następnie odtwórz lock i ponownie wykonaj testy:
 

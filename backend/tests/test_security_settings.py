@@ -182,6 +182,41 @@ def test_invalid_database_url_is_a_configuration_error_without_leaking_credentia
     assert 'private-password' not in str(error.value)
 
 
+def test_runtime_url_takes_precedence_over_owner_and_direct_urls():
+    database = load_settings({
+        **PRODUCTION_ENV,
+        'DATABASE_URL': 'postgresql://owner:owner-password-123456@db.example/owner_db',
+        'DATABASE_URL_UNPOOLED': 'postgresql://owner:owner-password-123456@db.example/direct_db',
+        'DATABASE_RUNTIME_URL': (
+            'postgresql://app:runtime-password-123456@ep-game-pooler.eu-central-1.aws.neon.tech/roster'
+            '?sslmode=require&channel_binding=require'
+        ),
+    }).DATABASES['default']
+    assert database['USER'] == 'app'
+    assert database['NAME'] == 'roster'
+    assert database['DISABLE_SERVER_SIDE_CURSORS'] is True
+    assert database['OPTIONS'] == {'sslmode': 'require', 'channel_binding': 'require'}
+
+
+def test_empty_runtime_url_keeps_existing_database_url_configuration():
+    database = load_settings({
+        **PRODUCTION_ENV,
+        'DATABASE_RUNTIME_URL': '',
+        'DATABASE_URL': 'postgresql://app:runtime-password-123456@db.example/roster',
+    }).DATABASES['default']
+    assert (database['USER'], database['HOST'], database['NAME']) == ('app', 'db.example', 'roster')
+
+
+def test_invalid_runtime_url_fails_without_owner_fallback_or_exposing_secret():
+    with pytest.raises(ImproperlyConfigured, match='DATABASE_RUNTIME_URL') as error:
+        load_settings({
+            **PRODUCTION_ENV,
+            'DATABASE_URL': 'postgresql://owner:owner-password-123456@db.example/roster',
+            'DATABASE_RUNTIME_URL': 'postgresql://app:private-runtime-password@db/name?unknown=x',
+        })
+    assert 'private-runtime-password' not in str(error.value)
+
+
 @pytest.mark.parametrize('setting', ['DJANGO_DEBUG', 'DJANGO_TRUST_PROXY_HEADERS'])
 def test_boolean_typo_is_rejected_instead_of_silently_changing_security_mode(setting):
     with pytest.raises(ImproperlyConfigured, match=setting):
@@ -196,3 +231,19 @@ def test_development_defaults_continue_to_allow_local_http():
     assert settings.CSRF_COOKIE_SECURE is False
     assert 'localhost' in settings.ALLOWED_HOSTS
     assert settings.CORS_ALLOWED_ORIGINS == ['http://localhost:3000']
+
+
+def test_production_serves_manifest_static_assets_after_security_middleware():
+    settings = load_settings(PRODUCTION_ENV)
+    security = settings.MIDDLEWARE.index('django.middleware.security.SecurityMiddleware')
+    assert settings.MIDDLEWARE[security + 1] == 'whitenoise.middleware.WhiteNoiseMiddleware'
+    assert settings.STORAGES['staticfiles']['BACKEND'] == (
+        'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    )
+
+
+def test_development_static_urls_do_not_require_a_collected_manifest():
+    settings = load_settings({})
+    assert settings.STORAGES['staticfiles']['BACKEND'] == (
+        'django.contrib.staticfiles.storage.StaticFilesStorage'
+    )

@@ -58,3 +58,4 @@ logs/
 backups/
 *.dump
 *.dump.incomplete
+.neon
