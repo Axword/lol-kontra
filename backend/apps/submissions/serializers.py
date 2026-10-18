@@ -6,7 +6,7 @@ from rest_framework import serializers
 
 from apps.dailies.models import Daily, DailySlot
 from apps.players.models import Player
-from apps.scoring.engine import MIN_SAMPLE, compute_rarity, recalc_submission_total, score_daily, unfilled_deduction
+from apps.scoring.engine import MIN_SAMPLE, compute_rarity, recalc_submission_total, unfilled_deduction
 from apps.users.services import refresh_user_stats
 
 from .models import MAX_ERRORS, STARTING_POINTS, Submission, SubmissionAnswer, SubmissionAttempt
@@ -38,9 +38,8 @@ def _finish_submission(submission):
     if submission.daily.date < timezone.localdate() and submission.is_over:
         submission.is_scored = True
         submission.save(update_fields=['is_scored'])
-    if submission.is_over and submission.daily.date < timezone.localdate():
-        score_daily(submission.daily_id, finalize=False)
-        submission.refresh_from_db()
+    # Completing an archive game only saves that player's result. A later
+    # entrant must never rewrite another player's earned score or saved picks.
     if submission.user_id and submission.is_over:
         refresh_user_stats(submission.user_id)
 

@@ -41,7 +41,9 @@ def slot_pick_stats(slot_id: int, player_id: int, *, exclude_answer_id=None):
 
 def answer_pick_stats(answer_obj, *, final=False):
     """A new official answer does not count itself in its live population."""
-    if final or answer_obj.daily_slot.daily.status == 'scored':
+    # A normal archive choice uses the real population before that choice, just
+    # like today's game. Snapshots belong exclusively to explicit batch scoring.
+    if final:
         snapshot = AnswerStatsDaily.objects.filter(daily_slot_id=answer_obj.daily_slot_id)
         total = snapshot.aggregate(n=Sum('pick_count'))['n'] or 0
         if total:
@@ -96,7 +98,10 @@ def recalc_submission_total(submission) -> float:
 
 @transaction.atomic
 def score_daily(daily_id: int, *, finalize=None):
-    """Rebuild shares and scores atomically without changing board publication.
+    """Explicitly rebuild batch scores without changing board publication.
+
+    Normal gameplay must not call this: completing one game cannot rewrite
+    another player's previously earned result.
 
     ``finalize=None`` finalizes closed past boards. ``finalize=False`` also
     updates real choices on current/future boards and late archive games

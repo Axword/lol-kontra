@@ -106,7 +106,7 @@ class PercentageScoringTests(TestCase):
         self.assertTrue(response.data['is_over'])
         self.assertEqual(response.data['unfilled_deduction'], 0)
 
-    def test_archive_games_join_official_population_and_refresh_every_finished_score(self):
+    def test_archive_choices_join_population_without_rewriting_earned_scores(self):
         self.population(selected=1, total=4)
         self.daily.date -= timedelta(days=1)
         self.daily.status = 'closed'
@@ -122,14 +122,21 @@ class PercentageScoringTests(TestCase):
         for index in range(1, 5):
             result = self.answer('archive-one', index=index)
         self.assertTrue(result.data['is_over'])
-        self.assertEqual(result.data['deduction'], 100)
-        self.assertEqual(result.data['total_points'], 60)  # 500 -40% - four 100% picks
-        self.assertNotEqual(list(AnswerStatsDaily.objects.values('player_id', 'pick_count', 'pick_percent')), before)
+        self.assertEqual(result.data['deduction'], 0)
+        self.assertEqual(result.data['total_points'], 475)  # 25% first choice, then four first-ever choices
+        self.assertTrue(result.data['is_scored'])
+        self.assertEqual(list(AnswerStatsDaily.objects.values('player_id', 'pick_count', 'pick_percent')), before)
         self.assertEqual(AnswerStatsDaily.objects.filter(daily_slot=self.slots[0]).count(), 2)
-        self.assertEqual(Submission.objects.get(guest_token='population-0').total_points, 60)
+        self.assertEqual(Submission.objects.get(guest_token='population-0').total_points, 75)
         ranking = self.client.get('/api/v1/leaderboard/', {'daily_id': self.daily.pk})
         self.assertEqual(len(ranking.data['results']), 5)
         self.assertFalse(Submission.objects.filter(is_practice=True).exists())
+        # A new archive choice sees the latest real votes, not the old 25%
+        # batch snapshot, while the completed entrant keeps the earned 475.
+        later = self.answer('archive-two')
+        self.assertEqual((later.data['deduction'], later.data['sample_size']), (40, 5))
+        self.assertEqual(Submission.objects.get(guest_token='archive-one').total_points, 475)
+        self.assertEqual(Submission.objects.get(guest_token='population-0').total_points, 75)
 
     def test_retired_seed_votes_never_affect_percent_chart_statistics_or_ranking(self):
         from django.contrib.auth import get_user_model
@@ -204,7 +211,7 @@ class PercentageScoringTests(TestCase):
         self.assertFalse(SubmissionAnswer.objects.filter(is_diamond_pick=True).exists())
         self.assertFalse(SubmissionAnswer.objects.filter(points_awarded__gt=0).exists())
 
-    def test_archival_scoring_failure_rolls_back_the_final_answer_and_shared_results(self):
+    def test_archival_own_score_failure_rolls_back_the_final_answer(self):
         from unittest.mock import patch
 
         self.daily.date -= timedelta(days=1)
@@ -213,7 +220,7 @@ class PercentageScoringTests(TestCase):
         for index in range(4):
             self.answer(index=index)
         before = list(SubmissionAnswer.objects.order_by('pk').values('pk', 'points_awarded', 'rarity_percent'))
-        with patch('apps.submissions.serializers.score_daily', side_effect=RuntimeError('rescore failed')):
+        with patch('apps.submissions.serializers.recalc_submission_total', side_effect=RuntimeError('own score failed')):
             with self.assertRaises(RuntimeError):
                 self.answer(index=4)
         self.assertEqual(list(SubmissionAnswer.objects.order_by('pk').values('pk', 'points_awarded', 'rarity_percent')), before)
@@ -262,14 +269,15 @@ class ConcurrentPercentageScoringTests(TransactionTestCase):
         self.assertEqual(results, [(200, True), (200, True)])
         self.assertEqual(SubmissionAnswer.objects.count(), 10)
         self.assertEqual(SubmissionAttempt.objects.count(), 10)
-        self.assertEqual(AnswerStatsDaily.objects.count(), 10)
+        self.assertEqual(AnswerStatsDaily.objects.count(), 0)
         for game in games:
             game.refresh_from_db()
             self.assertTrue(game.is_scored)
-            self.assertEqual(game.total_points, 250)
+            self.assertEqual(game.total_points, 500)
             self.assertEqual(game.answers.filter(is_correct=True).count(), 5)
-            self.assertEqual(list(game.answers.values_list('points_awarded', flat=True)), [-50] * 5)
-            self.assertTrue(all(answer.scoring_sample_size == 2 for answer in game.answers.all()))
+            self.assertEqual(list(game.answers.values_list('points_awarded', flat=True)), [0] * 5)
+            self.assertEqual(game.answers.filter(scoring_sample_size=0).count(), 4)
+            self.assertEqual(game.answers.filter(scoring_sample_size=1).count(), 1)
         for side, game in enumerate(games):
             last = last_indices[side]
             retry = self.client.post('/api/v1/submissions/answer/', {
@@ -278,7 +286,7 @@ class ConcurrentPercentageScoringTests(TransactionTestCase):
             }, format='json')
             self.assertEqual(retry.status_code, 200)
             self.assertTrue(retry.data['unchanged'])
-            self.assertEqual(retry.data['total_points'], 250)
+            self.assertEqual(retry.data['total_points'], 500)
         self.assertEqual(SubmissionAttempt.objects.count(), 10)
 
     def test_serialized_first_votes_have_zero_then_full_penalty_and_retry_is_idempotent(self):

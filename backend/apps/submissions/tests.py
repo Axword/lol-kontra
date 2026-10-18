@@ -52,6 +52,59 @@ class GameplayTests(TestCase):
         self.assertEqual(state.data['total_points'], result.data['total_points'])
         self.assertEqual(state.data['answers'][0]['player_slug'], self.right.slug)
 
+    def test_other_archive_finishes_preserve_all_prior_completed_games_and_picks(self):
+        self.daily.date -= timedelta(days=1)
+        self.daily.save(update_fields=['date'])
+        historical = []
+        for finalized, score in [(False, 400), (True, 350)]:
+            game = Submission.objects.create(
+                daily=self.daily, guest_token=f'completed-{finalized}',
+                total_points=score, is_scored=finalized, errors_used=2,
+            )
+            historical.append(game.pk)
+            for slot, player, percent, count in zip(self.slots, [self.right, self.mid], [41.7, 33.3], [417, 333]):
+                SubmissionAnswer.objects.create(
+                    submission=game, daily_slot=slot, player=player, is_correct=True,
+                    rarity_percent=percent, rarity_tier='common', points_awarded=-percent,
+                    scoring_pick_count=count, scoring_sample_size=1000,
+                )
+                SubmissionAttempt.objects.create(submission=game, daily_slot=slot, player=player, is_correct=True)
+            SubmissionAttempt.objects.create(submission=game, daily_slot=self.slots[0],
+                                             player=self.wrong, is_correct=False)
+
+        def preserved():
+            return {
+                'games': list(Submission.objects.filter(pk__in=historical).order_by('pk').values()),
+                'answers': list(SubmissionAnswer.objects.filter(submission_id__in=historical).order_by('pk').values()),
+                'attempts': list(SubmissionAttempt.objects.filter(submission_id__in=historical).order_by('pk').values()),
+            }
+
+        before = preserved()
+        for board_status in ['published', 'closed', 'scored']:
+            self.daily.status = board_status
+            self.daily.save(update_fields=['status'])
+            for bulk in [False, True]:
+                with self.subTest(status=board_status, bulk=bulk):
+                    token = f'new-archive-{board_status}-{bulk}'
+                    payload = {'daily_id': self.daily.pk, 'guest_token': token}
+                    if bulk:
+                        payload['answers'] = [
+                            {'slot_id': slot.pk, 'player_slug': player.slug}
+                            for slot, player in zip(self.slots, [self.right, self.mid])
+                        ]
+                        result = self.client.post('/api/v1/submissions/', payload, format='json')
+                        self.assertEqual(result.status_code, 201)
+                    else:
+                        for slot, player in zip(self.slots, [self.right, self.mid]):
+                            result = self.client.post('/api/v1/submissions/answer/', {
+                                **payload, 'slot_id': slot.pk, 'player_slug': player.slug,
+                            }, format='json')
+                            self.assertEqual(result.status_code, 200)
+                    self.assertEqual(result.data['total_points'], 300)
+                    self.assertTrue(result.data['is_over'])
+                    self.assertTrue(result.data['is_scored'])
+                    self.assertEqual(preserved(), before)
+
     def test_correct_slot_cannot_be_replaced(self):
         self.answer()
         result = self.answer(self.wrong)
