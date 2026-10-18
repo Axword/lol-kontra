@@ -25,7 +25,7 @@ class ScoringTests(TestCase):
     def test_tier_boundaries(self):
         for percent, expected in [(0, 'legendary'), (1.99, 'legendary'), (2, 'epic'),
                                   (4.99, 'epic'), (5, 'rare'), (14.99, 'rare'),
-                                  (15, 'common'), (100, 'common')]:
+                                  (15, 'uncommon'), (24.99, 'uncommon'), (25, 'common'), (100, 'common')]:
             with self.subTest(percent=percent):
                 self.assertEqual(tier_for_percent(percent, self.cfg), expected)
 
@@ -42,7 +42,7 @@ class ScoringTests(TestCase):
             wrong.refresh_from_db()
             first.refresh_from_db()
             self.assertEqual(diamond.points_awarded, -100)
-            self.assertFalse(diamond.is_diamond_pick)
+            self.assertTrue(diamond.is_diamond_pick)
             self.assertEqual(wrong.points_awarded, 0)
             self.assertEqual(first.total_points, 400)
             self.assertTrue(first.is_scored)
@@ -161,8 +161,8 @@ class ScoringTests(TestCase):
                     self.assertEqual(result.data['total_points'], 500)
                 answer = SubmissionAnswer.objects.get(submission_id=first.data['submission_id'])
                 self.assertEqual(answer.rarity_percent, 0)
-                self.assertFalse(answer.is_diamond_pick)
-                self.assertIsNone(answer.diamond_awarded_at)
+                self.assertTrue(answer.is_diamond_pick)
+                self.assertIsNotNone(answer.diamond_awarded_at)
                 self.assertEqual(answer.submission.attempts.count(), 1)
         score_daily(self.daily.pk)
         self.assertEqual(AnswerStatsDaily.objects.get().pick_percent, 100)

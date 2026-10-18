@@ -38,7 +38,7 @@ class UserPrivacyAndStatsTests(TestCase):
         result = self.client.get('/api/v1/users/me/stats/')
         self.assertEqual(result.data['games_played'], 1)
         self.assertEqual(result.data['total_points'], first.data['total_points'])
-        self.assertEqual(result.data['diamond_picks'], 0)
+        self.assertEqual(result.data['diamond_picks'], 1)
 
     def test_in_progress_games_do_not_inflate_stats_or_leaderboard(self):
         daily = Daily.objects.create(date=timezone.localdate(), status='published')

@@ -24,6 +24,7 @@ class ScoringConfig(models.Model):
     is_active = models.BooleanField(default=True)
 
     threshold_rare = models.FloatField(default=15.0)
+    threshold_uncommon = models.FloatField(default=25.0, db_default=25.0)
     threshold_epic = models.FloatField(default=5.0)
     threshold_legendary = models.FloatField(default=2.0)
 
@@ -32,7 +33,8 @@ class ScoringConfig(models.Model):
     class Meta:
         constraints = [models.CheckConstraint(check=(
             Q(threshold_legendary__gte=0, threshold_legendary__lte=F('threshold_epic'))
-            & Q(threshold_epic__lte=F('threshold_rare'), threshold_rare__lte=100)
+            & Q(threshold_epic__lte=F('threshold_rare'), threshold_rare__lte=F('threshold_uncommon'))
+            & Q(threshold_uncommon__lte=100)
         ), name='scoring_thresholds_ordered')]
 
     def __str__(self):

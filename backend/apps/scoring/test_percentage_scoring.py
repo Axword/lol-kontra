@@ -50,7 +50,7 @@ class PercentageScoringTests(TestCase):
         self.assertEqual(result.data['deduction'], 0)
         self.assertEqual(result.data['points_awarded'], 0)
         self.assertTrue(result.data['is_provisional'])
-        self.assertFalse(result.data['is_diamond_pick'])
+        self.assertTrue(result.data['is_diamond_pick'])
 
     def test_one_percent_means_one_point_not_a_tier_or_diamond_bonus(self):
         self.population(selected=1, total=100)
@@ -312,4 +312,4 @@ class ConcurrentPercentageScoringTests(TransactionTestCase):
         self.assertEqual(sorted(results), [(200, 0), (200, 100)])
         self.assertEqual(Submission.objects.count(), 2)
         self.assertEqual(SubmissionAttempt.objects.count(), 2)
-        self.assertFalse(SubmissionAnswer.objects.filter(is_diamond_pick=True).exists())
+        self.assertEqual(SubmissionAnswer.objects.filter(is_diamond_pick=True).count(), 1)

@@ -63,6 +63,7 @@ class SubmissionAnswer(models.Model):
 
     RARITY_CHOICES = [
         ('common', 'Common'),
+        ('uncommon', 'Uncommon'),
         ('rare', 'Rare'),
         ('epic', 'Epic'),
         ('legendary', 'Legendary'),

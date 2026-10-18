@@ -8,4 +8,4 @@ class AnswerStatsDailyAdmin(admin.ModelAdmin):
 
 @admin.register(ScoringConfig)
 class ScoringConfigAdmin(admin.ModelAdmin):
-    list_display = ('id', 'is_active', 'threshold_rare', 'threshold_epic', 'threshold_legendary', 'updated_at')
+    list_display = ('id', 'is_active', 'threshold_uncommon', 'threshold_rare', 'threshold_epic', 'threshold_legendary', 'updated_at')

@@ -181,7 +181,7 @@ class GameplayTests(TestCase):
         result = self.answer()
         self.assertEqual(result.status_code, 200)
         self.assertFalse(result.data['is_practice'])
-        self.assertFalse(result.data['is_diamond_pick'])
+        self.assertTrue(result.data['is_diamond_pick'])
 
     def test_midnight_preserves_the_same_official_game_and_archive_resume(self):
         first = self.answer()
@@ -229,13 +229,13 @@ class GameplayTests(TestCase):
         result = self.client.get('/api/v1/submissions/me/', {'daily_id': 'not-a-number'})
         self.assertEqual(result.status_code, 400)
 
-    def test_cache_loss_cannot_award_a_retired_diamond_bonus(self):
+    def test_diamond_is_permanent_metadata_without_a_point_bonus_after_cache_loss(self):
         first = self.answer()
         cache.clear()
         self.token = 'guest-two'
         second = self.answer()
         self.assertEqual(second.status_code, 200)
-        self.assertFalse(first.data['is_diamond_pick'])
+        self.assertTrue(first.data['is_diamond_pick'])
         self.assertFalse(second.data['is_diamond_pick'])
         self.assertEqual(second.data['total_points'], 400)
 
@@ -246,7 +246,7 @@ class GameplayTests(TestCase):
         self.assertFalse(Submission.objects.exists())
         result = self.answer()
         self.assertEqual(result.status_code, 200)
-        self.assertFalse(result.data['is_diamond_pick'])
+        self.assertTrue(result.data['is_diamond_pick'])
         self.assertEqual(result.data['deduction'], 0)
 
     def test_bulk_submission_rejects_duplicate_slots_and_rolls_back_invalid_answers(self):
@@ -308,7 +308,7 @@ class GameplayTests(TestCase):
 
 
 class ConcurrentGameplayTests(TransactionTestCase):
-    def test_simultaneous_answers_have_no_diamond_and_handle_retries(self):
+    def test_simultaneous_first_answers_award_one_permanent_diamond_and_handle_retries(self):
         from concurrent.futures import ThreadPoolExecutor
         from threading import Barrier
         from django.db import close_old_connections
@@ -334,6 +334,6 @@ class ConcurrentGameplayTests(TransactionTestCase):
             with ThreadPoolExecutor(max_workers=2) as pool:
                 results = list(pool.map(submit, tokens))
             self.assertEqual(results, [200, 200])
-        self.assertEqual(SubmissionAnswer.objects.filter(is_diamond_pick=True).count(), 0)
+        self.assertEqual(SubmissionAnswer.objects.filter(is_diamond_pick=True).count(), 1)
         self.assertEqual(Submission.objects.count(), 3)
         self.assertEqual(SubmissionAttempt.objects.count(), 3)

@@ -19,8 +19,10 @@ MIN_SAMPLE = 25
 def tier_for_percent(pick_percent: float, cfg: ScoringConfig = None) -> str:
     """Classify exact percentages using exclusive upper bounds, without bonuses."""
     cfg = cfg or ScoringConfig.get_active()
-    if pick_percent >= cfg.threshold_rare:
+    if pick_percent >= cfg.threshold_uncommon:
         return 'common'
+    if pick_percent >= cfg.threshold_rare:
+        return 'uncommon'
     if pick_percent >= cfg.threshold_epic:
         return 'rare'
     if pick_percent >= cfg.threshold_legendary:
@@ -69,11 +71,9 @@ def compute_rarity(answer_obj, cfg: ScoringConfig = None, *, final=False):
     answer_obj.points_awarded = points
     answer_obj.scoring_pick_count = count
     answer_obj.scoring_sample_size = total
-    answer_obj.is_diamond_pick = False
-    answer_obj.diamond_awarded_at = None
     answer_obj.save(update_fields=[
         'rarity_tier', 'rarity_percent', 'points_awarded', 'scoring_pick_count',
-        'scoring_sample_size', 'is_diamond_pick', 'diamond_awarded_at',
+        'scoring_sample_size',
     ])
     return {
         'tier': tier, 'pick_percent': percent, 'pick_count': count,
@@ -130,7 +130,6 @@ def score_daily(daily_id: int, *, finalize=None):
             correct.filter(player_id=row['player']).update(
                 rarity_tier=tier, rarity_percent=percent, points_awarded=-percent,
                 scoring_pick_count=row['pick_count'], scoring_sample_size=total,
-                is_diamond_pick=False, diamond_awarded_at=None,
             )
         AnswerStatsDaily.objects.bulk_create(stats)
 
@@ -144,7 +143,7 @@ def score_daily(daily_id: int, *, finalize=None):
         daily_slot__daily_id=daily_id, is_correct=False, submission__is_seed=False,
     ).update(
         points_awarded=0.0, rarity_tier=None, rarity_percent=None,
-        scoring_pick_count=0, scoring_sample_size=0, is_diamond_pick=False, diamond_awarded_at=None,
+        scoring_pick_count=0, scoring_sample_size=0,
     )
 
     for submission in Submission.objects.select_for_update().filter(

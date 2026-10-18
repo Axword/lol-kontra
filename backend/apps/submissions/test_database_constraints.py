@@ -107,6 +107,8 @@ class DatabaseConstraintTests(TestCase):
         config = ScoringConfig.objects.create()
         config_rows = ScoringConfig.objects.filter(pk=config.pk)
         for values in [dict(threshold_legendary=-1), dict(threshold_epic=21), dict(threshold_rare=101),
+                       dict(threshold_rare=26), dict(threshold_uncommon=14), dict(threshold_uncommon=101),
+                       dict(threshold_uncommon=float('nan')), dict(threshold_uncommon=float('inf')),
                        dict(threshold_rare=float('nan')), dict(threshold_epic=float('inf')),
                        dict(threshold_legendary=float('nan'))]:
             with self.subTest(values=values):

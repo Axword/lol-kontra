@@ -6,7 +6,9 @@ from rest_framework import serializers
 
 from apps.dailies.models import Daily, DailySlot
 from apps.players.models import Player
+from apps.players.serializers import VerifiedPlayerSerializer
 from apps.scoring.engine import MIN_SAMPLE, compute_rarity, recalc_submission_total, unfilled_deduction
+from apps.scoring.diamonds import award_first_pick
 from apps.users.services import refresh_user_stats
 
 from .models import MAX_ERRORS, STARTING_POINTS, Submission, SubmissionAnswer, SubmissionAttempt
@@ -51,8 +53,12 @@ def _finish_submission(submission):
 class SubmissionAnswerOutputSerializer(serializers.ModelSerializer):
     player_nickname = serializers.CharField(source='player.nickname', read_only=True)
     player_slug = serializers.CharField(source='player.slug', read_only=True)
+    player_portrait_url = serializers.SerializerMethodField()
     slot_role = serializers.CharField(source='daily_slot.role', read_only=True)
     deduction = serializers.SerializerMethodField()
+
+    def get_player_portrait_url(self, obj):
+        return VerifiedPlayerSerializer().get_portrait_url(obj.player)
 
     def get_deduction(self, obj):
         return max(0.0, -obj.points_awarded) if obj.is_correct else 0.0
@@ -60,7 +66,7 @@ class SubmissionAnswerOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubmissionAnswer
         fields = [
-            'id', 'daily_slot', 'slot_role', 'player', 'player_nickname', 'player_slug',
+            'id', 'daily_slot', 'slot_role', 'player', 'player_nickname', 'player_slug', 'player_portrait_url',
             'is_correct', 'rarity_tier', 'rarity_percent', 'points_awarded', 'deduction', 'is_diamond_pick',
         ]
 
@@ -214,6 +220,7 @@ class AnswerCreateSerializer(serializers.Serializer):
                 submission.errors_used = min(MAX_ERRORS, submission.errors_used + 1)
                 submission.save(update_fields=['errors_used'])
 
+            award_first_pick(answer_obj)
             rarity = compute_rarity(answer_obj)
             _finish_submission(submission)
             answer_obj.refresh_from_db()
@@ -334,6 +341,7 @@ class SubmissionCreateSerializer(serializers.Serializer):
                     submission=submission, daily_slot=slot, player=player,
                     is_correct=answer_obj.is_correct,
                 )
+                award_first_pick(answer_obj)
                 compute_rarity(answer_obj)
 
             submission.errors_used = min(
