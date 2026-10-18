@@ -2,7 +2,7 @@
 
 Live deductions use official choices recorded before the current answer. They
 stay fixed until final scoring. Final scoring uses the full official population.
-Rarity tiers remain legacy metadata and never affect points.
+Rarity tiers are display metadata and never affect points.
 """
 from django.db import transaction
 from django.db.models import Count, Sum
@@ -17,20 +17,20 @@ MIN_SAMPLE = 25
 
 
 def tier_for_percent(pick_percent: float, cfg: ScoringConfig = None) -> str:
-    """Legacy display metadata; tiers never award points."""
+    """Classify exact percentages using exclusive upper bounds, without bonuses."""
     cfg = cfg or ScoringConfig.get_active()
-    if pick_percent > cfg.threshold_rare:
+    if pick_percent >= cfg.threshold_rare:
         return 'common'
-    if pick_percent > cfg.threshold_epic:
+    if pick_percent >= cfg.threshold_epic:
         return 'rare'
-    if pick_percent > cfg.threshold_legendary:
+    if pick_percent >= cfg.threshold_legendary:
         return 'epic'
     return 'legendary'
 
 
 def slot_pick_stats(slot_id: int, player_id: int, *, exclude_answer_id=None):
     qs = SubmissionAnswer.objects.filter(
-        daily_slot_id=slot_id, is_correct=True, submission__is_practice=False,
+        daily_slot_id=slot_id, is_correct=True, submission__is_practice=False, submission__is_seed=False,
     )
     if exclude_answer_id is not None:
         qs = qs.exclude(pk=exclude_answer_id)
@@ -99,7 +99,7 @@ def score_daily(daily_id: int, *, finalize=None):
     """Rebuild shares and scores atomically without changing board publication.
 
     ``finalize=None`` finalizes closed past boards. ``finalize=False`` also
-    prepares seed votes for current/future boards and updates late archive games
+    updates real choices on current/future boards and late archive games
     without closing unfinished games. Explicit True never finalizes a future or
     currently published board.
     """
@@ -110,7 +110,7 @@ def score_daily(daily_id: int, *, finalize=None):
     slots = list(DailySlot.objects.select_for_update().filter(daily_id=daily_id).order_by('pk'))
     for slot in slots:
         correct = SubmissionAnswer.objects.filter(
-            daily_slot=slot, is_correct=True, submission__is_practice=False,
+            daily_slot=slot, is_correct=True, submission__is_practice=False, submission__is_seed=False,
         )
         total = correct.count()
         AnswerStatsDaily.objects.filter(daily_slot=slot).delete()
@@ -132,15 +132,19 @@ def score_daily(daily_id: int, *, finalize=None):
     # Only colliding historical practice games retain this legacy flag. They
     # remain preserved but never alter the official population or leaderboard.
     for answer in SubmissionAnswer.objects.filter(
-        daily_slot__daily_id=daily_id, submission__is_practice=True,
+        daily_slot__daily_id=daily_id, submission__is_practice=True, submission__is_seed=False,
     ).select_related('daily_slot__daily', 'submission'):
         compute_rarity(answer, cfg, final=True)
-    SubmissionAnswer.objects.filter(daily_slot__daily_id=daily_id, is_correct=False).update(
+    SubmissionAnswer.objects.filter(
+        daily_slot__daily_id=daily_id, is_correct=False, submission__is_seed=False,
+    ).update(
         points_awarded=0.0, rarity_tier=None, rarity_percent=None,
         scoring_pick_count=0, scoring_sample_size=0, is_diamond_pick=False, diamond_awarded_at=None,
     )
 
-    for submission in Submission.objects.select_for_update().filter(daily_id=daily_id).select_related('daily'):
+    for submission in Submission.objects.select_for_update().filter(
+        daily_id=daily_id, is_seed=False,
+    ).select_related('daily'):
         if finalize and not submission.is_practice:
             submission.is_scored = True
             submission.save(update_fields=['is_scored'])

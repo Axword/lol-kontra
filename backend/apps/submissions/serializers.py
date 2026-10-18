@@ -160,6 +160,8 @@ class AnswerCreateSerializer(serializers.Serializer):
                 defaults={'ip_hash': ''},
             )
             submission = Submission.objects.select_for_update().get(pk=submission.pk)
+            if submission.is_seed:
+                raise serializers.ValidationError('Ten identyfikator rozgrywki nie jest dostępny')
 
             existing = SubmissionAnswer.objects.filter(
                 submission=submission, daily_slot=slot
@@ -315,7 +317,7 @@ class SubmissionCreateSerializer(serializers.Serializer):
                 is_practice=is_practice_daily(daily),
                 defaults={'ip_hash': ''},
             )
-            if not created:
+            if not created or submission.is_seed:
                 raise serializers.ValidationError('Już wysłałeś odpowiedź dla tego Daily')
 
             for ans in validated_data['answers']:

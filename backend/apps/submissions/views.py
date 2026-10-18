@@ -49,7 +49,8 @@ class SubmissionViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, view
 
     def get_queryset(self):
         queryset = super().get_queryset().filter(
-            daily__status__in=['published', 'closed', 'scored'], daily__date__lte=timezone.localdate()
+            daily__status__in=['published', 'closed', 'scored'], daily__date__lte=timezone.localdate(),
+            is_seed=False,
         )
         if self.request.user.is_authenticated:
             return queryset.filter(user=self.request.user)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import UserStats
+from .guest_profiles import validate_guest_nickname
 
 User = get_user_model()
 
@@ -15,3 +16,26 @@ class UserStatsSerializer(serializers.ModelSerializer):
         model = UserStats
         fields = ['username', 'games_played', 'total_points', 'avg_points', 'best_score',
                   'legendary_answers', 'diamond_picks', 'current_streak', 'max_streak', 'updated_at']
+
+
+class GuestNicknameField(serializers.CharField):
+    def to_internal_value(self, data):
+        if not isinstance(data, str):
+            self.fail('invalid')
+        return super().to_internal_value(data)
+
+
+class GuestTokenField(serializers.RegexField):
+    def to_internal_value(self, data):
+        if not isinstance(data, str):
+            self.fail('invalid')
+        return super().to_internal_value(data)
+
+
+class GuestProfileInputSerializer(serializers.Serializer):
+    guest_token = GuestTokenField(r'\A[A-Za-z0-9_-]{16,64}\Z', trim_whitespace=False, max_length=64,
+        error_messages={'invalid': 'Nieprawidłowy identyfikator gościa.'})
+    nickname = GuestNicknameField(required=False, allow_blank=True, trim_whitespace=False, max_length=256)
+
+    def validate_nickname(self, value):
+        return validate_guest_nickname(value)

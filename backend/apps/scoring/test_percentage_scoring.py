@@ -131,7 +131,7 @@ class PercentageScoringTests(TestCase):
         self.assertEqual(len(ranking.data['results']), 5)
         self.assertFalse(Submission.objects.filter(is_practice=True).exists())
 
-    def test_seed_votes_affect_percent_and_chart_but_not_player_statistics_or_ranking(self):
+    def test_retired_seed_votes_never_affect_percent_chart_statistics_or_ranking(self):
         from django.contrib.auth import get_user_model
         from apps.users.services import refresh_user_stats
 
@@ -141,13 +141,18 @@ class PercentageScoringTests(TestCase):
             SubmissionAnswer.objects.create(submission=seed, daily_slot=slot, player=player, is_correct=True)
         score_daily(self.daily.pk, finalize=False)
         result = self.answer()
-        self.assertEqual(result.data['deduction'], 100)
-        self.assertEqual(result.data['sample_size'], 1)
+        self.assertEqual(result.data['deduction'], 0)
+        self.assertEqual(result.data['sample_size'], 0)
+        self.assertEqual(result.data['total_points'], 500)
         graph = self.client.get(f'/api/v1/dailies/{self.daily.pk}/score-distribution/')
-        self.assertEqual(graph.data['total_submissions'], 1)
-        self.assertEqual(graph.data['seeded_count'], 1)
+        self.assertEqual(graph.data['total_submissions'], 0)
+        self.assertEqual(graph.data['seeded_count'], 0)
         self.assertEqual(graph.data['real_count'], 0)
-        self.assertEqual(graph.data['distribution'], [{'score': 0, 'count': 1}])
+        self.assertEqual(graph.data['distribution'], [])
+        self.assertFalse(AnswerStatsDaily.objects.exists())
+        stats = self.client.get(f'/api/v1/dailies/{self.daily.pk}/answer-stats/').data['results']
+        self.assertEqual(len(stats), 1)
+        self.assertEqual((stats[0]['pick_count'], stats[0]['pick_percent']), (1, 100))
         self.assertEqual(refresh_user_stats(user.pk).games_played, 0)
         self.assertEqual(self.client.get('/api/v1/leaderboard/').data['results'], [])
 

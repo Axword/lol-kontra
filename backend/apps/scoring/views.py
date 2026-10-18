@@ -9,10 +9,11 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from apps.submissions.models import MAX_ERRORS, STARTING_POINTS, Submission
+from apps.submissions.models import MAX_ERRORS, STARTING_POINTS, Submission, SubmissionAnswer
 from apps.dailies.models import Daily
 
-from .models import AnswerStatsDaily
+from .engine import tier_for_percent
+from .models import ScoringConfig
 
 
 class ScoringViewSet(viewsets.ViewSet):
@@ -27,21 +28,27 @@ class ScoringViewSet(viewsets.ViewSet):
     def answer_stats(self, request, daily_id=None):
         """Ilu graczy wybrało którego zawodnika na którym slocie."""
         self.get_daily(daily_id)
-        stats = (
-            AnswerStatsDaily.objects
-            .filter(daily_slot__daily_id=daily_id)
-            .select_related('player', 'daily_slot')
-            .order_by('daily_slot__position', '-pick_count')
-        )
-        results = [{
-            'slot_id': s.daily_slot_id,
-            'slot_role': s.daily_slot.role,
-            'player': s.player.nickname,
-            'player_slug': s.player.slug,
-            'pick_count': s.pick_count,
-            'pick_percent': round(s.pick_percent, 2),
-            'rarity_tier': s.rarity_tier,
-        } for s in stats]
+        # Read real choices directly, so an old cached snapshot can never expose
+        # synthetic votes that have already been retired.
+        stats = list(SubmissionAnswer.objects.filter(
+            daily_slot__daily_id=daily_id, is_correct=True,
+            submission__is_practice=False, submission__is_seed=False,
+        ).values('daily_slot_id', 'daily_slot__role', 'daily_slot__position',
+                 'player__nickname', 'player__slug').annotate(pick_count=Count('id'))
+          .order_by('daily_slot__position', '-pick_count', 'player__slug'))
+        totals = {}
+        for row in stats:
+            totals[row['daily_slot_id']] = totals.get(row['daily_slot_id'], 0) + row['pick_count']
+        cfg = ScoringConfig.objects.filter(is_active=True).first() or ScoringConfig()
+        results = []
+        for row in stats:
+            percent = row['pick_count'] / totals[row['daily_slot_id']] * 100
+            results.append({
+                'slot_id': row['daily_slot_id'], 'slot_role': row['daily_slot__role'],
+                'player': row['player__nickname'], 'player_slug': row['player__slug'],
+                'pick_count': row['pick_count'], 'pick_percent': round(percent, 2),
+                'rarity_tier': tier_for_percent(percent, cfg),
+            })
         return Response({'daily_id': int(daily_id), 'results': results})
 
     @action(detail=False, methods=['get'], url_path=r'dailies/(?P<daily_id>[^/.]+)/score-distribution')
@@ -65,7 +72,7 @@ class ScoringViewSet(viewsets.ViewSet):
                 raise ValidationError({'user_score': 'Wynik musi być skończoną liczbą'})
             if not 0 <= score <= STARTING_POINTS:
                 raise ValidationError({'user_score': 'Wynik musi mieścić się w zakresie 0–500'})
-        scored = Submission.objects.filter(daily_id=daily_id, is_practice=False).annotate(
+        scored = Submission.objects.filter(daily_id=daily_id, is_practice=False, is_seed=False).annotate(
             slot_count=Count('daily__slots', distinct=True),
             correct_count=Count('answers', filter=Q(answers__is_correct=True), distinct=True),
         ).filter(
@@ -102,8 +109,8 @@ class ScoringViewSet(viewsets.ViewSet):
             'daily_id': int(daily_id),
             'distribution': distribution,
             'total_submissions': total,
-            'seeded_count': scored.filter(is_seed=True).count(),
-            'real_count': scored.filter(is_seed=False).count(),
+            'seeded_count': 0,
+            'real_count': total,
             'avg_score': round(agg.get('avg') or 0, 1) if total else None,
             'max_score': round(agg.get('max') or 0, 1) if total else None,
             'min_score': round(agg.get('min') or 0, 1) if total else None,

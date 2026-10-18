@@ -30,6 +30,24 @@ class UserStats(models.Model):
     def __str__(self):
         return f"Stats {self.user}"
 
+
+class GuestProfile(models.Model):
+    # A guest token is a bearer credential. Profiles only store its keyed hash;
+    # neither the token nor this private identity key is serialized publicly.
+    guest_key = models.CharField(max_length=64, unique=True, editable=False)
+    nickname = models.CharField(max_length=24, blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(check=Q(guest_key__regex=r'^[a-f0-9]{64}$'), name='guestprofile_key_is_sha256'),
+        ]
+
+    def __str__(self):
+        return self.nickname or 'Guest profile'
+
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_user_stats(sender, instance, created, **kwargs):
     if created:

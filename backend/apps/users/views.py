@@ -1,7 +1,3 @@
-import hashlib
-import hmac
-
-from django.conf import settings
 from django.db.models import Count, F, Max, Q, Subquery, Sum
 from django.utils import timezone
 from rest_framework import viewsets, mixins
@@ -13,8 +9,10 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from apps.dailies.models import Daily
 from apps.submissions.models import MAX_ERRORS, Submission, SubmissionAnswer
-from .serializers import UserSerializer, UserStatsSerializer
+from .serializers import GuestProfileInputSerializer, UserSerializer, UserStatsSerializer
 from .services import refresh_user_stats
+from .models import GuestProfile
+from .guest_profiles import guest_display_name, guest_identity_key, guest_stats
 
 User = get_user_model()
 
@@ -38,6 +36,31 @@ class UserViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 # Leaderboard simple
 from rest_framework.views import APIView
+
+
+class GuestProfileView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = GuestProfileInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        payload = serializer.validated_data
+        token = payload['guest_token']
+        key = guest_identity_key(token)
+        if 'nickname' in payload:
+            profile, _ = GuestProfile.objects.update_or_create(
+                guest_key=key, defaults={'nickname': payload['nickname']},
+            )
+        else:
+            profile, _ = GuestProfile.objects.get_or_create(guest_key=key)
+        response = Response({
+            'nickname': profile.nickname or None,
+            'display_name': guest_display_name(token, profile.nickname),
+            'stats': guest_stats(token),
+        })
+        response['Cache-Control'] = 'private, no-store'
+        return response
+
 
 class LeaderboardView(APIView):
     permission_classes = [AllowAny]
@@ -85,10 +108,15 @@ class LeaderboardView(APIView):
                     legendary_answers=Count('pk', filter=Q(rarity_tier='legendary')),
                 )
             }
-            for row in totals:
+            # Resolve all guest nicknames in one query, while keeping private
+            # bearer tokens and identity hashes out of the response.
+            rows = list(totals)
+            profiles = dict(GuestProfile.objects.filter(
+                guest_key__in=[guest_identity_key(row[identity]) for row in rows],
+            ).values_list('guest_key', 'nickname')) if guest else {}
+            for row in rows:
                 if guest:
-                    digest = hmac.new(settings.SECRET_KEY.encode(), row[identity].encode(), hashlib.sha256).hexdigest()[:8]
-                    username = f'#{digest.upper()}'
+                    username = guest_display_name(row[identity], profiles.get(guest_identity_key(row[identity]), ''))
                 else:
                     username = row['user__username']
                 picks = counts.get(row[identity], {})

@@ -28,7 +28,9 @@ def recommended_roster(slots, popular):
 def daily_solutions(daily):
     slots = []
     for slot in daily.slots.prefetch_related('conditions').order_by('position'):
-        votes = SubmissionAnswer.objects.filter(daily_slot=slot, is_correct=True, submission__is_practice=False)
+        votes = SubmissionAnswer.objects.filter(
+            daily_slot=slot, is_correct=True, submission__is_practice=False, submission__is_seed=False,
+        )
         counts = dict(votes.values('player_id').annotate(n=Count('id')).values_list('player_id', 'n'))
         total = sum(counts.values())
         players = []

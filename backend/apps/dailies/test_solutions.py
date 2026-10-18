@@ -41,11 +41,31 @@ class CompletedSolutionsTests(TestCase):
         response = self.client.get(url, {'guest_token': 'winner'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual([len(slot['players']) for slot in response.data['slots']], [8] * 5)
+        self.assertEqual([slot['sample_size'] for slot in response.data['slots']], [2, 1, 1, 1, 1])
+        self.assertEqual(response.data['slots'][0]['players'][0]['pick_count'], 2)
         self.assertEqual(len(set(response.data['popular'].values())), 5)
         self.assertEqual(len(set(response.data['rare'].values())), 5)
         self.board.date += timedelta(days=1)
         self.board.save()
         self.assertEqual(self.client.get(url, {'guest_token': 'winner'}).status_code, 404)
+
+    def test_retired_seed_token_cannot_read_or_modify_a_synthetic_game(self):
+        seed = self.submission('retired-seed', seed=True)
+        state = self.client.get('/api/v1/submissions/me/', {
+            'daily_id': self.board.pk, 'guest_token': seed.guest_token,
+        })
+        self.assertEqual(state.status_code, 200)
+        self.assertIsNone(state.data['id'])
+        self.assertEqual(state.data['answers'], [])
+        self.assertEqual(self.client.get(f'/api/v1/submissions/{seed.pk}/', {
+            'guest_token': seed.guest_token,
+        }).status_code, 404)
+        result = self.client.post('/api/v1/submissions/answer/', {
+            'daily_id': self.board.pk, 'slot_id': self.slots[0].pk,
+            'guest_token': seed.guest_token, 'player_slug': self.players[0].slug,
+        }, format='json')
+        self.assertEqual(result.status_code, 400)
+        self.assertEqual(seed.answers.count(), 5)
 
     def test_recommendation_optimizes_share_without_reusing_a_multirole_player(self):
         slots = [{'slot_id': index, 'players': [

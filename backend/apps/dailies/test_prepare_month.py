@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.test import SimpleTestCase, TestCase
 from rest_framework.test import APIClient
 
@@ -47,15 +48,15 @@ class PreparedMonthTests(TestCase):
         )
         original_conditions = list(human_board.slots.values_list('conditions__pk', 'conditions__condition_type', 'conditions__value'))
         for _ in range(2):
-            call_command('prepare_month', month='2026-10', voters=10, stdout=StringIO())
+            call_command('prepare_month', month='2026-10', stdout=StringIO())
             self.assertEqual(list(Daily.objects.order_by('date').values_list('date', flat=True)),
                              [date(2026, 10, day) for day in range(1, 32)])
             self.assertEqual(Daily.objects.filter(status='published').count(), 31)
             self.assertEqual(DailySlot.objects.count(), 155)
             self.assertEqual(DailySlotCondition.objects.count(), 310)
-            self.assertEqual(Submission.objects.filter(is_seed=True).count(), 310)
-            self.assertEqual(SubmissionAnswer.objects.count(), 1551)
-            self.assertEqual(SubmissionAttempt.objects.count(), 1551)
+            self.assertEqual(Submission.objects.filter(is_seed=True).count(), 0)
+            self.assertEqual(SubmissionAnswer.objects.count(), 1)
+            self.assertEqual(SubmissionAttempt.objects.count(), 1)
             human_answer.refresh_from_db()
             human_attempt.refresh_from_db()
             self.assertEqual((human_answer.submission_id, human_answer.player_id, human_answer.is_correct),
@@ -73,28 +74,21 @@ class PreparedMonthTests(TestCase):
                 initial = snapshot
             else:
                 self.assertEqual(snapshot, initial)
-        for seed in Submission.objects.filter(is_seed=True).prefetch_related('answers'):
-            self.assertEqual(len(seed.answers.all()), 5)
-            self.assertEqual(len({answer.player_id for answer in seed.answers.all()}), 5)
-            self.assertTrue(all(answer.is_correct for answer in seed.answers.all()))
-            self.assertGreaterEqual(seed.total_points, 0)
-            self.assertLessEqual(seed.total_points, 500)
-
         client = APIClient()
         today = Daily.objects.get(date=TODAY)
         future = Daily.objects.get(date=date(2026, 10, 19))
-        future_seed = future.submissions.filter(is_seed=True).first()
+        future_game = Submission.objects.create(daily=future, guest_token='existing-future-human')
         future_slot = future.slots.first()
         self.assertEqual(client.get('/api/v1/dailies/today/').data['id'], today.pk)
         archive = client.get('/api/v1/dailies/')
         self.assertEqual(archive.data['count'], 18)
         self.assertNotIn(future.pk, [board['id'] for board in archive.data['results']])
         for suffix in ['', 'slots/', 'solutions/', 'answer-stats/', 'score-distribution/']:
-            response = client.get(f'/api/v1/dailies/{future.pk}/{suffix}', {'guest_token': future_seed.guest_token})
+            response = client.get(f'/api/v1/dailies/{future.pk}/{suffix}', {'guest_token': future_game.guest_token})
             self.assertEqual(response.status_code, 404, suffix)
         self.assertEqual(client.get('/api/v1/submissions/me/', {'daily_id': future.pk}).status_code, 404)
-        self.assertEqual(client.get(f'/api/v1/submissions/{future_seed.pk}/',
-                                    {'guest_token': future_seed.guest_token}).status_code, 404)
+        self.assertEqual(client.get(f'/api/v1/submissions/{future_game.pk}/',
+                                    {'guest_token': future_game.guest_token}).status_code, 404)
         self.assertEqual(client.post('/api/v1/submissions/answer/', {
             'daily_id': future.pk, 'slot_id': future_slot.pk,
             'player_slug': self.players[0].slug, 'guest_token': 'future-human',
@@ -106,12 +100,17 @@ class PreparedMonthTests(TestCase):
         self.assertFalse(Submission.objects.filter(guest_token='future-human').exists())
         graph = client.get(f'/api/v1/dailies/{today.pk}/score-distribution/')
         self.assertEqual(graph.status_code, 200)
-        self.assertEqual((graph.data['total_submissions'], graph.data['seeded_count'], graph.data['real_count']), (10, 10, 0))
+        self.assertEqual((graph.data['total_submissions'], graph.data['seeded_count'], graph.data['real_count']), (0, 0, 0))
         self.assertEqual(client.get('/api/v1/leaderboard/').data['results'], [])
-        self.assertTrue(AnswerStatsDaily.objects.filter(daily_slot__daily=today).exists())
-        today_seed = today.submissions.filter(is_seed=True).first()
+        self.assertFalse(AnswerStatsDaily.objects.exists())
         self.assertEqual(client.get(f'/api/v1/dailies/{today.pk}/solutions/',
-                                    {'guest_token': today_seed.guest_token}).status_code, 403)
+                                    {'guest_token': 'retired-test-voter'}).status_code, 403)
+
+    def test_month_command_rejects_synthetic_votes_before_creating_boards(self):
+        with self.assertRaisesRegex(CommandError, 'Synthetic votes are disabled'):
+            call_command('prepare_month', month='2026-10', voters=10, stdout=StringIO())
+        self.assertFalse(Daily.objects.exists())
+        self.assertFalse(Submission.objects.exists())
 
     @patch('django.utils.timezone.localdate', return_value=TODAY)
     @patch('apps.dailies.generator.build_condition_pool', return_value=TEST_POOL)

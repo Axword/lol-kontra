@@ -1,5 +1,4 @@
 """Read-only checks for the offline data shipped with this release."""
-from collections import Counter
 from importlib import import_module
 from django.db import connections
 from django.db.migrations.executor import MigrationExecutor
@@ -44,15 +43,8 @@ def check_release_data(*, database='default', strict=False):
         if ([(slot.position, slot.role) for slot in slots] != list(enumerate(calendar_source.ROLES, 1))
                 or any(len(slot.conditions.all()) != 2 for slot in slots)):
             raise ValueError(f'Calendar board {daily.date} needs five roles and two requirements each')
-    seeds = Submission.objects.using(database).filter(daily__date__in=dates, is_seed=True)
-    if strict:
-        per_day = Counter(seeds.values_list('daily__date', flat=True))
-        if any(per_day.get(daily.date) != 10 for daily in dailies):
-            raise ValueError('Fresh calendar needs ten marked test rosters per date')
-        for game in seeds.prefetch_related('answers__daily_slot'):
-            answers = list(game.answers.all())
-            if (len(answers) != 5 or any(not a.is_correct or a.daily_slot.daily_id != game.daily_id for a in answers)
-                    or len({a.player_id for a in answers}) != 5):
-                raise ValueError('Fresh test roster is incomplete or contains duplicate players')
+    seeds = Submission.objects.using(database).filter(is_seed=True)
+    if seeds.exists():
+        raise ValueError('Synthetic test rosters are retired; run all migrations before publishing')
     return {'players': len(players), 'verified': verified, 'photos': photos, 'career_stats': careers,
             'boards': len(dailies), 'test_rosters': seeds.count()}

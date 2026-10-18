@@ -91,7 +91,7 @@ class LeaderboardTests(TestCase):
         response = self.client.get('/api/v1/leaderboard/')
         entry = response.data['results'][0]
         self.assertTrue(entry['is_guest'])
-        self.assertRegex(entry['username'], r'^#[A-F0-9]{8}$')
+        self.assertRegex(entry['username'], r'^Gość-[A-F0-9]{8}$')
         self.assertEqual(entry['total_points'], 30.75)
         self.assertEqual(entry['best_score'], 20.5)
         self.assertEqual(entry['games_played'], 2)

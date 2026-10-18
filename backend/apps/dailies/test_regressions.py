@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+from io import StringIO
 from unittest.mock import patch
 
 from django.core.management import call_command
@@ -172,27 +173,25 @@ class GeneratorRegressionTests(TestCase):
         with self.assertNumQueries(2):
             self.assertEqual(len(count_candidates(slot)), 8)
 
-    def test_history_simulation_never_labels_invalid_answers_correct(self):
+    def test_history_simulation_is_disabled_without_creating_answers(self):
+        from django.core.management.base import CommandError
         from .management.commands.seed_history import Command
         self.make_pool(count=8)
         daily = generate_daily(date=date(2026, 1, 1))
-        Command().simulate_submissions(daily, 4)
-        for submission in daily.submissions.all():
-            answers = list(submission.answers.select_related('player', 'daily_slot'))
-            self.assertEqual(len({answer.player_id for answer in answers}), 5)
-            self.assertEqual(len(answers), 5)
-            for answer in answers:
-                self.assertIn(answer.player, count_candidates(answer.daily_slot))
-
-    def test_history_simulation_rejects_unanswerable_conditions(self):
-        from .management.commands.seed_history import Command
-        self.make_pool(count=8)
-        daily = generate_daily(date=date(2026, 1, 1))
-        slot = daily.slots.first()
-        slot.conditions.update(condition_type='country', operator='eq', value='ZZ')
-        with self.assertRaises(ValueError):
-            Command().simulate_submissions(daily, 1)
+        with self.assertRaisesRegex(CommandError, 'Synthetic history is disabled'):
+            Command().simulate_submissions(daily, 4)
         self.assertFalse(daily.submissions.exists())
+
+    def test_retired_history_command_cannot_clear_existing_boards_or_progress(self):
+        from django.core.management.base import CommandError
+        from apps.submissions.models import Submission
+        self.make_pool(count=8)
+        daily = generate_daily(date=date(2026, 1, 1))
+        human = Submission.objects.create(daily=daily, guest_token='real-human')
+        with self.assertRaisesRegex(CommandError, 'Synthetic history is disabled'):
+            call_command('seed_history', clear=True, stdout=StringIO())
+        self.assertTrue(Daily.objects.filter(pk=daily.pk).exists())
+        self.assertTrue(Submission.objects.filter(pk=human.pk).exists())
 
 
 class CanonicalGenerationTests(TestCase):

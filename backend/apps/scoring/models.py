@@ -20,12 +20,12 @@ class AnswerStatsDaily(models.Model):
         return f"{self.daily_slot} – {self.player} {self.pick_percent:.2f}% {self.rarity_tier}"
 
 class ScoringConfig(models.Model):
-    # Legacy rarity thresholds remain configurable for old API clients only.
+    # Display-only upper bounds; rarity tiers never change percentage deductions.
     is_active = models.BooleanField(default=True)
 
-    threshold_rare = models.FloatField(default=20.0)
-    threshold_epic = models.FloatField(default=10.0)
-    threshold_legendary = models.FloatField(default=1.0)
+    threshold_rare = models.FloatField(default=15.0)
+    threshold_epic = models.FloatField(default=5.0)
+    threshold_legendary = models.FloatField(default=2.0)
 
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -90,8 +90,9 @@ def main():
         try:
             with fresh.cursor() as cursor:
                 expected = {'players_player': 882, 'dailies_daily': 31, 'dailies_dailyslot': 155,
-                    'dailies_dailyslotcondition': 310, 'submissions_submission': 310,
-                    'submissions_submissionanswer': 1550, 'submissions_submissionattempt': 1550}
+                    'dailies_dailyslotcondition': 310, 'submissions_submission': 0,
+                    'submissions_submissionanswer': 0, 'submissions_submissionattempt': 0,
+                    'scoring_answerstatsdaily': 0}
                 for table, count in expected.items():
                     cursor.execute(sql.SQL('SELECT COUNT(*) FROM {}').format(sql.Identifier(table)))
                     assert cursor.fetchone()[0] == count, table
@@ -139,8 +140,16 @@ from rest_framework.test import APIClient
 from apps.dailies.models import Daily
 from apps.dailies.generator import validate_daily
 from apps.submissions.models import Submission
+from apps.scoring.models import ScoringConfig
 with override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}):
     client=APIClient(HTTP_HOST='localhost')
+    assert not Submission.objects.filter(is_seed=True).exists()
+    cfg=ScoringConfig.get_active()
+    assert (cfg.threshold_rare,cfg.threshold_epic,cfg.threshold_legendary)==(15,5,2)
+    profile=client.post('/api/v1/guest/profile/',{'guest_token':'4c6bc268-88c1-4d91-8567-f62b418fe1e9','nickname':'SmokeTester'},format='json')
+    assert profile.status_code==200 and profile.data['display_name']=='Gość-SmokeTester'
+    profile=client.post('/api/v1/guest/profile/',{'guest_token':'4c6bc268-88c1-4d91-8567-f62b418fe1e9'},format='json')
+    assert profile.status_code==200 and profile.data['nickname']=='SmokeTester'
     for board in Daily.objects.all():
         validate_daily(board)
         if board.date > timezone.localdate():
@@ -150,6 +159,9 @@ with override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backend
     if available:
         game=Submission.objects.get(guest_token='release-smoke-progress')
         assert client.get('/api/v1/submissions/me/',{'daily_id':available.pk,'guest_token':game.guest_token}).data['total_points']==500
+        assert client.get(f'/api/v1/dailies/{available.pk}/answer-stats/').data['results']==[]
+        chart=client.get(f'/api/v1/dailies/{available.pk}/score-distribution/').data
+        assert chart['total_submissions']==0 and chart['seeded_count']==0
         response=client.get('/api/v1/players/autocomplete/',{'q':'Faker','role':'mid'})
         assert response.status_code==200 and response.data['results'][0]['nickname']=='Faker'
 print('Fresh API and all 31 board checks: OK')
