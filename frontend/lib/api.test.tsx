@@ -75,6 +75,16 @@ describe('game identity and cache', () => {
 })
 
 describe('answer reconciliation', () => {
+  it.each([false, true])('refreshes only the current guest statistics when a game finishes (finished: %s)', async (finished) => {
+    client.setQueryData(['guest-profile', 'alice'], { stats: { games_played: 0 } })
+    client.setQueryData(['guest-profile', 'bob'], { stats: { games_played: 7 } })
+    vi.spyOn(api, 'post').mockResolvedValue({ data: answer({ is_over: finished }) })
+    const hook = renderHook(() => useAnswerSlot(7), { wrapper })
+    await act(async () => { await hook.result.current.mutateAsync(payload) })
+    expect(client.getQueryState(['guest-profile', 'alice'])?.isInvalidated).toBe(finished)
+    expect(client.getQueryState(['guest-profile', 'bob'])?.isInvalidated).toBe(false)
+  })
+
   it('uses server counters, replaces the same slot and keeps other answers', async () => {
     const existing = answer({ daily_slot: 20, id: 20, slot_role: 'mid' })
     client.setQueryData(gameStateKey(7, 'alice', clock.date), state({ answers: [existing, answer({ is_correct: false })] }))

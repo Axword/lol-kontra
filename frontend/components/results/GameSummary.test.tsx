@@ -45,7 +45,7 @@ describe('finished-game result dialog', () => {
     expect(within(dialog).getByRole('img', {
       name: locale === 'pl' ? 'Rozkład wyników z oznaczeniem Twojego wyniku' : 'Score distribution with your score marked',
     })).toBeTruthy()
-    expect(within(dialog).getByText(locale === 'pl' ? /2 rozgrywek testowych/ : /2 test games/)).toBeTruthy()
+    expect(within(dialog).queryByText(locale === 'pl' ? /rozgrywek testowych/ : /test games/)).toBeNull()
     expect(within(dialog).getByRole('link', { name: 'Ranking' }).getAttribute('href')).toBe('/leaderboard')
     expect(within(dialog).queryByRole('button', { name: '10' })).toBeNull()
   })

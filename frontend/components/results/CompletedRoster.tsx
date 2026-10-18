@@ -5,6 +5,7 @@ import { usePrefs } from '@/lib/store'
 import { roleLabel } from '@/lib/flags'
 import { useDialog } from '../ui/useDialog'
 import PlayerPortrait from '../roster/PlayerPortrait'
+import RarityIndicator from '../roster/RarityIndicator'
 import RiftBoard from '../roster/RiftBoard'
 import SlotList from '../roster/SlotList'
 import LoadError from '@/app/load-error'
@@ -22,7 +23,15 @@ export default function CompletedRoster({ daily, state }: { daily: Daily; state:
   const dialog = useDialog<HTMLDivElement>(!!inspecting, () => setInspecting(null))
   const titleId = useId()
   const actual = Object.fromEntries(state.answers.filter((answer) => answer.is_correct).map((answer) => [answer.daily_slot, answer]))
-  const answers: Record<number, GameAnswer> = { ...actual }
+  const answers: Record<number, GameAnswer> = Object.fromEntries(
+    Object.entries(actual).map(([id, answer]) => [id, { ...answer, rarity_percent: null }]),
+  )
+  // Historical scores stay fixed; popularity reflects the current real votes.
+  for (const slot of data.data?.slots || []) {
+    const answer = answers[slot.slot_id]
+    const player = slot.players.find((candidate) => candidate.id === answer?.player)
+    if (answer && player) answers[slot.slot_id] = { ...answer, rarity_percent: player.pick_percent }
+  }
   if (mode !== 'mine' && mode !== 'all' && data.data) {
     for (const slot of data.data.slots) {
       const player = slot.players.find((candidate) => candidate.id === data.data![mode][String(slot.slot_id)])
@@ -77,6 +86,7 @@ export default function CompletedRoster({ daily, state }: { daily: Daily; state:
           {visible.map((player) => <li key={player.id} className="flex items-center gap-3 border-b px-6 py-3" style={{ borderColor: 'var(--line-soft)' }}>
             <PlayerPortrait url={player.portrait_url} />
             <span className="min-w-0 flex-1 truncate font-semibold">{player.nickname}</span>
+            <RarityIndicator percent={player.pick_percent} locale={locale} className="ml-auto shrink-0 text-right text-xs" />
           </li>)}
         </ul>
       </div>

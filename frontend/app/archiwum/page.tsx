@@ -13,8 +13,8 @@ export default function ArchivePage() {
           <h1 className="text-[28px] font-semibold leading-tight sm:text-[32px]">{locale === 'pl' ? 'Archiwum' : 'Archive'}</h1>
           <p className="max-w-2xl text-sm leading-relaxed" style={{ color: 'var(--text-dim)' }}>
             {locale === 'pl'
-              ? 'Wcześniejsze plansze. Wyniki z archiwum nie wchodzą do rankingu dnia.'
-              : 'Earlier boards. Archived results do not count towards the daily ranking.'}
+              ? 'Wróć do wcześniejszych plansz, swoich składów i wyników. Gry z archiwum liczą się do rankingu.'
+              : 'Revisit earlier boards, your lineups and scores. Archived games count towards the leaderboard.'}
           </p>
         </header>
         <ArchiveList />

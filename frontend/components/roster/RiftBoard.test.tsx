@@ -53,7 +53,7 @@ describe('the map and mobile roster show server answers', () => {
     expect(rows[2].textContent).not.toMatch(/zawodników|players/)
   })
 
-  it.each(['pl', 'en'] as const)('shows conditions, the solved nickname and points in %s', (locale) => {
+  it.each(['pl', 'en'] as const)('shows conditions, the solved nickname and only the pick percentage in %s', (locale) => {
     prefs.locale = locale
     const { container } = render(<>
       <RiftBoard slots={slots} answers={answers} onPick={vi.fn()} />
@@ -71,10 +71,11 @@ describe('the map and mobile roster show server answers', () => {
     })
     expect(within(cards[0]).getByText('Zeus')).toBeTruthy()
     expect(within(mobileRows[0]).getByText(/Zeus/)).toBeTruthy()
-    const points = locale === 'pl' ? /−4,25 pkt/ : /−4\.25 pts/
-    expect(within(cards[0]).getByText(points)).toBeTruthy()
-    expect(within(mobileRows[0]).getByText(points)).toBeTruthy()
-    expect(within(cards[0]).getByText(/4\.3%/)).toBeTruthy()
+    const percent = locale === 'pl' ? '4,3%' : '4.3%'
+    expect(within(cards[0]).getByText(percent)).toBeTruthy()
+    expect(within(mobileRows[0]).getByText(percent)).toBeTruthy()
+    expect(cards[0].textContent).not.toMatch(/pkt|pts|−4/)
+    expect(mobileRows[0].textContent).not.toMatch(/pkt|pts|−4/)
   })
 
   it('does not invent a percentage when the answer has no official sample', () => {
@@ -82,8 +83,27 @@ describe('the map and mobile roster show server answers', () => {
       slots={slots} answers={{ 11: { ...solved, rarity_percent: null } }} onPick={vi.fn()}
     />)
     const card = container.querySelector<HTMLElement>('.rift-card')!
-    expect(within(card).getByText(/−4,25 pkt/)).toBeTruthy()
+    expect(card.textContent).not.toMatch(/pkt|pts/)
     expect(card.textContent).not.toContain('%')
+    expect(card.hasAttribute('data-rarity')).toBe(false)
+  })
+
+  it.each([
+    [0, 'legendary'], [1.99, 'legendary'], [2, 'epic'], [4.99, 'epic'],
+    [5, 'rare'], [9.09, 'rare'], [14.99, 'rare'], [15, 'common'], [100, 'common'],
+  ])('uses the same rarity for %s%% while playing, reviewing and on mobile', (percent, tier) => {
+    const { container } = render(<>
+      <RiftBoard slots={slots} answers={{ 11: { ...solved, rarity_percent: Number(percent) } }} onPick={vi.fn()} />
+      <RiftBoard slots={slots} answers={{ 11: { ...solved, rarity_percent: Number(percent) } }} onPick={vi.fn()} inspect />
+      <SlotList slots={slots} answers={{ 11: { ...solved, rarity_percent: Number(percent) } }} onPick={vi.fn()} />
+    </>)
+    const surfaces = container.querySelectorAll('.rarity-surface[data-rarity]')
+    expect(surfaces.length).toBe(5)
+    surfaces.forEach((surface) => {
+      expect(surface.getAttribute('data-rarity')).toBe(tier)
+      expect(surface.textContent).not.toMatch(/pkt|pts/)
+    })
+    expect(container.querySelectorAll('svg[aria-label="Diamentowy wybór"]').length).toBe(percent === 0 ? 5 : 0)
   })
 })
 

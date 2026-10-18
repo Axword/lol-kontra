@@ -15,7 +15,7 @@ docker compose up --build
 
 Gra: <http://localhost>, API: <http://localhost/api/v1/>, Swagger: <http://localhost/api/docs/>, panel administracyjny: <http://localhost/admin/>. Konto administratora utworzysz przez `make createsuperuser`.
 
-Migracje instalują zamrożony pakiet 882 tożsamości z pełnymi dostępnymi metadanymi oraz 31 październikowych plansz z 310 oznaczonymi składami testowymi. Nie potrzebują dostępu do Leaguepedii. Istniejące plansze i rozgrywki pozostają zachowane. Entrypoint wykonuje `bootstrap_database`: blokadę równoległego startu, migracje i kontrolę kompletności; błąd przerywa start. Brakującą dzisiejszą planszę przygotowuje oddzielnie.
+Migracje instalują zamrożony pakiet 882 tożsamości z pełnymi dostępnymi metadanymi oraz 31 październikowych plansz. Ostatnia migracja usuwa oznaczone sztuczne rozgrywki i odbudowuje popularność z prawdziwych wyborów. Historyczne punkty, składy, odpowiedzi i postęp prawdziwych graczy pozostają zachowane. Nie potrzebuje dostępu do Leaguepedii. Entrypoint wykonuje `bootstrap_database`: blokadę równoległego startu, migracje i kontrolę kompletności; błąd przerywa start. Brakującą dzisiejszą planszę przygotowuje oddzielnie.
 
 Przed publicznym hostingiem użyj oddzielnego `docker-compose.prod.yml`, prywatnego `.env.prod` i zewnętrznego HTTPS proxy. [Instrukcja wdrożenia, uprawnienia i backup](docs/DEPLOYMENT.md).
 
@@ -35,10 +35,12 @@ Przygotowanie pojedynczej planszy lub kalendarza deweloperskiego:
 
 ```sh
 docker compose exec api python manage.py create_daily --publish
-docker compose exec api python manage.py prepare_month --month 2026-10 --voters 10
+docker compose exec api python manage.py prepare_month --month 2026-10
 ```
 
-`prepare_month` tworzy cały miesiąc oraz oznaczone `is_seed` składy testowe. Te wybory tworzą przykładowe procenty popularności, ale nie trafiają do rankingów ani statystyk użytkowników. Ponowne uruchomienie zachowuje istniejące odpowiedzi. Przyszłe plansze otwierają się dopiero w dniu swojej daty w strefie Europe/Warsaw; API nie ujawnia ich wcześniej.
+`prepare_month` tworzy plansze bez sztucznych głosów; opcja `--voters` przyjmuje tylko `0`. Stare polecenie `seed_history` jest wyłączone. Ponowne uruchomienie zachowuje istniejące odpowiedzi. Przyszłe plansze otwierają się dopiero w dniu swojej daty w strefie Europe/Warsaw; API nie ujawnia ich wcześniej.
+
+Gość może ustawić nick w profilu. Ranking pokazuje `Gość-nick` lub wygenerowaną nazwę; zmiana nicku zachowuje tożsamość i statystyki. Nicki sprawdza serwerowy filtr. [Profil gościa i API](docs/GUEST_PROFILES.md).
 
 ## Dane i weryfikacja
 

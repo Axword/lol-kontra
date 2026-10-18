@@ -212,6 +212,7 @@ export function useAnswerSlot(dailyId?: number) {
       void qc.invalidateQueries({ queryKey: ['answer-stats', context.dailyId] })
       void qc.invalidateQueries({ queryKey: ['score-distribution', context.dailyId] })
       void qc.invalidateQueries({ queryKey: ['leaderboard'] })
+      if (data.is_over) void qc.invalidateQueries({ queryKey: ['guest-profile', _payload.guest_token] })
     },
     onError: (_error, _payload, context) => {
       // A response can be lost after the server committed a move. Refresh before
@@ -235,6 +236,17 @@ export function usePlayerAutocomplete(q: string, role?: Role) {
 }
 
 export type SolutionPlayer = Player & { pick_count: number; pick_percent: number }
+export type AnswerPickStat = { slot_id: number; player_slug: string; pick_percent: number }
+
+export function useAnswerStats(dailyId: number, enabled: boolean) {
+  return useQuery<{ results: AnswerPickStat[] }>({
+    queryKey: ['answer-stats', dailyId],
+    queryFn: async ({ signal }) => (await api.get(`/dailies/${dailyId}/answer-stats/`, { signal })).data,
+    enabled: enabled && isValidDailyId(dailyId),
+    staleTime: 30_000,
+  })
+}
+
 export type DailySolutions = {
   daily_id: number
   slots: { slot_id: number; role: Role; sample_size: number; players: SolutionPlayer[] }[]

@@ -3,7 +3,8 @@ import { useId, type CSSProperties } from 'react'
 import { Check, Plus } from 'lucide-react'
 import { DailySlot, GameAnswer, Role } from '@/lib/api'
 import { roleLabel } from '@/lib/flags'
-import { formatDeduction } from '@/lib/points'
+import { rarityForPercent } from '@/lib/rarity'
+import RarityIndicator from './RarityIndicator'
 import PlayerPortrait from './PlayerPortrait'
 import { usePrefs } from '@/lib/store'
 
@@ -42,12 +43,11 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
         const label = roleLabel(slot.role, locale)
         const count = candidateCounts?.[slot.id]
         const ariaLabel = `${label} – ${count != null ? `${count} ${locale === 'pl' ? 'pasujących zawodników' : 'matching players'}` : solved ? answer.player_nickname : locale === 'pl' ? 'puste' : 'empty'}`
-        const percent = answer?.rarity_percent ?? 0
-        const finishedColor = inspect && solved ? (percent > 20 ? '#edf0ef' : percent > 10 ? '#baf0cf' : percent > 1 ? '#e4c9f5' : '#ffe58c') : undefined
+        const rarity = solved ? rarityForPercent(answer.rarity_percent) : null
         const pick = () => { if (!disabled && (!solved || inspect)) onPick(slot) }
         return (
           <div key={slot.id} className="rift-position" style={{ '--left': pos.left, '--top': pos.top, zIndex: activeSlotId === slot.id ? 2 : 1 } as CSSProperties}>
-            <button className="rift-card" data-state={nodeState} style={finishedColor ? { background: finishedColor } : undefined} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
+            <button className="rift-card rarity-surface" data-state={nodeState} data-rarity={rarity ?? undefined} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
               <span className="rift-card-head">
                 {solved && portraits?.[answer.player] ? <PlayerPortrait url={portraits[answer.player]} /> : <span className="rift-role-icon">
                   {count != null ? <span className="text-lg font-semibold tabular">{count}</span> : <>
@@ -66,18 +66,18 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
               </ul>
               {count != null && <div className="mt-3 text-xs tabular">{count} {locale === 'pl' ? 'zawodników' : 'players'}</div>}
               {solved && (
-                <div className="rift-result tabular" style={{ color: 'var(--gold)' }}>
-                  {answer.rarity_percent != null ? `${answer.rarity_percent.toFixed(1)}% · ` : ''}
-                  {formatDeduction(answer.deduction ?? Math.max(0, -answer.points_awarded), locale)} {locale === 'pl' ? 'pkt' : 'pts'}
+                <div className="rift-result">
+                  <RarityIndicator percent={answer.rarity_percent} locale={locale} />
                 </div>
               )}
             </button>
-            <button className="rift-marker" data-state={nodeState} style={finishedColor ? { background: finishedColor } : undefined} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
+            <button className="rift-marker rarity-surface" data-state={nodeState} data-rarity={rarity ?? undefined} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
               {count != null ? <strong aria-hidden className="tabular">{count}</strong> : <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`/roles/${slot.role}.svg`} alt="" aria-hidden draggable={false} />
               </>}
               <span>{solved ? answer.player_nickname : label}</span>
+              {solved && <RarityIndicator percent={answer.rarity_percent} locale={locale} className="text-[10px]" />}
             </button>
           </div>
         )

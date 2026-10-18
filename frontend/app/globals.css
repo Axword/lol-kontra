@@ -18,9 +18,9 @@
   --ok: #226246;
   --bad: #b33432;
   --rarity-common: #536056;
-  --rarity-rare: #246aaa;
+  --rarity-rare: #187240;
   --rarity-epic: #7850a5;
-  --rarity-legendary: #a75a14;
+  --rarity-legendary: #865900;
   --rarity-diamond: #087b8a;
 }
 html, body {
@@ -61,6 +61,11 @@ button:disabled { cursor: default; }
 .rarity-epic { color: var(--rarity-epic); }
 .rarity-legendary { color: var(--rarity-legendary); }
 .rarity-diamond { color: var(--rarity-diamond); }
+.rarity-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+.rarity-surface[data-rarity="common"] { --rarity-bg: #ffffff; }
+.rarity-surface[data-rarity="rare"] { --rarity-bg: #baf0cf; }
+.rarity-surface[data-rarity="epic"] { --rarity-bg: #e4c9f5; }
+.rarity-surface[data-rarity="legendary"] { --rarity-bg: #ffe58c; }
 
 /* Conditions sit on the field. Mobile keeps them in a readable list. */
 .rift-surface { position: relative; isolation: isolate; width: 100%; max-width: 1000px; margin-inline: auto; aspect-ratio: 1.5; overflow: hidden; background: #142f29; border: 1px solid #234b3c; }
@@ -106,6 +111,7 @@ button:disabled { cursor: default; }
   .rift-marker:focus-visible { outline-color: #e1edc9; }
   .slot-list-mobile { display: grid; }
 }
+.rarity-surface[data-rarity], .rift-card[data-state="solved"][data-rarity] { background: var(--rarity-bg); }
 @keyframes riseIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .rise { animation: riseIn .18s ease-out both; }
 @keyframes shakeX { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }

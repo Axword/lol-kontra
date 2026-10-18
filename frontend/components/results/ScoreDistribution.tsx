@@ -1,9 +1,27 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useId, useMemo, useState } from 'react'
 import { useScoreDistribution } from '@/lib/api'
 import { usePrefs } from '@/lib/store'
 import LoadError from '@/app/load-error'
 import { formatPoints } from '@/lib/points'
+
+const chartWidth = 480
+const chartHeight = 180
+const chartPadding = 16
+const chartBaseline = chartHeight - chartPadding
+const scoreX = (score: number) => chartPadding + (1 - Math.max(0, Math.min(500, score)) / 500) * (chartWidth - chartPadding * 2)
+
+function smoothPath(points: { x: number; y: number }[]) {
+  if (!points.length) return ''
+  let path = `M ${points[0].x} ${points[0].y}`
+  for (let i = 0; i < points.length - 1; i++) {
+    const current = points[i]
+    const next = points[i + 1]
+    path += ` Q ${current.x} ${current.y} ${(current.x + next.x) / 2} ${(current.y + next.y) / 2}`
+  }
+  const last = points[points.length - 1]
+  return `${path} T ${last.x} ${last.y}`
+}
 
 /**
  * Rozkład wyników wszystkich graczy danego dnia.
@@ -23,6 +41,7 @@ export default function ScoreDistribution({
   compact?: boolean
 }) {
   const locale = usePrefs((s) => s.locale)
+  const gradientId = `score-fill-${useId().replace(/:/g, '')}`
   const [bin, setBin] = useState(10)
   const { data, isLoading, isError, refetch } = useScoreDistribution(dailyId, userScore)
 
@@ -30,14 +49,12 @@ export default function ScoreDistribution({
   const roundedScore = Math.round(userScore)
 
   const bars = useMemo(() => {
-    const raw: { score: number; count: number }[] = data?.distribution || []
+    const raw: { score: number; count: number }[] = (data?.distribution || []).filter(
+      (entry: { score: number; count: number }) => Number.isFinite(entry.score) && entry.score >= 0 && entry.score <= 500 && entry.count > 0,
+    )
     if (!raw.length) return []
-    const min = Math.min(...raw.map((d) => d.score), roundedScore, 0)
-    const max = Math.max(...raw.map((d) => d.score), roundedScore, 500)
-    const start = Math.floor(min / bin) * bin
-    const end = Math.ceil((max + 1) / bin) * bin
     const out: { from: number; to: number; count: number; mine: boolean }[] = []
-    for (let x = start; x < end; x += bin) {
+    for (let x = 0; x <= 500; x += bin) {
       out.push({
         from: x,
         to: Math.min(500, x + bin - 1),
@@ -45,8 +62,26 @@ export default function ScoreDistribution({
         mine: roundedScore >= x && roundedScore < x + bin,
       })
     }
-    return out
+    return out.reverse()
   }, [data?.distribution, bin, roundedScore])
+
+  const curve = useMemo(() => {
+    const raw: { score: number; count: number }[] = (data?.distribution || []).filter(
+      (entry: { score: number; count: number }) => Number.isFinite(entry.score) && entry.score >= 0 && entry.score <= 500 && entry.count > 0,
+    )
+    if (!raw.length) return ''
+    // A fixed bandwidth softens real score counts without adding submissions.
+    const density = Array.from({ length: 101 }, (_, index) => {
+      const score = 500 - index * 5
+      const count = raw.reduce((sum, entry) => sum + entry.count * Math.exp(-0.5 * ((score - entry.score) / 18) ** 2), 0)
+      return { score, count }
+    })
+    const peak = Math.max(...density.map((point) => point.count))
+    return smoothPath(density.map((point) => ({
+      x: scoreX(point.score),
+      y: chartBaseline - point.count / peak * (chartBaseline - chartPadding - 8),
+    })))
+  }, [data?.distribution])
 
   const maxCount = Math.max(1, ...bars.map((b) => b.count))
   const total = data?.total_submissions ?? 0
@@ -87,23 +122,33 @@ export default function ScoreDistribution({
   }
 
   if (compact) {
-    const width = 480, height = 170, padding = 12
-    const x = (value: number) => padding + Math.max(0, Math.min(500, value)) / 500 * (width - padding * 2)
-    const y = (count: number) => height - padding - count / maxCount * (height - padding * 3)
-    const line = bars.map((bar) => `${x((bar.from + bar.to) / 2)},${y(bar.count)}`).join(' ')
-    const mine = x(userScore)
+    const mine = scoreX(userScore)
     return <div>
       {compactMetrics}
       <p className="my-5 text-center text-sm" style={{ color: 'var(--text-dim)' }}>
         {locale === 'pl' ? `Twój wynik jest lepszy niż ${formatPoints(data?.percentile ?? 0, locale)}% wyników.` : `Your score is higher than ${formatPoints(data?.percentile ?? 0, locale)}% of scores.`}
       </p>
-      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label={locale === 'pl' ? 'Rozkład wyników z oznaczeniem Twojego wyniku' : 'Score distribution with your score marked'} className="w-full">
-        <polyline points={`${padding},${y(0)} ${line} ${width-padding},${y(0)}`} fill="none" stroke="var(--gold)" strokeWidth="2.5" />
-        <line x1={mine} x2={mine} y1={padding} y2={y(0)} stroke="var(--gold)" strokeDasharray="4 4" />
-        <rect x={mine-3} y={y(0)-3} width="6" height="6" fill="var(--gold)" />
+      <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} role="img"
+        aria-label={locale === 'pl' ? 'Rozkład wyników z oznaczeniem Twojego wyniku' : 'Score distribution with your score marked'}
+        aria-describedby={`${gradientId}-description`} className="w-full">
+        <desc id={`${gradientId}-description`}>{locale === 'pl'
+          ? `500 po lewej, 0 po prawej. Twój wynik: ${formatPoints(userScore, locale)}.`
+          : `500 on the left, 0 on the right. Your score: ${formatPoints(userScore, locale)}.`}</desc>
+        <defs>
+          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.22" />
+            <stop offset="100%" stopColor="var(--gold)" stopOpacity="0.02" />
+          </linearGradient>
+        </defs>
+        {[0.25, 0.5, 0.75].map((fraction) => <line key={fraction} x1={chartPadding} x2={chartWidth - chartPadding}
+          y1={chartPadding + fraction * (chartBaseline - chartPadding)} y2={chartPadding + fraction * (chartBaseline - chartPadding)} stroke="var(--line-soft)" />)}
+        <path d={`${curve} L ${chartWidth - chartPadding} ${chartBaseline} L ${chartPadding} ${chartBaseline} Z`} fill={`url(#${gradientId})`} />
+        <path d={curve} fill="none" stroke="var(--gold)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <line x1={chartPadding} x2={chartWidth - chartPadding} y1={chartBaseline} y2={chartBaseline} stroke="var(--line)" />
+        <line data-user-score={userScore} x1={mine} x2={mine} y1={chartPadding} y2={chartBaseline} stroke="var(--gold)" strokeDasharray="3 5" />
+        <rect x={mine - 3.5} y={chartBaseline - 3.5} width="7" height="7" fill="var(--gold)" stroke="white" strokeWidth="1.5" />
       </svg>
-      <div className="flex justify-between text-xs tabular" style={{ color: 'var(--text-dim)' }}><span>0</span><span>{locale === 'pl' ? 'Twój wynik' : 'Your score'}: {formatPoints(userScore, locale)}</span><span>500</span></div>
-      {!!data?.seeded_count && <p className="mt-4 text-center text-xs" style={{ color: 'var(--text-faint)' }}>{locale === 'pl' ? `Próba zawiera ${data.seeded_count} rozgrywek testowych.` : `The sample includes ${data.seeded_count} test games.`}</p>}
+      <div data-score-axis className="flex justify-between text-xs tabular" style={{ color: 'var(--text-dim)' }}><span>500</span><span>{locale === 'pl' ? 'Twój wynik' : 'Your score'}: {formatPoints(userScore, locale)}</span><span>0</span></div>
     </div>
   }
 
@@ -156,9 +201,9 @@ export default function ScoreDistribution({
       </div>
 
       <div className="mt-2 flex justify-between text-xs tabular" style={{ color: 'var(--text-dim)' }}>
-        <span>{bars[0].from}</span>
+        <span>500</span>
         <span>{locale === 'pl' ? 'punkty' : 'points'}</span>
-        <span>{bars[bars.length - 1].to}</span>
+        <span>0</span>
       </div>
 
       <dl className="mt-6 grid grid-cols-2 gap-x-5 gap-y-6 border-t pt-6 sm:grid-cols-4" style={{ borderColor: 'var(--line-soft)' }}>
@@ -176,9 +221,6 @@ export default function ScoreDistribution({
           </div>
         ))}
       </dl>
-      {!!data?.seeded_count && <p className="mt-5 text-xs" style={{ color: 'var(--text-faint)' }}>
-        {locale === 'pl' ? `Próba zawiera ${data.seeded_count} rozgrywek testowych.` : `The sample includes ${data.seeded_count} test games.`}
-      </p>}
     </div>
   )
 }

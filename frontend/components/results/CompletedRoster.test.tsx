@@ -65,6 +65,19 @@ function selectedNames(container: HTMLElement) {
 }
 
 describe('completed roster choices', () => {
+  it('keeps the historical roster and earned score while displaying current real pick percentages', () => {
+    const historical = { ...state, total_points: 366.67,
+      answers: state.answers.map((answer) => ({ ...answer, rarity_percent: 41.7, points_awarded: -41.7 })) }
+    const snapshot = JSON.stringify(historical)
+    const { container } = render(<CompletedRoster daily={daily} state={historical} />)
+    expect(selectedNames(container)).toEqual(mine.map((id) => names[id - 1]))
+    const card = container.querySelector<HTMLElement>('.rift-card')!
+    expect(within(card).getByText('40%')).toBeTruthy()
+    expect(container.textContent).not.toContain('41,7%')
+    expect(JSON.stringify(historical)).toBe(snapshot)
+    expect(historical.total_points).toBe(366.67)
+  })
+
   it('switches between the actual, popular, rare and all answers without reusing players', () => {
     const { container } = render(<CompletedRoster daily={daily} state={state} />)
     expect(solutionsHook).toHaveBeenCalledWith(7, 'my-guest-token')
@@ -94,7 +107,7 @@ describe('completed roster choices', () => {
     expect(state.answers.map((answer) => answer.player)).toEqual(mine)
   })
 
-  it('opens solved roles for inspection and shows only candidate nicknames and available photos', () => {
+  it('opens solved roles with candidate nicknames, available photos and colored pick percentages', () => {
     const { container } = render(<CompletedRoster daily={daily} state={state} />)
     const card = container.querySelector<HTMLButtonElement>('.rift-card')!
     card.focus()
@@ -103,17 +116,19 @@ describe('completed roster choices', () => {
     expect(within(dialog).getByText('Warunek 1')).toBeTruthy()
     const input = within(dialog).getByRole('textbox', { name: 'Nick zawodnika' })
     expect(document.activeElement).toBe(input)
-    for (const player of players) {
+    const expectedTiers = ['common', 'common', 'common', 'rare', 'rare', 'epic', 'epic', 'legendary']
+    for (const [index, player] of players.entries()) {
       const row = within(dialog).getByText(player.nickname).closest('li')!
-      expect(row.textContent).toBe(player.nickname)
-      expect(row.querySelector('svg')).toBeNull()
+      expect(row.textContent).toBe(`${player.nickname}${player.pick_percent}%`)
+      expect(row.querySelector('[data-rarity]')?.getAttribute('data-rarity')).toBe(expectedTiers[index])
+      expect(Boolean(within(row).queryByRole('img', { name: 'Diamentowy wybór' }))).toBe(player.pick_percent === 0)
       expect(row.querySelector('img')?.getAttribute('src') ?? null).toBe(player.portrait_url)
     }
-    expect(dialog.textContent).not.toMatch(/Hidden real name|LCK|KR|%/)
+    expect(dialog.textContent).not.toMatch(/Hidden real name|LCK|KR|pkt|pts/)
     const firstRow = within(dialog).getByText('Faker').closest('li')!
     fireEvent.error(firstRow.querySelector('img')!)
     expect(firstRow.querySelector('img')).toBeNull()
-    expect(firstRow.textContent).toBe('Faker')
+    expect(firstRow.textContent).toBe('Faker40%')
     fireEvent.change(input, { target: { value: '  cAnYoN  ' } })
     expect(within(dialog).getByText('Canyon')).toBeTruthy()
     expect(within(dialog).queryByText('Faker')).toBeNull()
@@ -165,6 +180,9 @@ describe('completed roster choices', () => {
     expect(container.querySelector('.rift-marker')?.getAttribute('aria-label')).toMatch(/8 matching players$/)
     fireEvent.click(container.querySelector('.rift-card')!)
     expect(within(screen.getByRole('dialog')).getByText('Condition 1')).toBeTruthy()
+    const zeroPickRow = within(screen.getByRole('dialog')).getByText('Deft').closest('li')!
+    expect(within(zeroPickRow).getByText('0%')).toBeTruthy()
+    expect(within(zeroPickRow).getByRole('img', { name: 'Diamond pick' })).toBeTruthy()
     expect(screen.getByRole('textbox', { name: 'Player nickname' })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Close' }))
     expect(screen.queryByRole('dialog')).toBeNull()

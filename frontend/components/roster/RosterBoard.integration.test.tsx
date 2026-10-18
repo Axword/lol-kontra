@@ -45,10 +45,10 @@ describe('answer feedback with the real picker and query cache', () => {
   it('accepts Knight and clears an earlier miss when the API validates his career Orianna condition', async () => {
     const result: AnswerResult = {
       ...previousMiss, player: 417, player_nickname: 'Knight', player_slug: 'knight-zhuo-ding',
-      is_correct: true, rarity_tier: 'rare', rarity_percent: 18.18,
-      points_awarded: -18.18, deduction: 18.18,
-      pick_percent: 18.18, pick_count: 2, sample_size: 11, is_provisional: true,
-      unchanged: false, submission_id: 7, total_points: 481.82,
+      is_correct: true, rarity_tier: 'epic', rarity_percent: 9.09,
+      points_awarded: -9.09, deduction: 9.09,
+      pick_percent: 9.09, pick_count: 1, sample_size: 11, is_provisional: true,
+      unchanged: false, submission_id: 7, total_points: 490.91,
       errors_used: 1, errors_left: 9, max_errors: 10, slots_total: 5,
       correct_count: 1, is_over: false, is_scored: false, is_practice: false,
     }
@@ -76,11 +76,13 @@ describe('answer feedback with the real picker and query cache', () => {
       daily_id: 18, slot_id: 88, player_slug: 'knight-zhuo-ding', guest_token: 'knight-regression',
     })
     expect(screen.getByRole('status').textContent).toContain('Knight pasuje.')
+    expect(screen.getByRole('status').textContent).toMatch(/9[,.]1%/)
+    expect(screen.getByRole('status').textContent).not.toMatch(/pkt|pts|9[,.]09/)
     expect(screen.queryByRole('alert')).toBeNull()
     expect(screen.queryByText(/nie spełnia warunków/)).toBeNull()
     expect(screen.getAllByRole('button', { name: 'Mid – Knight' }).every((button) => (button as HTMLButtonElement).disabled)).toBe(true)
     expect(client.getQueryData<GameState>(gameStateKey(18, 'knight-regression', '2026-10-18'))).toMatchObject({
-      total_points: 481.82, correct_count: 1, errors_used: 1, errors_left: 9,
+      total_points: 490.91, correct_count: 1, errors_used: 1, errors_left: 9,
       answers: [{ player_slug: 'knight-zhuo-ding', is_correct: true }],
     })
   })

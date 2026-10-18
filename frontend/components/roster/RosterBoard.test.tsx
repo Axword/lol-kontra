@@ -6,10 +6,15 @@ import RosterBoard from './RosterBoard'
 const mocks = vi.hoisted(() => ({
   mutate: vi.fn(),
   ensureGuestToken: vi.fn(() => 'guest-fixture'),
+  shares: undefined as { results: { slot_id: number; player_slug: string; pick_percent: number }[] } | undefined,
+  boardAnswers: {} as Record<number, GameAnswer>,
 }))
+
+vi.mock('@/lib/daily', () => ({ useGameDate: () => '2026-10-19' }))
 
 vi.mock('@/lib/api', () => ({
   useAnswerSlot: () => ({ mutate: mocks.mutate, isPending: false }),
+  useAnswerStats: () => ({ data: mocks.shares }),
   formatApiError: (_error: unknown, fallback: string) => fallback,
 }))
 vi.mock('@/lib/store', () => ({
@@ -21,9 +26,12 @@ vi.mock('@/lib/sound', () => ({
   sound: { open: vi.fn(), close: vi.fn(), success: vi.fn(), error: vi.fn(), diamond: vi.fn() },
 }))
 vi.mock('./RiftBoard', () => ({
-  default: ({ slots, onPick }: { slots: DailySlot[]; onPick: (slot: DailySlot) => void }) => <div>
+  default: ({ slots, answers, onPick }: { slots: DailySlot[]; answers: Record<number, GameAnswer>; onPick: (slot: DailySlot) => void }) => {
+    mocks.boardAnswers = answers
+    return <div>
     {slots.map((slot) => <button key={slot.id} onClick={() => onPick(slot)}>{slot.label_pl}</button>)}
-  </div>,
+    </div>
+  },
 }))
 vi.mock('./SlotList', () => ({ default: () => null }))
 vi.mock('./PlayerPickerModal', () => ({
@@ -55,7 +63,7 @@ function answer(slotId: number, correct: boolean): GameAnswer {
   }
 }
 
-afterEach(cleanup)
+afterEach(() => { cleanup(); mocks.shares = undefined; mocks.boardAnswers = {} })
 
 describe('picker follows external game updates', () => {
   it('closes an open picker when another window finishes the game', () => {
@@ -82,6 +90,15 @@ describe('picker follows external game updates', () => {
 
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(mocks.mutate).not.toHaveBeenCalled()
+  })
+
+  it('shows current real percentages on a saved unfinished board without changing its score or answers', () => {
+    mocks.shares = { results: [{ slot_id: 11, player_slug: 'player-fixture', pick_percent: 25 }] }
+    const saved = { ...initialState, total_points: 458.3, answers: [{ ...answer(11, true), rarity_percent: 41.7 }] }
+    const snapshot = JSON.stringify(saved)
+    render(<RosterBoard daily={daily} state={saved} />)
+    expect(mocks.boardAnswers[11].rarity_percent).toBe(25)
+    expect(JSON.stringify(saved)).toBe(snapshot)
   })
 
   it.each([

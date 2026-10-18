@@ -34,20 +34,26 @@ Główny `.env`, lokalny kontekst `.neon` i kopie sekretów pozostają poza Gite
 
 Kod przeglądarki nie otrzymuje danych połączenia z PostgreSQL. Publiczny jest wyłącznie `NEXT_PUBLIC_API_URL`, czyli adres Django API. Zmienne `DATABASE_*`, hasła i klucze Neon pozostają w środowisku backendu. Frontend Vercela używa `https://lol-kontra.onrender.com/api/v1`; API działa na Renderze.
 
-## Potwierdzona weryfikacja
+## Potwierdzona weryfikacja wcześniejszego wdrożenia
 
-Potwierdzono lokalnie i po wdrożeniu:
+Poniższe wyniki dotyczą wdrożenia z 18.10.2026, sprzed usunięcia syntetycznych głosów i zmiany prezentacji rzadkości:
 
 - Build frontendu i 119 testów frontendu przeszły. Pełny zestaw backendu na odizolowanej lokalnej bazie testowej: 431 PASS, 175 ostrzeżeń, 187,48 s.
-- Wydanie na gałęzi `production` zawiera 882 tożsamości, 738 zweryfikowanych uczestników Worlds, 733 zdjęcia, 737 kompletnych statystyk kariery, 31 plansz i 310 oznaczonych składów testowych. Nie przenoszono kont użytkowników.
-- Test gry obejmujący błędną odpowiedź i pięciu różnych poprawnych graczy zakończył się wynikiem 270 punktów: `500 − (50 + 40 + 50 + 40 + 50)`. Transakcję testową cofnięto.
+- Wydanie na gałęzi `production` zawierało 882 tożsamości, 738 zweryfikowanych uczestników Worlds, 733 zdjęcia, 737 kompletnych statystyk kariery i 31 plansz. Nie przenoszono kont użytkowników.
+- Historyczny test gry obejmujący błędną odpowiedź i pięciu różnych poprawnych graczy zakończył się wynikiem 270 punktów: `500 − (50 + 40 + 50 + 40 + 50)`. Udziały pochodziły wtedy z oznaczonych składów testowych; ten wynik nie jest oczekiwaniem dla obecnej gry. Transakcję testową cofnięto.
 - Połączenia direct i pooled raportowały aktywne TLS. Ponowne wykonanie `bootstrap_database` nie zmieniło sum kontrolnych ośmiu sprawdzonych tabel.
 - Ograniczona rola aplikacji nie mogła wykonywać DDL ani zapisywać historii migracji.
 - Migracje najpierw sprawdzono na podrzędnej gałęzi testowej, którą następnie usunięto. Pozostała tylko gałąź `production`.
 - Uruchomiony frontend (`http://localhost:3000/`) i API (`http://localhost:8000/api/v1/dailies/today/`) zwracają HTTP 200. W przeglądarce sprawdzono planszę oraz wyszukiwanie zawodnika ze zdjęciem.
 - Lokalny test `tests.deploy_smoke` sprawdził migracje od zera, zachowanie postępu przy ponownym wdrożeniu i uprawnienia rzeczywistej roli aplikacji. Losową bazę i rolę testową usunięto.
 
-Vercel Production i Render są uruchomione z commita `e686188`; adres API ustawiono dla Production i Preview. Publiczna kontrola odczytu oraz Chrome potwierdziły jasny interfejs, planszę i wyszukiwanie Fakera ze zdjęciem. API działa z PostgreSQL i prywatnym cache Redis. Nie zapisywano danych użytkowników podczas publicznej kontroli. Osobny worker i scheduler Celery nie są wdrożone; nie utworzono płatnych zasobów. Szczegóły i odtwarzanie konfiguracji opisuje [RENDER.md](RENDER.md).
+Wcześniejsze wdrożenie `e686188` działało na Vercel Production i Renderze; adres API ustawiono dla Production i Preview. Publiczna kontrola odczytu oraz Chrome potwierdziły jasny interfejs, planszę i wyszukiwanie Fakera ze zdjęciem. API działa z PostgreSQL i prywatnym cache Redis. Nie zapisywano danych użytkowników podczas tamtej kontroli. Osobny worker i scheduler Celery nie są wdrożone; nie utworzono płatnych zasobów. Szczegóły i odtwarzanie konfiguracji opisuje [RENDER.md](RENDER.md).
+
+## Aktualizacja bez syntetycznych głosów
+
+Aktualne migracje zachowują zamrożone wydanie, a następną migracją usuwają wyłącznie rozgrywki `is_seed` i ich odpowiedzi. Docelowo świeża baza po wszystkich migracjach zawiera 31 plansz i zero syntetycznych rozgrywek. Istniejące prawdziwe rozgrywki pozostają w bazie. Algorytmy procentów wyboru i statystyk dodatkowo pomijają `is_seed`, a `prepare_month` domyślnie nie dodaje głosów i odrzuca dodatnie `--voters`.
+
+19.10.2026 backend `3da0ff0` osiągnął Render Live. Migracje na Neon usunęły 310 oznaczonych syntetycznych rozgrywek i dodały profile gości. Kontrola publicznego API potwierdziła brak sztucznych głosów, prawdziwy rozkład wyników, moderację nicków oraz ponowne otwarcie ośmiu historycznych ukończonych plansz z zachowanymi składami i punktami. Zakończenie nowej gry archiwalnej nie przelicza poprzednich graczy. Świeży test migracji oraz 448 testów backendu przeszły poprawnie. Początkowe 0% przy braku wcześniejszych wyborów jest prawidłowe.
 
 ## Integracje narzędzi agentów
 

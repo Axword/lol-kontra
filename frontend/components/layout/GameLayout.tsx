@@ -79,6 +79,9 @@ export default function GameLayout({
           {locale === 'pl'
             ? 'Dane: Leaguepedia · Projekt fanowski, niezwiązany z Riot Games'
             : 'Data: Leaguepedia · Fan project, not affiliated with Riot Games'}
+          {' · Made by '}
+          <a href="https://x.com/AxwordLol" target="_blank" rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-[var(--text)]">Axword</a>
         </footer>
       </div>
       <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />

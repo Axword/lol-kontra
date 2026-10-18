@@ -1,6 +1,8 @@
 # Vercel + Render + Neon
 
-Instrukcja dotyczy działających usług: [frontendu](https://lol-kontra.vercel.app) i Django API `https://lol-kontra.onrender.com/api/v1`. Dla commita `e686188` Render potwierdził Live (`dep-dbajr4u7bikc73etp5s0`, 2 min 05 s), a Vercel Production Ready (`GJrFKwDfGcHMdYQA7kjy6p6bZHWh`, 59 s). W Chrome sprawdzono jasny interfejs, planszę oraz podpowiedź Fakera ze zdjęciem.
+Instrukcja dotyczy działających usług: [frontendu](https://lol-kontra.vercel.app) i Django API `https://lol-kontra.onrender.com/api/v1`. Backend `3da0ff0` osiągnął Render Live 19.10.2026 (`dep-dbakukfbtjjs73firhqg`, 1 min 23 s). Poprzednie wydanie `e686188` miało potwierdzone Render Live i Vercel Production Ready; w Chrome sprawdzono wtedy jasny interfejs, planszę oraz podpowiedź Fakera ze zdjęciem.
+
+Nowy backend usuwa oznaczone syntetyczne głosy, obsługuje moderowane nicki gości i chroni wcześniejsze ukończone gry przed przeliczeniem przy zakończeniu kolejnej gry archiwalnej. Publiczna kontrola potwierdziła te migracje i ponowne odczytanie ośmiu dawnych składów wraz z punktacją; nie dodawała testowych rozgrywek.
 
 ## Frontend w Vercelu
 
@@ -71,7 +73,7 @@ Publiczna kontrola po wdrożeniu przeszła bez zapisu danych użytkowników:
 - przyszła plansza i jej rozwiązania: HTTP 404;
 - plik CSS panelu administracyjnego z hashem w nazwie: HTTP 200.
 
-Neon zawiera 882 tożsamości, 738 zweryfikowanych uczestników Worlds, 733 zdjęcia, 737 kompletnych statystyk kariery, 31 plansz i 310 oznaczonych składów testowych. Nie migrowano kont użytkowników.
+Pakiet danych zawiera 882 tożsamości, 738 zweryfikowanych uczestników Worlds, 733 zdjęcia, 737 kompletnych statystyk kariery i 31 plansz. Nie migrowano kont użytkowników. Aktualne migracje kończą świeżą instalację bez syntetycznych rozgrywek; na istniejącej bazie usuwają tylko oznaczone `is_seed` wraz z ich odpowiedziami. Procenty wyborów i statystyki pomijają syntetyczne rekordy również podczas odczytu. Kontrola wydania potwierdziła usunięcie 310 syntetycznych rozgrywek i zachowanie wszystkich dziewięciu gier, 41 odpowiedzi oraz 56 prób z kopii sprzed aktualizacji. Nowe gry pozostawiono bez zmian.
 
 Po kolejnych wdrożeniach powtórz:
 

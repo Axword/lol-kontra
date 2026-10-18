@@ -1,10 +1,11 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Daily, DailySlot, GameAnswer, GameState, Player, formatApiError, useAnswerSlot } from '@/lib/api'
-import { formatDeduction } from '@/lib/points'
+import { Daily, DailySlot, GameAnswer, GameState, Player, formatApiError, useAnswerSlot, useAnswerStats } from '@/lib/api'
+import { useGameDate } from '@/lib/daily'
 import { usePrefs } from '@/lib/store'
 import { sound } from '@/lib/sound'
 import PlayerPickerModal from './PlayerPickerModal'
+import RarityIndicator from './RarityIndicator'
 import RiftBoard from './RiftBoard'
 import SlotList from './SlotList'
 
@@ -16,10 +17,7 @@ type Props = {
 type Flash = {
   correct: boolean
   nickname: string
-  tier: string | null
   percent: number | null
-  points: number
-  diamond: boolean
   provisional: boolean
 } | null
 
@@ -36,12 +34,19 @@ export default function RosterBoard({ daily, state }: Props) {
   const pickerWasOpen = useRef(false)
 
   const answer = useAnswerSlot(daily.id)
+  const archived = daily.date < useGameDate()
+  const shares = useAnswerStats(daily.id, archived)
 
   const answersBySlot = useMemo(() => {
     const map: Record<number, GameAnswer> = {}
-    for (const a of state.answers) map[a.daily_slot] = a
+    for (const a of state.answers) {
+      const percent = shares.data?.results.find((row) => row.slot_id === a.daily_slot && row.player_slug === a.player_slug)?.pick_percent
+      map[a.daily_slot] = archived && a.is_correct
+        ? { ...a, rarity_percent: shares.data ? percent ?? 0 : null }
+        : a
+    }
     return map
-  }, [state.answers])
+  }, [state.answers, archived, shares.data])
 
   const over = state.is_over
   useEffect(() => {
@@ -92,10 +97,7 @@ export default function RosterBoard({ daily, state }: Props) {
           setFlash({
             correct: data.is_correct,
             nickname: data.player_nickname,
-            tier: data.rarity_tier,
             percent: data.pick_percent,
-            points: data.points_awarded,
-            diamond: data.is_diamond_pick,
             provisional: data.is_provisional,
           })
         },
@@ -145,13 +147,10 @@ export default function RosterBoard({ daily, state }: Props) {
                 {locale === 'pl' ? 'pasuje.' : 'fits.'}
               </span>{' '}
               {flash.percent != null && (
-                <span className="tabular" style={{ color: 'var(--text-faint)' }}>
-                  {' · '}{flash.percent.toFixed(1)}% {locale === 'pl' ? 'graczy' : 'of players'}
+                <span>
+                  {' · '}<RarityIndicator percent={flash.percent} locale={locale} />
                 </span>
               )}
-              <span className="tabular" style={{ color: 'var(--gold)' }}>
-                {' · '}{formatDeduction(Math.max(0, -flash.points), locale)} {locale === 'pl' ? 'pkt' : 'pts'}
-              </span>
               {flash.provisional && (
                 <span className="text-[11px]" style={{ color: 'var(--text-faint)' }}>
                   {' · '}

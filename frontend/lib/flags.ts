@@ -64,10 +64,10 @@ export const ROLE_ORDER: Array<'top' | 'jungle' | 'mid' | 'adc' | 'support'> = [
 ]
 
 export const rarityNames: Record<string, { pl: string; en: string }> = {
-  common: { pl: 'Popularny', en: 'Common' },
+  common: { pl: 'Pospolity', en: 'Common' },
   rare: { pl: 'Rzadki', en: 'Rare' },
   epic: { pl: 'Epicki', en: 'Epic' },
-  legendary: { pl: 'Legendarny', en: 'Legendary' },
+  legendary: { pl: 'Złoty', en: 'Gold' },
 }
 
 export function rarityLabel(tier?: string | null, locale: 'pl' | 'en' = 'pl'): string {

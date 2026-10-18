@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { BookOpen, ChevronRight, Menu, Volume2, VolumeX } from 'lucide-react'
 import { usePrefs } from '@/lib/store'
 import { isSoundEnabled, sound, toggleSound } from '@/lib/sound'
+import GuestIdentity from './GuestIdentity'
 
 type Props = {
   onMenu: () => void
@@ -51,8 +52,9 @@ export default function TopBar({ onMenu, onHelp }: Props) {
           )}
         </div>
 
-        <div className="ml-auto shrink-0 flex items-center gap-1 sm:gap-2">
-          <div className="flex items-center border" style={{ borderColor: 'var(--line)' }}>
+        <div className="ml-auto min-w-0 flex items-center gap-1 sm:gap-2">
+          <GuestIdentity />
+          <div className="shrink-0 flex items-center border" style={{ borderColor: 'var(--line)' }}>
             {(['pl', 'en'] as const).map((language) => (
               <button
                 type="button"
@@ -81,7 +83,7 @@ export default function TopBar({ onMenu, onHelp }: Props) {
               setSoundEnabled(enabled)
               if (enabled) sound.click()
             }}
-            className="h-9 w-9 flex items-center justify-center transition-colors"
+            className="shrink-0 h-9 w-9 flex items-center justify-center transition-colors"
             style={{ color: soundEnabled ? 'var(--text-dim)' : 'var(--text-faint)' }}
           >
             {soundEnabled
@@ -93,7 +95,7 @@ export default function TopBar({ onMenu, onHelp }: Props) {
             aria-label={locale === 'pl' ? 'Zasady gry' : 'How to play'}
             title={locale === 'pl' ? 'Zasady gry' : 'How to play'}
             onClick={() => { sound.open(); onHelp() }}
-            className="h-9 w-9 flex items-center justify-center transition-colors"
+            className="shrink-0 h-9 w-9 flex items-center justify-center transition-colors"
             style={{ color: 'var(--text-dim)' }}
           >
             <BookOpen size={18} strokeWidth={1.7} aria-hidden="true" />

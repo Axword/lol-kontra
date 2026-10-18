@@ -2,15 +2,23 @@
 
 ## Co jest w repozytorium
 
-Zwykłe `python manage.py migrate --noinput` na pustym PostgreSQL instaluje schemat oraz zamrożony pakiet danych z 18.10.2026:
+Zwykłe `python manage.py migrate --noinput` na pustym PostgreSQL instaluje schemat i zamrożony pakiet danych z 18.10.2026, a następnie stosuje aktualizacje wydania:
 
 - 882 tożsamości zawodników, w tym 738 ze zweryfikowanymi danymi Worlds;
 - statystyki (w tym 737 kompletnych statystyk kariery), historię lig i turniejów, championów oraz metadane 733 zdjęć;
 - 31 plansz na październik 2026, po pięć ról i dokładnie dwa wymagania;
-- po 10 oznaczonych składów testowych na planszę: 310 składów i 1550 wyborów;
+- zero syntetycznych rozgrywek i wyborów po zakończeniu wszystkich migracji;
 - konfigurację punktacji.
 
-Zdjęcia są adresami źródłowymi Leaguepedii; migracja nie pobiera plików zdjęć. Wymagania oparte na niekompletnych danych pozostają wyłączone. Przyszłe plansze są zapisane, ale API udostępnia je dopiero w odpowiednim dniu według `Europe/Warsaw`. Składy testowe wpływają na procent wyborów, a nie na ranking prawdziwych graczy.
+Zdjęcia są adresami źródłowymi Leaguepedii; migracja nie pobiera plików zdjęć. Wymagania oparte na niekompletnych danych pozostają wyłączone. Przyszłe plansze są zapisane, ale API udostępnia je dopiero w odpowiednim dniu według `Europe/Warsaw`. Procenty wyborów, ranking i statystyki uwzględniają wyłącznie prawdziwe rozgrywki; rekordy oznaczone `is_seed` są pomijane.
+
+Historyczna migracja październikowego wydania tworzyła oznaczone składy testowe. Pozostaje niezmieniona, a osobna migracja usuwa te rozgrywki wraz z ich odpowiedziami. Na istniejącej bazie zachowuje rozgrywki i odpowiedzi prawdziwych graczy. Nowa instalacja kończy migracje z 31 planszami i bez syntetycznych głosów.
+
+Punktacja pozostaje równa 500 minus procenty wyborów. Kolor rzadkości wynika z dokładnego procentu: poniżej 2% złoty, od 2% do poniżej 5% epicki (fioletowy), od 5% do poniżej 15% rzadki (zielony), od 15% pospolity (biały). Dokładne 0% ma dodatkowo mały diament. Przy zawodniku wyświetlany jest sam procent; suma punktów pozostaje wynikiem całej gry.
+
+Usunięcie syntetycznych głosów nie zmienia historycznie zdobytych punktów ani zapisanych składów prawdziwych graczy. Po powrocie do zakończonej planszy widać własne wybory i zachowany wynik, a popularność kart pochodzi z aktualnych prawdziwych odpowiedzi.
+
+Ukończenie kolejnej gry archiwalnej zapisuje wyłącznie wynik jej gracza. Nowa odpowiedź używa udziałów z prawdziwych wyborów sprzed tej próby; nie przelicza wcześniejszych ukończonych gier. Polecenia administracyjnego przeliczania punktów są oddzielną, jawną operacją.
 
 Pliki wymagane w commicie:
 
@@ -53,7 +61,7 @@ Kontrola po wdrożeniu:
 docker compose --env-file .env.prod -f docker-compose.prod.yml run --rm release python manage.py check_release_data
 ```
 
-Na świeżej, niezmienianej instalacji można dodać `--strict`, aby porównać także dane zawodników z pakietem wydania i sprawdzić dziesięć składów testowych dla każdej daty. Zwykła kontrola pozwala na późniejsze aktualizacje danych źródłowych.
+Na świeżej, niezmienianej instalacji można dodać `--strict`, aby porównać także dane zawodników z pakietem wydania i sprawdzić brak syntetycznych rozgrywek oraz odpowiedzi. Zwykła kontrola pozwala na późniejsze aktualizacje danych źródłowych.
 
 Jeżeli dzień dzisiejszy nie jest objęty zapisanym kalendarzem, `bootstrap_database` tworzy go tylko wtedy, gdy taka data jeszcze nie istnieje. Endpoint dzisiejszej planszy również potrafi przygotować brakujący dzień na żądanie. Nie ma automatycznego zadania Celery generującego kalendarz. Bootstrap nie nadpisuje istniejącej planszy ani nie publikuje automatycznie istniejącego szkicu.
 
@@ -79,7 +87,7 @@ Nie używaj `docker compose down -v` ani poleceń czyszczących dane do aktualiz
 
 ## Frontend na Vercelu
 
-Projekt Vercel publikuje frontend z katalogu `frontend`. [Jasny frontend](https://lol-kontra.vercel.app) i Django API `https://lol-kontra.onrender.com/api/v1` są uruchomione z commita `e686188`: Vercel Production Ready, Render Live. `NEXT_PUBLIC_API_URL` ustawiono dla Production i Preview; 18 kluczy backendu zaimportowano prywatnie do Rendera. PostgreSQL Neon i prywatny cache Redis działają, co potwierdziła publiczna kontrola API bez zapisu danych użytkowników oraz Chrome z planszą i podpowiedzią Fakera ze zdjęciem. Worker i scheduler Celery nadal nie są wdrożone; nie utworzono płatnych zasobów. Ustawienia usług, identyfikatory wdrożeń i wyniki kontroli opisuje [RENDER.md](RENDER.md).
+Projekt Vercel publikuje [jasny frontend](https://lol-kontra.vercel.app) z katalogu `frontend` i gałęzi `master`. Django API `https://lol-kontra.onrender.com/api/v1` działa na Renderze; backend `3da0ff0` osiągnął Live 19.10.2026. `NEXT_PUBLIC_API_URL` ustawiono dla Production i Preview; 18 kluczy backendu zaimportowano prywatnie do Rendera. PostgreSQL Neon i prywatny cache Redis działają. Publiczna kontrola API potwierdziła usunięcie syntetycznych głosów, profile gości oraz powrót do dawnych składów i wyników. Worker i scheduler Celery nadal nie są wdrożone; nie utworzono płatnych zasobów. Ustawienia usług, identyfikatory wdrożeń i wyniki kontroli opisuje [RENDER.md](RENDER.md).
 
 W ustawieniach projektu Vercel wybierz:
 
