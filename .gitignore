@@ -19,6 +19,7 @@ staticfiles/
 
 # Node
 node_modules/
+*.tsbuildinfo
 .next/
 out/
 dist/
@@ -36,7 +37,9 @@ yarn-error.log*
 
 # Env
 .env
-.env.*.local
+.env.*
+!.env.example
+!.env.prod.example
 
 # Docker
 .docker/
@@ -52,3 +55,6 @@ yarn-error.log*
 *.bak
 tmp/
 logs/
+backups/
+*.dump
+*.dump.incomplete

@@ -1,13 +1,18 @@
-from rest_framework import viewsets, mixins
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+import logging
+
+from django.db import transaction
+from django.http import Http404
 from django.utils import timezone
+from rest_framework import mixins, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+from .generator import generate_daily
 from .models import Daily
 from .serializers import DailySerializer, DailySlotSerializer
 
-# helper for role names PL
-roleNamesPl = {'top':'Top','jungle':'Dżungla','mid':'Mid','adc':'ADC','support':'Support'}
+logger = logging.getLogger(__name__)
 
 
 class DailyViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -15,62 +20,47 @@ class DailyViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
     serializer_class = DailySerializer
     permission_classes = [AllowAny]
 
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            date__lte=timezone.localdate(), status__in=['published', 'closed', 'scored'],
+        )
+
     @action(detail=False, methods=['get'], url_path='today')
     def today(self, request):
         today = timezone.localdate()
-        daily, created = Daily.objects.get_or_create(
-            date=today,
-            defaults={'status': 'published', 'reveal_mode': 'instant', 'locale_seed': str(today)}
-        )
-        # auto-generate slots if empty (dev convenience)
-        if daily.slots.count() == 0:
-            from .generator import generate_daily
-            # generate_daily will skip if slots exist, so delete draft first? we need to populate
-            # manually generate slots
-            from .models import DailySlot
-            if not DailySlot.objects.filter(daily=daily).exists():
-                # use generator helper
-                try:
-                    # clear and regenerate
-                    generate_daily(date=today, seed=str(today))
-                    daily.refresh_from_db()
-                except Exception as e:
-                    pass
-        # if still empty, provide fallback demo slots
-        if daily.slots.count() == 0:
-            self._ensure_demo_slots(daily)
-        serializer = self.get_serializer(daily)
-        return Response(serializer.data)
-
-    def _ensure_demo_slots(self, daily):
-        """Fallback – creates 5 demo slots if generator fails
-        v2 – instant mode only, NO worlds_champion (DB may lack titles),
-        target 20-80 candidates per slot
-        """
-        from .models import DailySlot, DailySlotCondition
-        # always rebuild demo to ensure clean conditions
-        DailySlot.objects.filter(daily=daily).delete()
-        roles = [('top',1),('jungle',2),('mid',3),('adc',4),('support',5)]
-        # safe, high-coverage conditions – tested vs 876 players
-        demo_conditions = [
-            # Top – LCK + Worlds
-            [('residency','eq','LCK','Grał w LCK','Played in LCK'), ('worlds_appearance','any',True,'Grał na Worlds','Worlds appearance')],
-            # Jungle – LEC + active
-            [('residency','eq','LEC','Grał w LEC','Played in LEC'), ('active','eq',True,'Aktywny','Active')],
-            # Mid – LCK + active
-            [('residency','eq','LCK','Grał w LCK','Played in LCK'), ('active','eq',True,'Aktywny','Active')],
-            # ADC – Europe + Worlds
-            [('continent','eq','Europe','Europejczyk','European'), ('worlds_appearance','any',True,'Grał na Worlds','Worlds appearance')],
-            # Support – LEC + active
-            [('residency','eq','LEC','Grał w LEC','Played in LEC'), ('active','eq',True,'Aktywny','Active')],
-        ]
-        for (role, pos), conds in zip(roles, demo_conditions):
-            slot = DailySlot.objects.create(daily=daily, role=role, position=pos, label_pl=roleNamesPl.get(role, role.capitalize()), label_en=role.capitalize())
-            for i,(ctype,op,val,pl,en) in enumerate(conds):
-                DailySlotCondition.objects.create(slot=slot, condition_type=ctype, operator=op, value=val, label_pl=pl, label_en=en, order=i)
+        try:
+            with transaction.atomic():
+                daily = Daily.objects.select_for_update().filter(date=today).first()
+                if daily is not None and daily.status == 'draft':
+                    raise Http404
+                if daily is None or not daily.slots.exists():
+                    daily = generate_daily(date=today, seed=str(today))
+                    daily.status = 'published'
+                    daily.published_at = timezone.now()
+                    daily.save(update_fields=['status', 'published_at'])
+        except ValueError:
+            logger.exception('Cannot generate daily for %s', today)
+            return Response({'detail': 'Dzisiejsza plansza nie jest jeszcze dostępna.'}, status=503)
+        daily = self.get_queryset().get(pk=daily.pk)
+        return Response(self.get_serializer(daily).data)
 
     @action(detail=True, methods=['get'], url_path='slots')
     def slots(self, request, pk=None):
         daily = self.get_object()
-        serializer = DailySlotSerializer(daily.slots.all(), many=True)
-        return Response(serializer.data)
+        return Response(DailySlotSerializer(daily.slots.all(), many=True).data)
+
+    @action(detail=True, methods=['get'], url_path='solutions')
+    def solutions(self, request, pk=None):
+        from apps.submissions.models import Submission
+        from .solutions import daily_solutions
+        daily = self.get_object()
+        submissions = Submission.objects.filter(daily=daily, is_practice=False, is_seed=False)
+        if request.user.is_authenticated:
+            submissions = submissions.filter(user=request.user)
+        else:
+            token = request.query_params.get('guest_token')
+            submissions = submissions.filter(user__isnull=True, guest_token=token) if token else submissions.none()
+        submission = submissions.first()
+        if submission is None or not submission.is_over:
+            return Response({'detail': 'Rozwiązania są dostępne po zakończeniu własnej gry.'}, status=403)
+        return Response(daily_solutions(daily))

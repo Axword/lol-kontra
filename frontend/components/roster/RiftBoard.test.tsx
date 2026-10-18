@@ -1,0 +1,116 @@
+import { cleanup, fireEvent, render, within } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { DailySlot, GameAnswer } from '@/lib/api'
+import RiftBoard from './RiftBoard'
+import SlotList from './SlotList'
+
+const prefs = vi.hoisted(() => ({ locale: 'pl' as 'pl' | 'en' }))
+vi.mock('@/lib/store', () => ({
+  usePrefs: (select: (state: typeof prefs) => unknown) => select(prefs),
+}))
+
+const slots: DailySlot[] = [
+  { id: 11, position: 1, role: 'top', label_pl: 'Top', label_en: 'Top', conditions: [
+    { id: 1, condition_type: 'country', operator: 'eq', value: 'KR', label_pl: 'Koreańczyk', label_en: 'Korean player' },
+  ] },
+  { id: 12, position: 2, role: 'mid', label_pl: 'Mid', label_en: 'Mid', conditions: [
+    { id: 2, condition_type: 'worlds_champion', operator: 'eq', value: true, label_pl: 'Mistrz Worlds', label_en: 'Worlds champion' },
+  ] },
+  { id: 13, position: 3, role: 'jungle', label_pl: 'Dżungla', label_en: 'Jungle', conditions: [
+    { id: 3, condition_type: 'country', operator: 'eq', value: 'DK', label_pl: 'Duńczyk', label_en: 'Danish player' },
+  ] },
+]
+
+const solved: GameAnswer = {
+  id: 1, daily_slot: 11, slot_role: 'top', player: 101, player_nickname: 'Zeus', player_slug: 'zeus',
+  is_correct: true, rarity_tier: 'epic', rarity_percent: 4.25, points_awarded: -4.25, deduction: 4.25, is_diamond_pick: false,
+}
+const missed: GameAnswer = {
+  id: 2, daily_slot: 13, slot_role: 'jungle', player: 102, player_nickname: 'Wrong player', player_slug: 'wrong',
+  is_correct: false, rarity_tier: null, rarity_percent: null, points_awarded: 0, is_diamond_pick: false,
+}
+const answers = { 11: solved, 13: missed }
+
+beforeEach(() => { prefs.locale = 'pl' })
+afterEach(cleanup)
+
+describe('the map and mobile roster show server answers', () => {
+  it.each(['pl', 'en'] as const)('shows zero and positive candidate counts on mobile and announces them in %s', (locale) => {
+    prefs.locale = locale
+    const candidateCounts = { 11: 0, 12: 8 }
+    const { container } = render(<>
+      <RiftBoard slots={slots} answers={{}} onPick={vi.fn()} inspect candidateCounts={candidateCounts} />
+      <SlotList slots={slots} answers={{}} onPick={vi.fn()} inspect candidateCounts={candidateCounts} />
+    </>)
+    const markers = container.querySelectorAll<HTMLElement>('.rift-marker')
+    const rows = container.querySelectorAll<HTMLElement>('.slot-list-mobile button')
+    for (const [index, count] of [0, 8].entries()) {
+      expect(markers[index].querySelector('strong')?.textContent).toBe(String(count))
+      expect(markers[index].getAttribute('aria-label')).toContain(`${count} ${locale === 'pl' ? 'pasujących zawodników' : 'matching players'}`)
+      expect(rows[index].textContent).toContain(`· ${count} ${locale === 'pl' ? 'zawodników' : 'players'}`)
+    }
+    expect(markers[2].querySelector('strong')).toBeNull()
+    expect(rows[2].textContent).not.toMatch(/zawodników|players/)
+  })
+
+  it.each(['pl', 'en'] as const)('shows conditions, the solved nickname and points in %s', (locale) => {
+    prefs.locale = locale
+    const { container } = render(<>
+      <RiftBoard slots={slots} answers={answers} onPick={vi.fn()} />
+      <SlotList slots={slots} answers={answers} onPick={vi.fn()} />
+    </>)
+    const cards = container.querySelectorAll<HTMLElement>('.rift-card')
+    const mobileRows = container.querySelectorAll<HTMLElement>('.slot-list-mobile button')
+    expect(cards.length).toBe(slots.length)
+    expect(mobileRows.length).toBe(slots.length)
+    slots.forEach((slot, index) => {
+      const label = locale === 'pl' ? slot.conditions[0].label_pl : slot.conditions[0].label_en
+      expect(within(cards[index]).getByText(label)).toBeTruthy()
+      expect(within(container).getAllByRole('button', { name: cards[index].getAttribute('aria-label')!, description: label }).length).toBe(2)
+      expect(within(mobileRows[index]).getByText(label)).toBeTruthy()
+    })
+    expect(within(cards[0]).getByText('Zeus')).toBeTruthy()
+    expect(within(mobileRows[0]).getByText(/Zeus/)).toBeTruthy()
+    const points = locale === 'pl' ? /−4,25 pkt/ : /−4\.25 pts/
+    expect(within(cards[0]).getByText(points)).toBeTruthy()
+    expect(within(mobileRows[0]).getByText(points)).toBeTruthy()
+    expect(within(cards[0]).getByText(/4\.3%/)).toBeTruthy()
+  })
+
+  it('does not invent a percentage when the answer has no official sample', () => {
+    const { container } = render(<RiftBoard
+      slots={slots} answers={{ 11: { ...solved, rarity_percent: null } }} onPick={vi.fn()}
+    />)
+    const card = container.querySelector<HTMLElement>('.rift-card')!
+    expect(within(card).getByText(/−4,25 pkt/)).toBeTruthy()
+    expect(card.textContent).not.toContain('%')
+  })
+})
+
+describe('roster selection follows the server game state', () => {
+  it.each([
+    ['map cards', '.rift-card'],
+    ['map markers', '.rift-marker'],
+    ['mobile rows', '.slot-list-mobile button'],
+  ])('opens only unsolved slots and blocks a finished game on %s', (_surface, selector) => {
+    const onPick = vi.fn()
+    const board = (disabled = false) => <>
+      <RiftBoard slots={slots} answers={answers} onPick={onPick} disabled={disabled} />
+      <SlotList slots={slots} answers={answers} onPick={onPick} disabled={disabled} />
+    </>
+    const view = render(board())
+    const buttons = view.container.querySelectorAll<HTMLButtonElement>(selector)
+    expect(buttons.length).toBe(slots.length)
+    expect(Array.from(buttons, (button) => button.disabled)).toEqual([true, false, false])
+    buttons.forEach((button) => fireEvent.click(button))
+    expect(onPick.mock.calls).toEqual([[slots[1]], [slots[2]]])
+
+    onPick.mockClear()
+    view.rerender(board(true))
+    view.container.querySelectorAll<HTMLButtonElement>(selector).forEach((button) => {
+      expect(button.disabled).toBe(true)
+      fireEvent.click(button)
+    })
+    expect(onPick).not.toHaveBeenCalled()
+  })
+})

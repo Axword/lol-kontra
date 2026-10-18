@@ -1,54 +1,87 @@
 'use client'
-import { useState, ReactNode } from 'react'
+import { ReactNode, useCallback, useState } from 'react'
+import HelpModal from '../ui/HelpModal'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
-import HelpModal from '../ui/HelpModal'
+import { usePrefs } from '@/lib/store'
+import { formatPoints } from '@/lib/points'
+
+type Props = {
+  children: ReactNode
+  dailyId?: number
+  dailyDate?: string
+  score?: number | null
+  correctCount?: number
+  slotsTotal?: number
+  errorsLeft?: number | null
+  maxErrors?: number | null
+}
 
 export default function GameLayout({
-  children,
-  leftTopSlot,
-  rightTopSlot,
-  errorsLeft = 10,
-  locale = 'pl',
-  onLocaleChange
-}: {
-  children: ReactNode,
-  leftTopSlot?: ReactNode,
-  rightTopSlot?: ReactNode,
-  errorsLeft?: number,
-  locale?: string,
-  onLocaleChange?: (l:string)=>void
-}) {
+  children, dailyId, dailyDate, score, correctCount, slotsTotal, errorsLeft, maxErrors,
+}: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
+  const locale = usePrefs((s) => s.locale)
+  const closeSidebar = useCallback(() => setSidebarOpen(false), [])
+  const showGameHeader = dailyId != null && (score !== undefined || correctCount !== undefined || errorsLeft !== undefined)
+  const dateLabel = dailyDate
+    ? new Date(dailyDate + 'T00:00:00').toLocaleDateString(
+        locale === 'pl' ? 'pl-PL' : 'en-GB',
+        { day: 'numeric', month: 'long', year: 'numeric' }
+      )
+    : null
 
   return (
-    <div className="min-h-screen bg-[#06080c] text-[#E8E6E3] flex">
-      <Sidebar open={sidebarOpen} onClose={()=>setSidebarOpen(false)} />
+    <div className="min-h-screen flex" style={{ background: 'var(--bg)' }}>
+      <Sidebar open={sidebarOpen} onClose={closeSidebar} />
       <div className="flex-1 min-w-0 flex flex-col">
-        {/* TopBar – 2 rows combined in component */}
         <TopBar
-          errorsLeft={errorsLeft}
-          onMenu={()=>setSidebarOpen(true)}
-          onHelp={()=>setHelpOpen(true)}
-          locale={locale}
-          onLocaleChange={onLocaleChange}
+          onMenu={() => setSidebarOpen(true)}
+          onHelp={() => { setSidebarOpen(false); setHelpOpen(true) }}
         />
-        {/* optional injected left/right top slots – e.g. score */}
-        {(leftTopSlot || rightTopSlot) && (
-          <div className="px-3 sm:px-6 py-3 bg-[#0a0e13] border-b border-zinc-900 flex items-center justify-between gap-3">
-            <div className="min-w-0">{leftTopSlot}</div>
-            <div className="min-w-0 text-right">{rightTopSlot}</div>
-          </div>
-        )}
-        <main className="flex-1 px-3 sm:px-6 py-5 sm:py-7 max-w-[1200px] w-full mx-auto">
+        <main className="flex-1 w-full max-w-[1180px] mx-auto px-3 sm:px-6 py-6 sm:py-8">
+          {showGameHeader && (
+            <div className="max-w-[1000px] mx-auto mb-4">
+              <div className="flex flex-wrap items-end justify-between gap-2 mb-4">
+                <h1 className="text-[28px] sm:text-[34px] leading-none font-bold tracking-[-.045em]" style={{ color: 'var(--text)' }}>Worlds XI</h1>
+                <div className="text-[12px] flex items-center gap-3" style={{ color: 'var(--text-faint)' }}>
+                  {dateLabel && <span>{dateLabel}</span>}
+                  <span className="tabular">#{dailyId}</span>
+                </div>
+              </div>
+              <dl
+                className="grid grid-cols-3 sm:flex sm:items-center sm:justify-between gap-3 border px-3 sm:px-4 py-3"
+                style={{ background: '#fff', borderColor: 'var(--line)' }}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                  <dt className="text-[11px] sm:text-[12px]" style={{ color: 'var(--text-faint)' }}>{locale === 'pl' ? 'Wynik' : 'Score'}</dt>
+                  <dd className="tabular text-[20px] font-semibold leading-none" style={{ color: 'var(--gold)' }}>{score == null ? '—' : formatPoints(score, locale)}</dd>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                  <dt className="text-[11px] sm:text-[12px]" style={{ color: 'var(--text-faint)' }}>{locale === 'pl' ? 'Uzupełnione' : 'Completed'}</dt>
+                  <dd className="tabular text-[20px] font-semibold leading-none">
+                    {correctCount ?? '—'}<span className="text-[15px] font-normal" style={{ color: 'var(--text-faint)' }}> / {slotsTotal ?? '—'}</span>
+                  </dd>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
+                  <dt className="text-[11px] sm:text-[12px]" style={{ color: 'var(--text-faint)' }}>{locale === 'pl' ? 'Życia' : 'Lives'}</dt>
+                  <dd className="tabular text-[20px] font-semibold leading-none" style={{ color: errorsLeft === 0 ? 'var(--bad)' : 'var(--text)' }}>
+                    {errorsLeft ?? '—'}<span className="text-[15px] font-normal" style={{ color: 'var(--text-faint)' }}> / {maxErrors ?? '—'}</span>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          )}
           {children}
         </main>
-        <footer className="border-t border-zinc-900 py-5 text-center text-[11px] text-zinc-500">
-          LoL Roster Challenge • inspirowane <a href="https://kontra.games" target="_blank" className="underline hover:text-zinc-300">kontra.games</a> • dane: Leaguepedia • Not affiliated with Riot Games
+        <footer className="border-t px-4 py-5 text-center text-[11px]" style={{ borderColor: 'var(--line)', color: 'var(--text-faint)' }}>
+          {locale === 'pl'
+            ? 'Dane: Leaguepedia · Projekt fanowski, niezwiązany z Riot Games'
+            : 'Data: Leaguepedia · Fan project, not affiliated with Riot Games'}
         </footer>
       </div>
-      <HelpModal open={helpOpen} onClose={()=>setHelpOpen(false)} />
+      <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
     </div>
   )
 }

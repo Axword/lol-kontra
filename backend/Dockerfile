@@ -13,12 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY requirements.lock .
+RUN pip install --require-hashes -r requirements.lock
 
 COPY . .
 
-# entrypoint – auto migrate + seed fixtures
+# Serialized migrations and verification of the bundled release data.
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]
 

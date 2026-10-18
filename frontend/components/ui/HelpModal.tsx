@@ -1,47 +1,72 @@
 'use client'
+import { useId } from 'react'
+import { usePrefs } from '@/lib/store'
 import { sound } from '@/lib/sound'
-import { useEffect } from 'react'
+import { useDialog } from './useDialog'
 
-export default function HelpModal({ open, onClose }: { open: boolean, onClose: () => void }) {
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => { if(e.key==='Escape') { sound.close(); onClose() } }
-    if(open) window.addEventListener('keydown', h)
-    return () => window.removeEventListener('keydown', h)
-  }, [open, onClose])
+export default function HelpModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const locale = usePrefs((s) => s.locale)
+  const pl = locale === 'pl'
+  const dialogRef = useDialog<HTMLDivElement>(open, () => { sound.close(); onClose() })
+  const titleId = useId()
 
   if (!open) return null
+
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={()=>{sound.close(); onClose()}} />
-      <div className="relative w-full max-w-2xl bg-[#0f141b] border border-zinc-800 rounded-[20px] shadow-2xl overflow-hidden">
-        <div className="px-5 py-4 border-b border-zinc-800 flex justify-between items-center">
-          <h2 className="text-lg font-bold">Jak grać – Worlds XI</h2>
-          <button onClick={()=>{sound.close(); onClose()}} className="text-zinc-400 hover:text-white text-xl">×</button>
+      <div className="absolute inset-0" style={{ background: 'rgba(24,36,28,.35)' }} onClick={() => { sound.close(); onClose() }} />
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="relative flex max-h-[calc(100dvh-32px)] w-full max-w-xl flex-col border bg-white rise" style={{ borderColor: 'var(--line)' }}>
+        <div className="flex items-center justify-between gap-4 border-b px-6 py-5 sm:px-8" style={{ borderColor: 'var(--line)' }}>
+          <h2 id={titleId} className="text-[24px] font-semibold leading-tight">{pl ? 'Zasady' : 'How to play'}</h2>
+          <button aria-label={pl ? 'Zamknij' : 'Close'} onClick={() => { sound.close(); onClose() }} className="flex h-10 w-10 shrink-0 items-center justify-center border text-[24px] leading-none transition-colors hover:bg-[#f0f4f0]" style={{ borderColor: 'var(--line)', color: 'var(--text-dim)' }}>
+            &times;
+          </button>
         </div>
-        <div className="p-5 space-y-4 text-[13.5px] leading-relaxed text-zinc-300 max-h-[70vh] overflow-y-auto">
-          <p><b className="text-white">Cel:</b> Ułóż skład 5 zawodników League of Legends spełniających warunki na danej pozycji (Top / Jungle / Mid / ADC / Support).</p>
-          <ol className="list-decimal pl-5 space-y-1">
-            <li>Kliknij ikonę roli na mapie Rift.</li>
-            <li>Wyszukaj zawodnika – zobaczysz flagę kraju, region, liczbę występów na Worlds.</li>
-            <li>Wybierz – możesz zmienić do momentu wysłania całego składu.</li>
-            <li><b>1 skład dziennie.</b> Masz 10 “żyć” – błędny wybór zabiera życie (UI).</li>
-            <li>Po wysłaniu – wynik natychmiastowy (tryb instant).</li>
+
+        <div className="min-h-0 space-y-7 overflow-y-auto px-6 py-6 text-sm leading-relaxed sm:px-8 scroll-thin">
+          <p style={{ color: 'var(--text-dim)' }}>
+            {pl
+              ? 'Dobierz pięciu zawodników, którzy wystąpili na Worlds. Każdy musi spełniać wszystkie warunki swojej pozycji.'
+              : 'Pick five players who appeared at Worlds. Each must meet every condition of their position.'}
+          </p>
+
+          <ol className="space-y-3 pl-5" style={{ listStyle: 'decimal' }}>
+            <li>{pl ? 'Wybierz pozycję na mapie lub kartę pod mapą na telefonie.' : 'Select a position on the map, or a card below it on mobile.'}</li>
+            <li>{pl ? 'Trafienie zamyka pozycję na stałe.' : 'A correct answer locks that position.'}</li>
+            <li>{pl ? 'Pomyłka kosztuje jedno z dziesięciu żyć – pozycja zostaje otwarta.' : 'A miss costs one of ten lives – the position stays open.'}</li>
+            <li>{pl ? 'Gra kończy się po pięciu trafieniach albo po dziesięciu pomyłkach.' : 'The game ends after five hits or ten misses.'}</li>
           </ol>
-          <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-3">
-            <div className="font-semibold text-[#C89B3C] mb-1">Punktacja za rzadkość</div>
-            <ul className="text-zinc-300 space-y-0.5 text-[13px]">
-              <li>Common &gt;20% – <b>10 pkt</b></li>
-              <li><span className="text-[#3B82F6]">Rare 10–20%</span> – <b>25 pkt</b></li>
-              <li><span className="text-[#A855F7]">Epic 1–10%</span> – <b>60 pkt</b></li>
-              <li><span className="text-[#F59E0B]">Legendary &lt;1%</span> – <b>120 pkt</b></li>
-              <li><span className="text-[#22D3EE]">💎 Diamond Pick</span> – <b>+50 pkt</b> – pierwszy na świecie dany zawodnik danego dnia</li>
-            </ul>
+
+          <p style={{ color: 'var(--text-dim)' }}>
+            {pl
+              ? 'WR i liczba gier dotyczą Worlds, łącznie z play-in. TOP 5 kariery i TOP 5 na Worlds to osobne warunki, liczone według liczby gier, z remisami na piątym miejscu. „Powyżej” i „poniżej” nie obejmują równej wartości.'
+              : 'Win rate and game counts cover Worlds, including play-ins. Career top fives and Worlds top fives are separate conditions, based on games played, including ties for fifth. “Above” and “below” exclude an equal value.'}
+          </p>
+
+          <div>
+            <h3 className="mb-3 text-base font-semibold">{pl ? 'Punktacja' : 'Scoring'}</h3>
+            <p className="mb-5" style={{ color: 'var(--text-dim)' }}>
+              {pl
+                ? 'Im mniej graczy wskazało tego samego zawodnika, tym więcej punktów zachowasz.'
+                : 'The fewer players picked the same person, the more points you keep.'}
+            </p>
+            <p style={{ color: 'var(--text-dim)' }}>
+              {pl
+                ? 'Zaczynasz z 500 punktami. Każdy poprawny wybór odejmuje tyle punktów, ile wynosi jego udział w odpowiedziach: 1% to −1 punkt, 20% to −20 punktów. Im więcej punktów zachowasz, tym lepiej.'
+                : 'Start with 500 points. Each correct choice deducts its pick share: 1% costs 1 point, 20% costs 20 points. Higher scores are better.'}
+            </p>
+            <p className="mt-4" style={{ color: 'var(--text-dim)' }}>
+              {pl
+                ? 'Po wyczerpaniu żyć każda nieuzupełniona pozycja kosztuje 100 punktów. Procenty zależą od wyborów uczestników, a końcowy wykres pokazuje Twój wynik na ich tle. Wyniki archiwalnych plansz też liczą się do ich rankingów.'
+                : 'When you run out of lives, each unfilled position costs 100 points. Pick shares come from participants’ choices; the final chart compares your score with theirs. Archived boards also count towards their rankings.'}
+            </p>
           </div>
-          <p className="text-zinc-400">Im mniej oczywisty pick – tym więcej punktów. Faker da Ci Common 10 pkt. Duke w tych samych warunkach może dać Legendary 120 pkt.</p>
-          <p className="text-[11px] text-zinc-500">Dane: Leaguepedia • Nieoficjalny fanowski projekt • Not affiliated with Riot Games</p>
         </div>
-        <div className="px-5 py-3 border-t border-zinc-800 bg-zinc-950/50 text-right">
-          <button onClick={()=>{sound.close(); onClose()}} className="btn-gold text-sm px-4 py-2">Rozumiem</button>
+
+        <div className="shrink-0 border-t px-6 py-5 text-right sm:px-8" style={{ borderColor: 'var(--line)' }}>
+          <button onClick={() => { sound.close(); onClose() }} className="btn btn-gold">
+            {pl ? 'Zaczynam' : 'Got it'}
+          </button>
         </div>
       </div>
     </div>

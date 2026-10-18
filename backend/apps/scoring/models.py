@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import F, Q
 
 class AnswerStatsDaily(models.Model):
     daily_slot = models.ForeignKey('dailies.DailySlot', on_delete=models.CASCADE)
@@ -10,23 +11,29 @@ class AnswerStatsDaily(models.Model):
 
     class Meta:
         unique_together = [('daily_slot', 'player')]
+        constraints = [
+            models.CheckConstraint(check=Q(pick_count__gte=0), name='snapshot_count_nonnegative'),
+            models.CheckConstraint(check=Q(pick_percent__gte=0, pick_percent__lte=100), name='snapshot_percent_0_100'),
+        ]
 
     def __str__(self):
         return f"{self.daily_slot} – {self.player} {self.pick_percent:.2f}% {self.rarity_tier}"
 
 class ScoringConfig(models.Model):
+    # Legacy rarity thresholds remain configurable for old API clients only.
     is_active = models.BooleanField(default=True)
-    points_common = models.IntegerField(default=10)
-    points_rare = models.IntegerField(default=25)
-    points_epic = models.IntegerField(default=60)
-    points_legendary = models.IntegerField(default=120)
-    diamond_bonus = models.IntegerField(default=50)
 
     threshold_rare = models.FloatField(default=20.0)
     threshold_epic = models.FloatField(default=10.0)
     threshold_legendary = models.FloatField(default=1.0)
 
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [models.CheckConstraint(check=(
+            Q(threshold_legendary__gte=0, threshold_legendary__lte=F('threshold_epic'))
+            & Q(threshold_epic__lte=F('threshold_rare'), threshold_rare__lte=100)
+        ), name='scoring_thresholds_ordered')]
 
     def __str__(self):
         return f"ScoringConfig active={self.is_active}"

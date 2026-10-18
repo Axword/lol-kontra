@@ -7,19 +7,13 @@ from .engine import score_daily
 def nightly_scoring():
     """Uruchamiane po zamknięciu Daily"""
     today = timezone.localdate()
-    # score wczorajszy
+    yesterday = today - timezone.timedelta(days=1)
     try:
-        daily = Daily.objects.get(date=today)
-        # close it
+        daily = Daily.objects.get(date=yesterday, status__in=['published', 'closed', 'scored'])
         if daily.status == 'published':
             daily.status = 'closed'
             daily.closed_at = timezone.now()
             daily.save(update_fields=['status', 'closed_at'])
-    except Daily.DoesNotExist:
-        pass
-    yesterday = today - timezone.timedelta(days=1)
-    try:
-        daily = Daily.objects.get(date=yesterday)
         score_daily(daily.id)
         daily.status = 'scored'
         daily.save(update_fields=['status'])

@@ -1,74 +1,89 @@
 'use client'
-import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { Archive, CalendarDays, Trophy, User, X } from 'lucide-react'
+import { usePrefs } from '@/lib/store'
+import { useDialog } from '../ui/useDialog'
 
-const games = [
-  { id: 'worldsxi', label: 'Worlds XI', labelPl: 'Worlds XI', active: true, icon: '🏆' },
-  { id: 'lck', label: 'LCK Challenge', labelPl: 'LCK Challenge', active: false, soon: true },
-  { id: 'lec', label: 'LEC Challenge', labelPl: 'LEC Challenge', active: false, soon: true },
-  { id: 'allstar', label: 'All-Star Draft', labelPl: 'All-Star Draft', active: false, soon: true },
+const links = [
+  { href: '/', pl: 'Dzisiejsza plansza', en: "Today's board", icon: CalendarDays },
+  { href: '/archiwum', pl: 'Archiwum', en: 'Archive', icon: Archive },
+  { href: '/leaderboard', pl: 'Ranking', en: 'Leaderboard', icon: Trophy },
+  { href: '/profile', pl: 'Profil', en: 'Profile', icon: User },
 ]
 
-export default function Sidebar({ open, onClose }: { open: boolean, onClose: () => void }) {
+export default function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname()
+  const locale = usePrefs((s) => s.locale)
+  const [mobile, setMobile] = useState(false)
+  const dialogRef = useDialog<HTMLElement>(open && mobile, onClose)
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 1023px)')
+    const update = () => setMobile(query.matches)
+    update()
+    query.addEventListener('change', update)
+    return () => query.removeEventListener('change', update)
+  }, [])
+  useEffect(() => { onClose() }, [pathname, onClose])
+
   return (
     <>
-      {/* backdrop mobile */}
       <div
-        className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${open ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        aria-hidden="true"
+        className={'fixed inset-0 z-40 lg:hidden transition-opacity ' + (open ? 'opacity-100' : 'opacity-0 pointer-events-none')}
+        style={{ background: 'rgba(27,39,30,.28)' }}
         onClick={onClose}
       />
-      <aside className={`fixed lg:sticky top-0 left-0 h-screen z-50 w-[280px] bg-[#0b0f16] border-r border-zinc-800 flex flex-col transition-transform duration-250
-        ${open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        {/* logo */}
-        <div className="h-[64px] px-5 flex items-center border-b border-zinc-800">
-          <div className="font-extrabold tracking-tight text-[18px]">
-            <span className="text-[#C89B3C]">Worlds</span><span className="text-white"> XI</span>
-          </div>
-          <button onClick={onClose} className="lg:hidden ml-auto text-zinc-400">✕</button>
+      <aside
+        ref={dialogRef}
+        role={open && mobile ? 'dialog' : undefined}
+        aria-modal={open && mobile ? true : undefined}
+        aria-label={locale === 'pl' ? 'Nawigacja' : 'Navigation'}
+        tabIndex={-1}
+        className={'fixed lg:sticky top-0 left-0 h-[100dvh] z-50 w-[220px] max-w-[90vw] shrink-0 flex flex-col overflow-y-auto border-r transition-transform duration-200 ' +
+          (open ? 'translate-x-0 visible' : '-translate-x-full invisible lg:visible lg:translate-x-0')}
+        style={{ background: '#fff', borderColor: 'var(--line)' }}
+      >
+        <div className="h-14 shrink-0 px-6 flex items-center border-b" style={{ borderColor: 'var(--line)' }}>
+          <Link href="/" onClick={onClose} className="font-bold text-[20px] tracking-[-.055em]" style={{ color: 'var(--text)' }}>Worlds XI</Link>
+          <button
+            type="button"
+            aria-label={locale === 'pl' ? 'Zamknij menu' : 'Close menu'}
+            onClick={onClose}
+            className="lg:hidden ml-auto -mr-2 h-9 w-9 flex items-center justify-center"
+            style={{ color: 'var(--text-dim)' }}
+          >
+            <X size={18} strokeWidth={1.7} aria-hidden="true" />
+          </button>
         </div>
 
-        {/* game picker */}
-        <div className="p-4">
-          <div className="text-[11px] uppercase tracking-wider text-zinc-500 mb-2 px-1">Wybierz grę</div>
-          <nav className="space-y-1.5">
-            {games.map(g => (
+        <nav className="p-3 pt-6 space-y-1" aria-label={locale === 'pl' ? 'Menu główne' : 'Main menu'}>
+          {links.map((link) => {
+            const active = link.href === '/'
+              ? pathname === '/' || pathname.startsWith('/daily')
+              : pathname === link.href || pathname.startsWith(link.href + '/')
+            const Icon = link.icon
+            return (
               <Link
-                key={g.id}
-                href={g.active ? '/' : '#'}
-                onClick={e => { if(!g.active) e.preventDefault() }}
-                className={`flex items-center gap-3 px-3 py-[10px] rounded-xl border transition
-                  ${g.active 
-                    ? 'bg-[#121a23] border-[#C89B3C]/40 text-white' 
-                    : 'border-zinc-800 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
-                  }`}
+                key={link.href}
+                href={link.href}
+                onClick={onClose}
+                aria-current={active ? 'page' : undefined}
+                className="min-h-11 px-3 flex items-center gap-3 border text-[13px] transition-colors"
+                style={{
+                  borderColor: active ? 'var(--line)' : 'transparent',
+                  background: active ? '#f0f5f1' : 'transparent',
+                  color: active ? 'var(--gold)' : 'var(--text-dim)',
+                  fontWeight: active ? 600 : 400,
+                }}
               >
-                <span className="text-lg w-6 text-center">{g.icon || '🎮'}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-semibold truncate">{g.labelPl}</div>
-                  <div className="text-[10px] text-zinc-500">{g.label}</div>
-                </div>
-                {g.soon && <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400">soon</span>}
-                {g.active && <span className="w-1.5 h-1.5 rounded-full bg-[#C89B3C]" />}
+                <Icon size={18} strokeWidth={1.7} aria-hidden="true" />
+                <span>{locale === 'pl' ? link.pl : link.en}</span>
               </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="mt-auto border-t border-zinc-800 p-4 text-[11px] text-zinc-500 space-y-2">
-          <div>Daily Challenge<br/>LoL Esports</div>
-          <div className="text-[10px] text-zinc-600">
-            Inspirowane <a href="https://kontra.games" target="_blank" className="underline hover:text-zinc-400">kontra.games</a><br/>
-            Dane: Leaguepedia<br/>
-            Not affiliated with Riot
-          </div>
-          <div className="flex gap-3 pt-1 text-zinc-400">
-            <a href="/leaderboard" className="hover:text-white">Ranking</a>
-            <a href="#" className="hover:text-white">Regulamin</a>
-            <a href="#" className="hover:text-white">Kontakt</a>
-          </div>
-        </div>
+            )
+          })}
+        </nav>
       </aside>
     </>
   )

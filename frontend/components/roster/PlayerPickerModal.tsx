@@ -1,133 +1,196 @@
 'use client'
-import { useState, useEffect, useMemo } from 'react'
-import { usePlayerSearch, usePlayerAutocomplete, Player, DailySlot } from '@/lib/api'
-import { countryFlag, countryLabel, roleIcons } from '@/lib/flags'
-import { useRosterStore } from '@/lib/store'
+import { useEffect, useId, useRef, useState } from 'react'
+import { Search, X } from 'lucide-react'
+import { DailySlot, Player, usePlayerAutocomplete } from '@/lib/api'
+import { roleLabel } from '@/lib/flags'
+import { usePrefs } from '@/lib/store'
 import { sound } from '@/lib/sound'
+import { useDialog } from '../ui/useDialog'
+import PlayerPortrait from './PlayerPortrait'
 
-export default function PlayerPickerModal({
-  slot,
-  open,
-  onClose,
-}: {
-  slot: DailySlot | null,
-  open: boolean,
+type Props = {
+  slot: DailySlot | null
+  open: boolean
+  busy?: boolean
+  error?: string | null
   onClose: () => void
-}) {
+  onSelect: (player: Player) => void
+}
+
+export default function PlayerPickerModal({ slot, open, busy, error, onClose, onSelect }: Props) {
+  const locale = usePrefs((s) => s.locale)
   const [q, setQ] = useState('')
-  const setPick = useRosterStore(s => s.setPick)
-  const picks = useRosterStore(s => s.picks)
+  const [search, setSearch] = useState('')
+  const [highlight, setHighlight] = useState(0)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const listRef = useRef<HTMLUListElement>(null)
+  const dialogRef = useDialog<HTMLDivElement>(open, onClose)
+  const titleId = useId()
+  const listId = useId()
 
-  // reset query when opening different slot
-  useEffect(() => { if(open) setQ('') }, [open, slot?.id])
+  const waitingForQuery = q.trim() !== search
+  const query = usePlayerAutocomplete(open && !waitingForQuery ? search : '', slot?.role)
+  const { data, isError, refetch } = query
+  const isFetching = query.isFetching || waitingForQuery
+  const results: Player[] = q.trim() ? data || [] : []
 
-  // use autocomplete for fast, fallback to full search
-  const ac = usePlayerAutocomplete(q.length >= 1 ? q : '')
-  const full = usePlayerSearch(q, slot?.role)
-
-  const list: Player[] = useMemo(() => {
-    if (q.length === 0) {
-      // show popular / recent – just empty, encourage typing, but also show first 20
-      return full.data || []
-    }
-    return (ac.data && ac.data.length ? ac.data : (full.data || [])) as Player[]
-  }, [q, ac.data, full.data])
-
-  // close on ESC
   useEffect(() => {
-    const h = (e: KeyboardEvent) => { if(e.key==='Escape') onClose() }
-    if(open) window.addEventListener('keydown', h)
-    return () => window.removeEventListener('keydown', h)
-  }, [open, onClose])
+    if (!open || !q.trim()) { setSearch(''); return }
+    const timer = setTimeout(() => setSearch(q.trim()), 250)
+    return () => clearTimeout(timer)
+  }, [q, open, slot?.id])
+
+  useEffect(() => {
+    if (open) {
+      setQ('')
+      setHighlight(0)
+    }
+  }, [open, slot?.id])
+
+  useEffect(() => setHighlight(0), [q, data])
+  useEffect(() => {
+    if (open && !busy) inputRef.current?.focus()
+  }, [open, busy, slot?.id])
+
+  const onSearchKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (busy || isFetching || isError || e.nativeEvent.isComposing) return
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        setHighlight((h) => Math.min(h + 1, Math.max(0, results.length - 1)))
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        setHighlight((h) => Math.max(0, h - 1))
+      }
+      if (e.key === 'Enter' && results[highlight]) {
+        e.preventDefault()
+        sound.pick()
+        onSelect(results[highlight])
+      }
+  }
+
+  useEffect(() => {
+    listRef.current?.querySelector('[data-active="true"]')?.scrollIntoView?.({ block: 'nearest' })
+  }, [highlight])
 
   if (!open || !slot) return null
 
-  const currentPick = picks[slot.id]
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-2xl mx-4 bg-[#0f141b] border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden">
-        {/* header */}
-        <div className="px-5 py-4 border-b border-zinc-800 flex items-center justify-between bg-[#111822]">
-          <div>
-            <div className="text-xs text-lol-muted uppercase tracking-wider">
-              {roleIcons[slot.role]} {slot.role.toUpperCase()}
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-2 sm:p-6">
+      <div className="picker-backdrop absolute inset-0" onClick={onClose} />
+
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="panel picker-panel relative flex flex-col w-full max-w-lg max-h-[calc(100dvh-16px)] sm:max-h-[calc(100dvh-48px)] rise">
+        {/* nagłówek: rola + warunki */}
+        <div className="px-5 pt-5 pb-4 sm:px-6 sm:pt-6 border-b" style={{ borderColor: 'var(--line)' }}>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="eyebrow" style={{ color: 'var(--gold-dim)' }}>
+                {roleLabel(slot.role, locale)}
+              </div>
+              <h2 id={titleId} className="display text-[24px] mt-1">
+                {locale === 'pl' ? 'Kto pasuje?' : 'Who fits?'}
+              </h2>
             </div>
-            <div className="text-lg font-semibold">Wybierz zawodnika</div>
-            <div className="flex flex-wrap gap-1.5 mt-1">
-              {slot.conditions.map(c=>(
-                <span key={c.id} className="text-[11px] px-2 py-0.5 rounded-full bg-zinc-800 border border-zinc-700 text-zinc-300">{c.label_pl}</span>
-              ))}
-            </div>
+            <button onClick={onClose} className="p-2 -mr-2 -mt-2 hover:bg-[var(--panel-2)]" style={{ color: 'var(--text-faint)' }} aria-label={locale === 'pl' ? 'Zamknij' : 'Close'}>
+              <X size={20} aria-hidden />
+            </button>
           </div>
-          <button onClick={onClose} className="text-zinc-400 hover:text-white text-xl px-2">×</button>
+          <ul className="mt-4 space-y-2">
+            {slot.conditions.map((c) => (
+              <li
+                key={c.id}
+                className="text-[14px] leading-relaxed pl-3 border-l-2"
+                style={{ borderColor: 'var(--gold-dim)', color: 'var(--text)' }}
+              >
+                {locale === 'pl' ? c.label_pl : c.label_en}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* search */}
-        <div className="p-4 border-b border-zinc-800">
+        {/* wyszukiwarka */}
+        <div className="px-5 py-4 sm:px-6 border-b" style={{ borderColor: 'var(--line)' }}>
+          <div className="relative">
+          <Search size={18} aria-hidden className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--text-faint)' }} />
           <input
-            autoFocus
+            ref={inputRef}
+            data-dialog-focus
+            role="combobox"
+            aria-label={locale === 'pl' ? 'Nick zawodnika' : 'Player nickname'}
+            aria-autocomplete="list"
+            aria-expanded={results.length > 0}
+            aria-controls={listId}
+            aria-activedescendant={!isFetching && !isError && results[highlight] ? `${listId}-${results[highlight].id}` : undefined}
             value={q}
-            onChange={e=>setQ(e.target.value)}
-            placeholder="Szukaj: Faker, Caps, Jankos…"
-            className="w-full bg-black/40 border border-zinc-700 rounded-xl px-4 py-3 outline-none focus:border-lol-gold text-base"
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={onSearchKey}
+            autoComplete="off"
+            placeholder={locale === 'pl' ? 'Wpisz nick zawodnika' : 'Type a player nickname'}
+            className="field pl-11"
+            disabled={busy}
           />
-          <div className="text-[11px] text-zinc-500 mt-2">
-            {q ? `Wyniki dla "${q}" — ${list.length}` : 'Zacznij pisać, aby wyszukać. Pokażemy graczy Worlds z narodowością.'}
           </div>
+          {error && (
+            <div role="alert" className="mt-3 text-[13px] leading-relaxed shake" style={{ color: 'var(--bad)' }}>{error}</div>
+          )}
         </div>
 
-        {/* list */}
-        <div className="max-h-[55vh] overflow-y-auto">
-          {currentPick && (
-            <div className="px-4 py-2 text-xs text-lol-gold border-b border-zinc-900 bg-amber-950/10">
-              Aktualny wybór: <b>{currentPick.playerNickname}</b> – kliknij innego aby zmienić
-            </div>
+        {/* wyniki */}
+        <div className="min-h-0 max-h-[42dvh] overflow-y-auto scroll-thin" aria-busy={isFetching || busy}>
+          {q.trim().length === 0 && (
+            <p className="p-6 text-center text-[13px]" style={{ color: 'var(--text-faint)' }}>
+              {locale === 'pl'
+                ? 'Zawodnicy, którzy wystąpili na Worlds'
+                : 'Players who appeared at Worlds'}
+            </p>
           )}
-          {list.length === 0 && q.length>0 && !full.isLoading && (
-            <div className="p-6 text-center text-zinc-500">Brak wyników</div>
+
+          {q.trim().length > 0 && !isFetching && !isError && results.length === 0 && (
+            <p className="p-6 text-center text-[13px]" style={{ color: 'var(--text-faint)' }}>
+              {locale === 'pl' ? 'Brak wyników' : 'No results'}
+            </p>
           )}
-          {list.length === 0 && q.length===0 && (
-            <div className="p-6 text-center text-zinc-500 text-sm">
-              Wpisz min. 1 znak – pokażemy listę z <b>flagą kraju</b>, rolą, regionem i liczbą występów na Worlds.<br/>
-              <span className="text-zinc-600">Tip: spróbuj „fa”, „ja”, „ker” …</span>
-            </div>
+
+          {isError && (
+            <button className="w-full p-4 text-[13px]" onClick={() => refetch()} style={{ color: 'var(--bad)' }}>
+              {locale === 'pl' ? 'Nie udało się wyszukać. Spróbuj ponownie.' : 'Search failed. Try again.'}
+            </button>
           )}
-          <ul className="divide-y divide-zinc-900">
-            {list.map(p => (
-              <li key={p.slug}>
+
+          <ul ref={listRef} id={listId} role="listbox" aria-label={locale === 'pl' ? 'Zawodnicy' : 'Players'}>
+            {!isFetching && !isError && results.map((p, i) => (
+              <li key={p.slug} role="presentation">
                 <button
-                  onClick={() => { sound.pick(); setPick(slot.id, p.slug, p.nickname); onClose() }}
-                  className="w-full text-left px-4 py-3 hover:bg-zinc-900/80 flex items-center gap-3 transition"
+                  id={`${listId}-${p.id}`}
+                  role="option"
+                  aria-selected={i === highlight}
+                  tabIndex={-1}
+                  data-active={i === highlight}
+                  onMouseEnter={() => setHighlight(i)}
+                  onClick={() => { if (!busy) { sound.pick(); onSelect(p) } }}
+                  disabled={busy}
+                  className="picker-option w-full text-left px-5 sm:px-6 py-3.5 flex items-center gap-3 border-l-2 border-transparent transition disabled:opacity-50"
                 >
-                  <div className="text-2xl w-9 text-center">
-                    {countryFlag(p.country_code)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold flex items-center gap-2">
-                      {p.nickname}
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 uppercase">{p.primary_role}</span>
-                    </div>
-                    <div className="text-xs text-zinc-400 truncate">
-                      {countryLabel(p.country_code)} • {p.residency} • Worlds: {p.worlds_count} {p.worlds_titles_count ? `• 🏆 ${p.worlds_titles_count}` : ''}
-                      {p.real_name ? ` • ${p.real_name}` : ''}
-                    </div>
-                  </div>
-                  <div className="text-right text-[11px] text-zinc-500">
-                    {p.is_active ? <span className="text-emerald-400">● active</span> : <span>retired</span>}
-                  </div>
+                  <PlayerPortrait url={p.portrait_url} />
+                  <span className="min-w-0 truncate text-[15px] font-bold">{p.nickname}</span>
                 </button>
               </li>
             ))}
           </ul>
-          {full.isLoading && <div className="p-4 text-center text-zinc-500 text-sm">Szukam…</div>}
+
+          {(isFetching || busy) && (
+            <p role="status" className="p-4 text-center text-[13px]" style={{ color: 'var(--text-faint)' }}>
+              {busy ? (locale === 'pl' ? 'Sprawdzam…' : 'Checking…') : (locale === 'pl' ? 'Szukam…' : 'Searching…')}
+            </p>
+          )}
         </div>
 
-        {/* footer */}
-        <div className="px-4 py-3 border-t border-zinc-800 bg-[#0f141b] text-[11px] text-zinc-500 flex justify-between">
-          <span>💡 Liczy się rzadkość picku – mniej popularni = więcej punktów</span>
-          <span>ESC zamknij</span>
+        <div
+          className="shrink-0 px-5 sm:px-6 py-3 border-t flex justify-between text-[11px]"
+          style={{ borderColor: 'var(--line)', color: 'var(--text-faint)' }}
+        >
+          <span>↑ ↓ <span className="ml-2">Enter</span></span>
+          <span>Esc</span>
         </div>
       </div>
     </div>

@@ -1,223 +1,345 @@
-from rest_framework import serializers
+import uuid
+
 from django.db import transaction
-from django.db.models import Sum
-from .models import Submission, SubmissionAnswer
+from django.utils import timezone
+from rest_framework import serializers
+
+from apps.dailies.models import Daily, DailySlot
 from apps.players.models import Player
-from apps.dailies.models import DailySlot
-from .services import validate_and_score_answer
+from apps.scoring.engine import MIN_SAMPLE, compute_rarity, recalc_submission_total, score_daily, unfilled_deduction
+from apps.users.services import refresh_user_stats
+
+from .models import MAX_ERRORS, STARTING_POINTS, Submission, SubmissionAnswer, SubmissionAttempt
+from .services import is_practice_daily, validate_and_score_answer
+
+
+def _ensure_playable(daily):
+    if daily.status not in {'published', 'closed', 'scored'} or daily.date > timezone.localdate():
+        raise serializers.ValidationError('Ta plansza nie jest dostępna')
+
+
+def _unchanged_answer(answer, submission, guest_token):
+    answer._unchanged = True
+    answer._submission = submission
+    answer._guest_token = guest_token
+    count, total = answer.scoring_pick_count, answer.scoring_sample_size
+    answer._rarity = {
+        'pick_percent': answer.rarity_percent,
+        'pick_count': count, 'sample_size': total,
+        'provisional': answer.is_correct and (total == 0 or (
+            not submission.is_scored and answer.daily_slot.daily.status != 'scored' and total < MIN_SAMPLE
+        )),
+    }
+    return answer
+
+
+def _finish_submission(submission):
+    recalc_submission_total(submission)
+    if submission.daily.date < timezone.localdate() and submission.is_over:
+        submission.is_scored = True
+        submission.save(update_fields=['is_scored'])
+    if submission.is_over and submission.daily.date < timezone.localdate():
+        score_daily(submission.daily_id, finalize=False)
+        submission.refresh_from_db()
+    if submission.user_id and submission.is_over:
+        refresh_user_stats(submission.user_id)
+
+
+# --------------------------------------------------------------------------- #
+#  Wyjście
+# --------------------------------------------------------------------------- #
+
+class SubmissionAnswerOutputSerializer(serializers.ModelSerializer):
+    player_nickname = serializers.CharField(source='player.nickname', read_only=True)
+    player_slug = serializers.CharField(source='player.slug', read_only=True)
+    slot_role = serializers.CharField(source='daily_slot.role', read_only=True)
+    deduction = serializers.SerializerMethodField()
+
+    def get_deduction(self, obj):
+        return max(0.0, -obj.points_awarded) if obj.is_correct else 0.0
+
+    class Meta:
+        model = SubmissionAnswer
+        fields = [
+            'id', 'daily_slot', 'slot_role', 'player', 'player_nickname', 'player_slug',
+            'is_correct', 'rarity_tier', 'rarity_percent', 'points_awarded', 'deduction', 'is_diamond_pick',
+        ]
+
+
+class SubmissionOutputSerializer(serializers.ModelSerializer):
+    """
+    Pełny stan gry dla danego Daily. Frontend nie liczy niczego sam –
+    wszystkie liczniki (punkty, błędy, trafienia) pochodzą stąd.
+    """
+    answers = SubmissionAnswerOutputSerializer(many=True, read_only=True)
+    errors_left = serializers.IntegerField(read_only=True)
+    max_errors = serializers.SerializerMethodField()
+    slots_total = serializers.SerializerMethodField()
+    correct_count = serializers.SerializerMethodField()
+    is_over = serializers.BooleanField(read_only=True)
+    starting_points = serializers.SerializerMethodField()
+    unfilled_deduction = serializers.SerializerMethodField()
+
+    def get_starting_points(self, obj):
+        return STARTING_POINTS
+
+    def get_unfilled_deduction(self, obj):
+        return unfilled_deduction(obj)
+
+    class Meta:
+        model = Submission
+        fields = [
+            'id', 'daily', 'submitted_at', 'total_points', 'is_scored', 'is_practice',
+            'errors_used', 'errors_left', 'max_errors',
+            'slots_total', 'correct_count', 'is_over', 'answers', 'starting_points', 'unfilled_deduction',
+        ]
+
+    def get_max_errors(self, obj):
+        return MAX_ERRORS
+
+    def get_slots_total(self, obj):
+        return obj.daily.slots.count()
+
+    def get_correct_count(self, obj):
+        return obj.answers.filter(is_correct=True).count()
+
+
+# --------------------------------------------------------------------------- #
+#  Pojedyncza próba (tryb na żywo) – główna ścieżka rozgrywki
+# --------------------------------------------------------------------------- #
+
+class AnswerCreateSerializer(serializers.Serializer):
+    """
+    Jedna próba odgadnięcia zawodnika na jednym slocie.
+
+    Reguły egzekwowane serwerowo:
+      * slot z poprawną odpowiedzią jest zamknięty – nie da się go zmienić,
+      * każda pomyłka zwiększa `errors_used`; po MAX_ERRORS gra jest zakończona,
+      * ta sama nietrafiona odpowiedź powtórzona na tym samym slocie nie liczy się
+        drugi raz jako błąd (ochrona przed podwójnym kliknięciem / retry sieciowym).
+    """
+    daily_id = serializers.IntegerField(min_value=1)
+    slot_id = serializers.IntegerField(min_value=1)
+    player_slug = serializers.SlugField(max_length=80)
+    guest_token = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=64)
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user if request and request.user.is_authenticated else None
+
+        guest_token = '' if user else (validated_data.get('guest_token') or '')
+        if not user and not guest_token.strip():
+            guest_token = str(uuid.uuid4())
+
+        try:
+            slot = DailySlot.objects.select_related('daily').get(
+                id=validated_data['slot_id'], daily_id=validated_data['daily_id']
+            )
+        except DailySlot.DoesNotExist:
+            raise serializers.ValidationError('Nieprawidłowy slot dla tego Daily')
+        _ensure_playable(slot.daily)
+
+        try:
+            player = Player.objects.get(slug=validated_data['player_slug'])
+        except Player.DoesNotExist:
+            raise serializers.ValidationError('Nie znaleziono zawodnika')
+
+        with transaction.atomic():
+            # Every gameplay/scoring path locks its board before its children.
+            # This also matches generation and calendar preparation.
+            slot.daily = Daily.objects.select_for_update().get(pk=slot.daily_id)
+            _ensure_playable(slot.daily)
+            # All writes lock every daily slot in the same order, including late
+            # archive scoring, so different slots cannot deadlock each other.
+            list(DailySlot.objects.select_for_update().filter(daily=slot.daily).order_by('pk'))
+            submission, _ = Submission.objects.get_or_create(
+                daily_id=validated_data['daily_id'],
+                user=user if user else None,
+                guest_token=None if user else guest_token,
+                is_practice=is_practice_daily(slot.daily),
+                defaults={'ip_hash': ''},
+            )
+            submission = Submission.objects.select_for_update().get(pk=submission.pk)
+
+            existing = SubmissionAnswer.objects.filter(
+                submission=submission, daily_slot=slot
+            ).first()
+
+            if existing and existing.is_correct:
+                return _unchanged_answer(existing, submission, guest_token)
+
+            # Powtórzenie tej samej błędnej odpowiedzi nie liczy się jako nowy błąd.
+            duplicate_miss = SubmissionAttempt.objects.filter(
+                submission=submission, daily_slot=slot, player=player, is_correct=False
+            ).exists() or bool(existing and not existing.is_correct and existing.player_id == player.pk)
+            if duplicate_miss and existing:
+                return _unchanged_answer(existing, submission, guest_token)
+
+            if submission.is_over:
+                raise serializers.ValidationError({
+                    'detail': 'Gra jest zakończona', 'code': 'game_over',
+                })
+
+            if submission.answers.filter(is_correct=True, player=player).exclude(daily_slot=slot).exists():
+                raise serializers.ValidationError({
+                    'detail': 'Ten zawodnik jest już poprawnie wybrany na innej pozycji',
+                    'code': 'duplicate_player',
+                })
+
+            if existing:
+                existing.player = player
+                existing.is_correct = False
+                existing.rarity_tier = None
+                existing.rarity_percent = None
+                existing.points_awarded = 0.0
+                existing.save()
+                answer_obj = existing
+            else:
+                answer_obj = SubmissionAnswer.objects.create(
+                    submission=submission, daily_slot=slot, player=player
+                )
+
+            # Validate before recording the percentage deduction.
+            validate_and_score_answer(answer_obj)
+
+            SubmissionAttempt.objects.create(
+                submission=submission,
+                daily_slot=slot,
+                player=player,
+                is_correct=answer_obj.is_correct,
+            )
+
+            if not answer_obj.is_correct and not duplicate_miss:
+                submission.errors_used = min(MAX_ERRORS, submission.errors_used + 1)
+                submission.save(update_fields=['errors_used'])
+
+            rarity = compute_rarity(answer_obj)
+            _finish_submission(submission)
+            answer_obj.refresh_from_db()
+            if submission.is_over and submission.daily.date < timezone.localdate():
+                rarity = {
+                    'pick_percent': answer_obj.rarity_percent,
+                    'pick_count': answer_obj.scoring_pick_count,
+                    'sample_size': answer_obj.scoring_sample_size,
+                    'provisional': answer_obj.is_correct and answer_obj.scoring_sample_size == 0,
+                }
+
+        submission.refresh_from_db()
+        answer_obj._rarity = rarity
+        answer_obj._guest_token = guest_token
+        answer_obj._submission = submission
+        return answer_obj
+
+    def to_representation(self, instance):
+        data = SubmissionAnswerOutputSerializer(instance, context=self.context).data
+        rarity = getattr(instance, '_rarity', {}) or {}
+        submission = getattr(instance, '_submission', None) or instance.submission
+
+        data['pick_percent'] = rarity.get('pick_percent')
+        data['pick_count'] = rarity.get('pick_count')
+        data['sample_size'] = rarity.get('sample_size')
+        data['is_provisional'] = rarity.get('provisional', False)
+        data['unchanged'] = getattr(instance, '_unchanged', False)
+
+        data['total_points'] = submission.total_points
+        data['starting_points'] = STARTING_POINTS
+        data['unfilled_deduction'] = unfilled_deduction(submission)
+        data['errors_used'] = submission.errors_used
+        data['errors_left'] = submission.errors_left
+        data['max_errors'] = MAX_ERRORS
+        data['slots_total'] = submission.daily.slots.count()
+        data['correct_count'] = submission.answers.filter(is_correct=True).count()
+        data['is_over'] = submission.is_over
+        data['submission_id'] = submission.id
+        data['is_scored'] = submission.is_scored
+        data['is_practice'] = submission.is_practice
+        data['answers'] = SubmissionAnswerOutputSerializer(
+            submission.answers.select_related('player', 'daily_slot').order_by('daily_slot__position'),
+            many=True, context=self.context,
+        ).data
+
+        guest_token = getattr(instance, '_guest_token', None)
+        if guest_token:
+            data['guest_token'] = guest_token
+        return data
+
+
+# --------------------------------------------------------------------------- #
+#  Zbiorcze wysłanie składu – używane w archiwum
+# --------------------------------------------------------------------------- #
 
 class SubmissionAnswerInputSerializer(serializers.Serializer):
-    slot_id = serializers.IntegerField()
-    player_slug = serializers.SlugField()
+    slot_id = serializers.IntegerField(min_value=1)
+    player_slug = serializers.SlugField(max_length=80)
+
 
 class SubmissionCreateSerializer(serializers.Serializer):
-    daily_id = serializers.IntegerField()
-    guest_token = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+    daily_id = serializers.IntegerField(min_value=1)
+    guest_token = serializers.CharField(required=False, allow_blank=True, allow_null=True, max_length=64)
     answers = SubmissionAnswerInputSerializer(many=True)
 
     def validate(self, attrs):
-        if len(attrs['answers']) == 0:
-            raise serializers.ValidationError("Brak odpowiedzi")
-        # sprawdź unikalne sloty
+        if not attrs['answers']:
+            raise serializers.ValidationError('Brak odpowiedzi')
         slot_ids = [a['slot_id'] for a in attrs['answers']]
         if len(slot_ids) != len(set(slot_ids)):
-            raise serializers.ValidationError("Duplikaty slotów")
+            raise serializers.ValidationError('Duplikaty slotów')
+        player_slugs = [answer['player_slug'] for answer in attrs['answers']]
+        if len(player_slugs) != len(set(player_slugs)):
+            raise serializers.ValidationError('Każda pozycja wymaga innego zawodnika')
         return attrs
 
     def create(self, validated_data):
         request = self.context.get('request')
         user = request.user if request and request.user.is_authenticated else None
         daily_id = validated_data['daily_id']
-        guest_token = validated_data.get('guest_token')
 
-        if not user and not guest_token:
-            raise serializers.ValidationError("Wymagany user lub guest_token")
-
-        # normalize guest_token – empty string not allowed
-        if guest_token == '':
-            import uuid
+        guest_token = '' if user else (validated_data.get('guest_token') or '')
+        if not user and not guest_token.strip():
             guest_token = str(uuid.uuid4())
 
-        from apps.dailies.models import Daily
-        try:
-            daily = Daily.objects.get(id=daily_id)
-        except Daily.DoesNotExist:
-            raise serializers.ValidationError("Daily nie istnieje")
+        daily = Daily.objects.filter(id=daily_id).first()
+        if daily is None:
+            raise serializers.ValidationError('Daily nie istnieje')
+        _ensure_playable(daily)
 
         with transaction.atomic():
+            daily = Daily.objects.select_for_update().get(pk=daily_id)
+            _ensure_playable(daily)
+            # Board, slots and submission are always locked in this order.
+            list(DailySlot.objects.select_for_update().filter(daily=daily).order_by('pk'))
             submission, created = Submission.objects.get_or_create(
                 daily_id=daily_id,
                 user=user if user else None,
                 guest_token=None if user else guest_token,
-                defaults={'ip_hash': ''}
+                is_practice=is_practice_daily(daily),
+                defaults={'ip_hash': ''},
             )
             if not created:
-                raise serializers.ValidationError("Już wysłałeś odpowiedź dla tego Daily")
+                raise serializers.ValidationError('Już wysłałeś odpowiedź dla tego Daily')
 
-            # create answers
             for ans in validated_data['answers']:
                 try:
                     player = Player.objects.get(slug=ans['player_slug'])
                     slot = DailySlot.objects.get(id=ans['slot_id'], daily_id=daily_id)
                 except (Player.DoesNotExist, DailySlot.DoesNotExist):
-                    raise serializers.ValidationError(f"Nieprawidłowy slot/player: {ans}")
+                    raise serializers.ValidationError(f'Nieprawidłowy slot lub zawodnik: {ans}')
+
                 answer_obj = SubmissionAnswer.objects.create(
-                    submission=submission,
-                    daily_slot=slot,
-                    player=player,
+                    submission=submission, daily_slot=slot, player=player
                 )
-                # walidacja + diamond
                 validate_and_score_answer(answer_obj)
+                SubmissionAttempt.objects.create(
+                    submission=submission, daily_slot=slot, player=player,
+                    is_correct=answer_obj.is_correct,
+                )
+                compute_rarity(answer_obj)
 
-        # --- instant scoring ---
-        # jeśli reveal_mode == instant, od razu przelicz rarity dla tego Daily
-        if daily.reveal_mode == 'instant':
-            try:
-                from apps.scoring.engine import score_daily
-                # szybkie przeliczenie – może być kosztowne przy dużej liczbie submissions,
-                # ale dla MVP OK (<1s dla <10k)
-                score_daily(daily_id)
-                submission.refresh_from_db()
-            except Exception:
-                pass  # fail silently, nightly job naprawi
-
-        return submission
-
-class SubmissionAnswerOutputSerializer(serializers.ModelSerializer):
-    player_nickname = serializers.CharField(source='player.nickname', read_only=True)
-    player_slug = serializers.CharField(source='player.slug', read_only=True)
-    slot_role = serializers.CharField(source='daily_slot.role', read_only=True)
-
-    class Meta:
-        model = SubmissionAnswer
-        fields = ['id', 'daily_slot', 'slot_role', 'player', 'player_nickname', 'player_slug',
-                  'is_correct', 'rarity_tier', 'rarity_percent', 'points_awarded', 'is_diamond_pick']
-
-class SubmissionOutputSerializer(serializers.ModelSerializer):
-    answers = SubmissionAnswerOutputSerializer(many=True, read_only=True)
-    class Meta:
-        model = Submission
-        fields = ['id', 'daily', 'submitted_at', 'total_points', 'is_scored', 'answers']
-
-
-# --- PER-SLOT INSTANT ANSWER ---
-class AnswerCreateSerializer(serializers.Serializer):
-    daily_id = serializers.IntegerField()
-    slot_id = serializers.IntegerField()
-    player_slug = serializers.SlugField()
-    guest_token = serializers.CharField(required=False, allow_blank=True, allow_null=True)
-
-    def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user if request and request.user.is_authenticated else None
-        daily_id = validated_data['daily_id']
-        slot_id = validated_data['slot_id']
-        player_slug = validated_data['player_slug']
-        guest_token = validated_data.get('guest_token')
-
-        if not user and not guest_token:
-            # auto generate
-            import uuid
-            guest_token = str(uuid.uuid4())
-
-        if guest_token == '':
-            import uuid
-            guest_token = str(uuid.uuid4())
-
-        from apps.dailies.models import Daily, DailySlot
-        try:
-            daily = Daily.objects.get(id=daily_id)
-            slot = DailySlot.objects.get(id=slot_id, daily_id=daily_id)
-            player = Player.objects.get(slug=player_slug)
-        except (Daily.DoesNotExist, DailySlot.DoesNotExist):
-            raise serializers.ValidationError("Nieprawidłowy daily/slot")
-        except Player.DoesNotExist:
-            raise serializers.ValidationError("Nieprawidłowy gracz")
-
-        with transaction.atomic():
-            submission, _ = Submission.objects.get_or_create(
-                daily_id=daily_id,
-                user=user if user else None,
-                guest_token=None if user else guest_token,
-                defaults={'ip_hash': ''}
+            submission.errors_used = min(
+                MAX_ERRORS, submission.answers.filter(is_correct=False).count()
             )
+            submission.save(update_fields=['errors_used'])
+            _finish_submission(submission)
 
-            existing = SubmissionAnswer.objects.filter(submission=submission, daily_slot=slot).first()
-            if existing:
-                if existing.is_correct:
-                    # locked – cannot change correct answer
-                    return existing
-                # retry allowed: overwrite the wrong answer
-                existing.player = player
-                existing.is_correct = False
-                existing.rarity_tier = None
-                existing.rarity_percent = None
-                existing.points_awarded = 0
-                existing.is_diamond_pick = False
-                existing.save()
-                answer_obj = existing
-            else:
-                try:
-                    answer_obj = SubmissionAnswer.objects.create(
-                        submission=submission,
-                        daily_slot=slot,
-                        player=player,
-                    )
-                except IntegrityError:
-                    answer_obj = SubmissionAnswer.objects.get(submission=submission, daily_slot=slot)
-                    if answer_obj.is_correct:
-                        return answer_obj
-
-            # validate instantly (is_correct + diamond)
-            validate_and_score_answer(answer_obj)
-
-        # FAST kontra scoring – instant, no full score_daily
-        # deduction = 100 - pick_percent (or 100 for diamond)
-        # remaining = 500 - sum deductions
-        try:
-            pick_percent = getattr(answer_obj, 'rarity_percent', None) or 0.0
-            is_dia = answer_obj.is_diamond_pick
-            deduction = 100.0 if is_dia else round(100.0 - pick_percent, 1)
-            answer_obj.points_awarded = deduction
-            answer_obj.save(update_fields=['points_awarded'])
-
-            # compute running total from existing answers
-            existing_ded = submission.answers.aggregate(s=Sum('points_awarded'))['s'] or 0
-            remaining = round(500.0 - float(existing_ded), 1)
-            submission.total_points = int(remaining * 10)
-            submission.save(update_fields=['total_points'])
-        except Exception:
-            pass
-
-        answer_obj._guest_token = guest_token
-        answer_obj._submission_total = submission.total_points
-        answer_obj._pick_percent = getattr(answer_obj, 'rarity_percent', None) or 0.0
-        answer_obj._deduction = answer_obj.points_awarded
-        return answer_obj
-
-    def to_representation(self, instance):
-        data = SubmissionAnswerOutputSerializer(instance, context=self.context).data
-        # kontra fields
-        data['pick_percent'] = round(getattr(instance, '_pick_percent', 0.0) or getattr(instance, 'rarity_percent', 0.0) or 0.0, 1)
-        data['deduction'] = getattr(instance, '_deduction', instance.points_awarded or 0)
-        total = getattr(instance, '_submission_total', None)
-        if total is not None:
-            data['total_points'] = round(total / 10.0, 1)   # 304.1
-            data['remaining_score'] = data['total_points']
-            data['start_score'] = 500
-        else:
-            data['total_points'] = 500
-            data['remaining_score'] = 500
-            data['start_score'] = 500
-
-        gt = getattr(instance, '_guest_token', None)
-        if gt:
-            data['guest_token'] = gt
-        try:
-            sub = instance.submission
-            answered = sub.answers.count()
-            data['answered_count'] = answered
-            data['submission_id'] = sub.id
-        except Exception:
-            pass
-        return data
+        submission._guest_token = guest_token
+        return submission

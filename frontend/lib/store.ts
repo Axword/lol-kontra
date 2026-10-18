@@ -1,120 +1,53 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type AnswerResult = {
-  is_correct?: boolean
-  rarity_tier?: 'common' | 'rare' | 'epic' | 'legendary' | null
-  points_awarded?: number   // now = deduction (e.g. 95.8)
-  pick_percent?: number
-  is_diamond_pick?: boolean
-  locked?: boolean
-}
-
-type Pick = { 
-  slotId: number, 
-  playerSlug?: string, 
-  playerNickname?: string 
-} & AnswerResult
-
-type RosterState = {
-  dailyId?: number
-  picks: Record<number, Pick>
-  submitted: boolean
+/**
+ * Store trzyma wyłącznie preferencje i tożsamość gościa.
+ * Ustawienie dźwięku mieszka w `lib/sound.ts` – nie duplikujemy go tutaj.
+ *
+ * Stan rozgrywki (wybory, punkty, błędy) NIE jest tu duplikowany – jego jedynym
+ * źródłem jest serwer (`/submissions/me/`). Wcześniejsza wersja trzymała równoległą
+ * kopię w localStorage, przez co po północy widać było wczorajszą planszę,
+ * a licznik błędów rozjeżdżał się z serwerem.
+ */
+type Prefs = {
   guestToken: string
-  errors: number
-  maxErrors: number
-  setPick: (slotId: number, playerSlug: string, playerNickname: string) => void
-  setAnswer: (slotId: number, ans: AnswerResult) => void
-  clearPick: (slotId: number) => void
-  incrementError: () => void
-  setDaily: (id: number) => void
-  markSubmitted: () => void
-  reset: () => void
+  locale: 'pl' | 'en'
+  seenHelp: boolean
+  setLocale: (l: 'pl' | 'en') => void
+  markHelpSeen: () => void
+  ensureGuestToken: () => string
 }
 
-function genGuestToken() {
-  if (typeof window === 'undefined') return 'srv'
-  let t = localStorage.getItem('guest_token')
-  if (!t) {
-    t = Math.random().toString(36).slice(2) + Date.now().toString(36)
-    localStorage.setItem('guest_token', t)
-  }
-  return t
+function randomToken() {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID()
+  return Math.random().toString(36).slice(2) + Date.now().toString(36)
 }
 
-export const useRosterStore = create<RosterState>()(
+export const usePrefs = create<Prefs>()(
   persist(
     (set, get) => ({
-      dailyId: undefined,
-      picks: {},
-      submitted: false,
-      guestToken: typeof window !== 'undefined' ? genGuestToken() : '',
-      errors: 0,
-      maxErrors: 10,
+      guestToken: '',
+      locale: 'pl',
+      seenHelp: false,
 
-      setPick: (slotId, playerSlug, playerNickname) => set(state => {
-        const prev = state.picks[slotId] || { slotId }
-        // only block if CORRECTLY locked
-        if (prev.locked && prev.is_correct === true) return state
-        // new pick attempt – clear previous verification result
-        return {
-          picks: { 
-            ...state.picks, 
-            [slotId]: { 
-              slotId, 
-              playerSlug, 
-              playerNickname 
-              // is_correct, points_awarded, locked etc cleared for new attempt
-            } 
-          }
-        }
-      }),
+      setLocale: (locale) => set({ locale }),
+      markHelpSeen: () => set({ seenHelp: true }),
 
-      setAnswer: (slotId, ans) => set(state => {
-        const prev = state.picks[slotId] || { slotId }
-        // LOCK only if correct
-        const isCorrect = !!ans.is_correct
-        const locked = isCorrect
-        return {
-          picks: { 
-            ...state.picks, 
-            [slotId]: { 
-              ...prev, 
-              ...ans, 
-              locked 
-            } 
-          }
-        }
-      }),
-
-      clearPick: (slotId) => set(state => {
-        const prev = state.picks[slotId]
-        // cannot clear a correctly locked slot
-        if (prev?.locked && prev.is_correct === true) return state
-        const n = { ...state.picks }
-        delete n[slotId]
-        return { picks: n }
-      }),
-
-      incrementError: () => set(state => ({
-        errors: Math.min(state.errors + 1, state.maxErrors)
-      })),
-
-      setDaily: (id) => {
-        const s = get()
-        if (s.dailyId !== id) {
-          set({ 
-            dailyId: id, 
-            picks: {}, 
-            submitted: false,
-            errors: 0 
-          })
-        }
+      ensureGuestToken: () => {
+        const current = get().guestToken
+        if (current) return current
+        const token = randomToken()
+        set({ guestToken: token })
+        return token
       },
-
-      markSubmitted: () => set({ submitted: true }),
-      reset: () => set({ picks: {}, submitted: false, errors: 0 })
     }),
-    { name: 'lol-roster-store' }
+    {
+      name: 'worldsxi-prefs',
+      // Token gościa musi istnieć od pierwszego wejścia, także przed hydracją.
+      onRehydrateStorage: () => (state) => {
+        if (state && !state.guestToken) state.ensureGuestToken()
+      },
+    }
   )
 )

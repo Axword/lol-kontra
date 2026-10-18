@@ -8,28 +8,35 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        lol: {
-          bg: "#0A0E13",
-          bg2: "#111822",
-          gold: "#C89B3C",
-          blue: "#0AC8B9",
-          text: "#E8E6E3",
-          muted: "#8A8F98"
+        bg: "var(--bg)",
+        panel: "var(--panel)",
+        panel2: "var(--panel-2)",
+        line: "var(--line)",
+        lineSoft: "var(--line-soft)",
+        ink: "var(--text)",
+        dim: "var(--text-dim)",
+        faint: "var(--text-faint)",
+        gold: {
+          DEFAULT: "var(--gold)",
+          dim: "var(--gold-dim)",
+          lite: "var(--gold-lite)",
         },
+        ok: "var(--ok)",
+        bad: "var(--bad)",
         rarity: {
-          common: "#9CA3AF",
-          rare: "#3B82F6",
-          epic: "#A855F7",
-          legendary: "#F59E0B",
-          diamond: "#22D3EE"
-        }
+          common: "var(--rarity-common)",
+          rare: "var(--rarity-rare)",
+          epic: "var(--rarity-epic)",
+          legendary: "var(--rarity-legendary)",
+          diamond: "var(--rarity-diamond)",
+        },
       },
-      boxShadow: {
-        'gold': '0 0 20px rgba(200,155,60,0.25)'
+      fontFamily: {
+        display: ['Arial', 'Helvetica', 'system-ui', 'sans-serif'],
       },
-      animation: {
-        'pulse-gold': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-      }
+      letterSpacing: {
+        wider2: '0.18em',
+      },
     },
   },
   plugins: [],

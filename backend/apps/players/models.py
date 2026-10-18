@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.indexes import GinIndex
 from django.contrib.postgres.search import SearchVectorField
+from django.db.models.lookups import Exact
 
 ROLES = [
     ('top', 'Top'),
@@ -34,6 +35,15 @@ class Player(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        constraints = [
+            models.CheckConstraint(check=models.Q(worlds_count__gte=0), name='player_worlds_count_gte0'),
+            models.CheckConstraint(check=models.Q(worlds_titles_count__gte=0), name='player_titles_count_gte0'),
+            models.CheckConstraint(check=models.Q(primary_role__in=[role for role, _ in ROLES]), name='player_role_valid'),
+            models.CheckConstraint(check=models.Q(secondary_roles__contained_by=[role for role, _ in ROLES]), name='player_secondary_roles_valid'),
+            models.CheckConstraint(check=models.Q(birth_year__isnull=True) | models.Q(birth_year__range=(1900, 2100)), name='player_birth_year_valid'),
+            models.CheckConstraint(check=Exact(models.Func('attributes', function='jsonb_typeof', output_field=models.CharField()), models.Value('object')), name='player_attributes_object'),
+            models.CheckConstraint(check=Exact(models.Func('career_stats', function='jsonb_typeof', output_field=models.CharField()), models.Value('object')), name='player_career_stats_object'),
+        ]
         indexes = [
             GinIndex(fields=['attributes']),
             models.Index(fields=['primary_role', 'is_active']),
@@ -75,6 +85,10 @@ class PlayerTeamHistory(models.Model):
 
     class Meta:
         verbose_name_plural = 'Player team history'
+        constraints = [
+            models.CheckConstraint(check=models.Q(start_date__isnull=True) | models.Q(end_date__isnull=True) | models.Q(end_date__gte=models.F('start_date')), name='player_team_dates_ordered'),
+            models.CheckConstraint(check=models.Q(role__in=[''] + [role for role, _ in ROLES]), name='player_team_role_valid'),
+        ]
 
 class TournamentAppearance(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='tournament_appearances')
@@ -86,6 +100,11 @@ class TournamentAppearance(models.Model):
 
     class Meta:
         unique_together = [('player', 'tournament_slug')]
+        constraints = [
+            models.CheckConstraint(check=models.Q(year__range=(2000, 2100)), name='appearance_year_valid'),
+            models.CheckConstraint(check=models.Q(placement__isnull=True) | models.Q(placement__gte=1), name='appearance_placement_positive'),
+            models.CheckConstraint(check=models.Q(role__in=[''] + [role for role, _ in ROLES]), name='appearance_role_valid'),
+        ]
 
 class PlayerCoachHistory(models.Model):
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
@@ -96,3 +115,6 @@ class PlayerCoachHistory(models.Model):
     class Meta:
         verbose_name_plural = 'Player coach history'
         unique_together = [('player', 'coach', 'year')]
+        constraints = [
+            models.CheckConstraint(check=models.Q(year__isnull=True) | models.Q(year__range=(2000, 2100)), name='player_coach_year_valid'),
+        ]

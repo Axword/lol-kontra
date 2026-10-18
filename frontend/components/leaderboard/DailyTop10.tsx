@@ -1,67 +1,61 @@
 'use client'
-import { useQuery } from '@tanstack/react-query'
-import { api } from '@/lib/api'
+import Link from 'next/link'
+import { useLeaderboard } from '@/lib/api'
+import { usePrefs } from '@/lib/store'
+import LoadError from '@/app/load-error'
 
 type Entry = {
-  username: string,
-  total_points: number,
-  diamond_picks: number,
-  legendary_answers: number,
-  games_played?: number,
-  best_score?: number
+  username: string
+  total_points: number
+  diamond_picks?: number
+  legendary_answers?: number
 }
 
-export default function DailyTop10({ dailyId }: { dailyId?: number }) {
-  const { data, isLoading } = useQuery({
-    queryKey: ['leaderboard', dailyId || 'all'],
-    queryFn: async () => (await api.get('/leaderboard/', { params: dailyId ? { daily_id: dailyId } : {} })).data,
-    staleTime: 30_000
-  })
-
-  const rows: Entry[] = data?.results?.slice(0,10) || []
+export default function DailyTop10({ dailyId, limit = 10 }: { dailyId?: number; limit?: number }) {
+  const locale = usePrefs((s) => s.locale)
+  const { data, isLoading, isError, refetch } = useLeaderboard(dailyId)
+  const rows: Entry[] = (data?.results || []).slice(0, limit)
 
   return (
-    <div className="card-lol">
-      <div className="flex items-baseline justify-between mb-3">
-        <h3 className="font-bold">Top 10 – {dailyId ? `Daily #${dailyId}` : 'All-Time'}</h3>
-        <a href="/leaderboard" className="text-[11px] text-[#C89B3C] hover:underline">pełny ranking →</a>
+    <div className="min-w-0 border bg-white" style={{ borderColor: 'var(--line)' }}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b px-5 py-5" style={{ borderColor: 'var(--line)' }}>
+        <h2 className="text-base font-semibold">
+          {dailyId
+            ? (locale === 'pl' ? 'Ranking planszy' : 'Board ranking')
+            : (locale === 'pl' ? 'Najlepsi ogółem' : 'All-time top')}
+        </h2>
+        <Link href="/leaderboard" className="text-xs underline-offset-4 hover:underline" style={{ color: 'var(--gold)' }}>
+          {locale === 'pl' ? 'pełny ranking' : 'full ranking'}
+        </Link>
       </div>
 
-      {isLoading && <div className="text-sm text-zinc-400 py-6 text-center">Ładowanie…</div>}
-
-      {!isLoading && rows.length === 0 && (
-        <div className="text-sm text-zinc-500 py-6 text-center">Brak danych rankingowych – bądź pierwszy!</div>
+      {isLoading ? (
+        <p className="px-5 py-8 text-center text-sm" style={{ color: 'var(--text-dim)' }}>
+          {locale === 'pl' ? 'Wczytywanie…' : 'Loading…'}
+        </p>
+      ) : isError ? (
+        <LoadError onRetry={() => { void refetch() }} />
+      ) : rows.length === 0 ? (
+        <p className="px-5 py-8 text-center text-sm" style={{ color: 'var(--text-dim)' }}>
+          {locale === 'pl' ? 'Brak wyników do pokazania.' : 'No results yet.'}
+        </p>
+      ) : (
+        <ol>
+          {rows.map((r, i) => (
+            <li
+              key={`${r.username}-${i}`}
+              className="flex items-center gap-3 border-b px-5 py-4 text-sm last:border-b-0"
+              style={{ borderColor: 'var(--line-soft)' }}
+            >
+              <span className="w-5 shrink-0 tabular" style={{ color: i < 3 ? 'var(--gold)' : 'var(--text-dim)' }}>
+                {i + 1}
+              </span>
+              <span className="min-w-0 flex-1 break-words">{r.username}</span>
+              <span className="font-semibold tabular" style={{ color: 'var(--gold)' }}>{Math.round(r.total_points)}</span>
+            </li>
+          ))}
+        </ol>
       )}
-
-      {rows.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-[13px]">
-            <thead className="text-[11px] text-zinc-400 border-b border-zinc-800">
-              <tr className="[&>th]:py-2 [&>th]:font-medium [&>th]:text-left">
-                <th className="w-8">#</th>
-                <th>Gracz</th>
-                <th className="text-right">Pkt</th>
-                <th className="text-center">💎</th>
-                <th className="text-center">⭐</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r, i) => (
-                <tr key={i} className="border-b border-zinc-900 last:border-0 hover:bg-zinc-900/40">
-                  <td className="py-[10px] text-zinc-400">{i+1}</td>
-                  <td className="py-[10px] font-medium">
-                    <span className={i<3 ? 'text-[#C89B3C]' : 'text-white'}>{r.username}</span>
-                  </td>
-                  <td className="py-[10px] text-right font-semibold">{r.total_points}</td>
-                  <td className="py-[10px] text-center text-[#22D3EE]">{r.diamond_picks || 0}</td>
-                  <td className="py-[10px] text-center text-[#F59E0B]">{r.legendary_answers || 0}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-      <div className="text-[10px] text-zinc-500 mt-2">💎 = Diamond Picks • ⭐ = Legendary answers</div>
     </div>
   )
 }

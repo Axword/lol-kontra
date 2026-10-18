@@ -13,7 +13,8 @@ logs:
 	docker compose logs -f
 
 migrate:
-	docker compose exec api python manage.py migrate
+	docker compose exec api python manage.py bootstrap_database
+	docker compose exec api python manage.py check_release_data
 
 makemigrations:
 	docker compose exec api python manage.py makemigrations
@@ -28,17 +29,18 @@ seed-sample:
 	docker compose exec api python manage.py seed_players --sample
 
 seed-clear:
+	@test "$(CONFIRM_DATA_LOSS)" = "yes" || (echo "Use CONFIRM_DATA_LOSS=yes only for disposable development data"; exit 1)
 	docker compose exec api python manage.py seed_players --full --clear
 
 scrape:
 	docker compose exec api python -m scraper.main --full
 
 scrape-load:
-	docker compose exec api python manage.py seed_players --full --clear
+	docker compose exec api python manage.py seed_players --full
 
 test:
 	docker compose exec api pytest -q
-	docker compose exec frontend npm test --if-present
+	docker compose exec frontend npm test -- --run
 
 shell:
 	docker compose exec api python manage.py shell
@@ -50,5 +52,5 @@ bash-front:
 	docker compose exec frontend sh
 
 clean:
+	@test "$(CONFIRM_DATA_LOSS)" = "yes" || (echo "Use CONFIRM_DATA_LOSS=yes only to delete local development volumes"; exit 1)
 	docker compose down -v
-	docker system prune -f

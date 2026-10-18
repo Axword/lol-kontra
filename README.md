@@ -1,116 +1,52 @@
-# League of Legends Esports Roster Challenge – Worlds XI
+# League of Legends Esports Roster Challenge — Worlds XI
 
-Codzienna gra LoL Esports inspirowana Kontra.games „Mundialowa Jedenastka”.
+Codzienna gra inspirowana Kontra.games: ułóż skład TOP / JUNGLE / MID / ADC / SUPPORT. Każdy zawodnik musi spełniać dokładnie dwa wymagania pozycji, a pięć wyborów musi dotyczyć różnych osób. Interfejs jest dostępny po polsku i angielsku.
 
-**Stack:** Next.js 14 + TypeScript + Tailwind / Django 5 + DRF + PostgreSQL 16 + Redis 7
+Zaczynasz z 500 punktami. Poprawny wybór odejmuje procent osób, które wybrały tego zawodnika na tej pozycji; wyższy wynik jest lepszy. Masz 10 pomyłek. Po zakończeniu gry każde niewypełnione miejsce odejmuje 100 punktów. Gry archiwalne również liczą się do wyników i rankingów.
 
-Dokumentacja techniczna: [`docs/TECHNICAL_SPEC.md`](docs/TECHNICAL_SPEC.md)
+Stack: Next.js 14, React, TypeScript, Tailwind, Django 5.2 LTS, DRF, PostgreSQL 16, Redis 7 i Celery.
 
-## Szybki start
+## Uruchomienie
 
-```bash
+```sh
 cp .env.example .env
 docker compose up --build
-# ⏳ pierwszy start ~60-90s:
-#   - PostgreSQL init
-#   - Django makemigrations + migrate
-#   - AUTO-SEED: 876 graczy Worlds (via entrypoint.sh)
-#   - AUTO-DAILY: create_daily --publish
-# -> http://localhost   (frontend + mapa Rift)
-# -> http://localhost/api/docs/  (Swagger)
-# -> http://localhost/admin/  (admin / admin)
 ```
 
-**Entrypoint** (`backend/entrypoint.sh`) robi automatycznie przy każdym starcie kontenera:
-1. czeka na PostgreSQL + Redis
-2. `makemigrations && migrate`
-3. **sprawdza `Player.objects.count()`**
-   - `< 100` → `loaddata worlds_players_django` → **876 graczy**
-   - `> 700` → skip (2s)
-4. tworzy `ScoringConfig` jeśli brak
-5. `create_daily --publish` – dzisiejszy Daily z 5 slotami
-6. wyświetla podsumowanie:
-```
-====================================================
-  PLAYERS: 876
-  ACTIVE : 612
-  TODAY  : Daily #1 – 2026-07-07 – published – slots:5
-====================================================
-```
-7. `exec "$@"` → uruchamia `runserver` / `gunicorn` / `celery`
+Gra: <http://localhost>, API: <http://localhost/api/v1/>, Swagger: <http://localhost/api/docs/>, panel administracyjny: <http://localhost/admin/>. Konto administratora utworzysz przez `make createsuperuser`.
 
+Migracje instalują zamrożony pakiet 882 tożsamości z pełnymi dostępnymi metadanymi oraz 31 październikowych plansz z 310 oznaczonymi składami testowymi. Nie potrzebują dostępu do Leaguepedii. Istniejące plansze i rozgrywki pozostają zachowane. Entrypoint wykonuje `bootstrap_database`: blokadę równoległego startu, migracje i kontrolę kompletności; błąd przerywa start. Brakującą dzisiejszą planszę przygotowuje oddzielnie.
 
-## Komendy
+Przed publicznym hostingiem użyj oddzielnego `docker-compose.prod.yml`, prywatnego `.env.prod` i zewnętrznego HTTPS proxy. [Instrukcja wdrożenia, uprawnienia i backup](docs/DEPLOYMENT.md).
 
-```
-make up          # docker compose up --build
-make down
-make logs
-make migrate     # python manage.py migrate
+## Polecenia
+
+```sh
+make up                 # uruchom środowisko Docker
+make down               # zatrzymaj środowisko
+make logs               # logi usług
+make migrate            # migracje bazy
+make seed               # seed_players --full: aktualizacja z kanonicznego pliku
 make createsuperuser
-make seed        # seed 50 top graczy
-make scrape      # scraper full Worlds S1-S15
-make test
-make shell
+make test               # testy backendu i frontendu
 ```
 
-## Struktura
+Przygotowanie pojedynczej planszy lub kalendarza deweloperskiego:
 
-- `frontend/` – Next.js 14 App Router, PL/EN
-- `backend/` – Django 5 + DRF
-- `scraper/` – Leaguepedia + gol.gg ETL
-- `worker/` – Celery
-
-## Etapy
-
-- [x] Etap 0 – Dokumentacja techniczna
-- [x] Etap 0.5 – Monorepo + Docker scaffold
-- [x] Etap 1 – Modele DB + Admin + seed (36 graczy)
-- [x] Etap 2 – Scraper MVP (Leaguepedia Cargo + gol.gg stub)
-- [x] Etap 3 – API Daily + Submissions + Condition Evaluator + Diamond Pick
-- [x] Etap 4 – Scoring Engine + Rarity + Celery
-- [x] Etap 5 – Frontend core (RosterBoard, PlayerSearch, Results)
-- [x] Etap 6 – Auth scaffolding + UserStats + Leaderboard API
-- [x] Etap 7 – Admin API + Daily Generator
-- [ ] Etap 8 – OAuth Google/Discord keys, Admin SPA, E2E, deploy produkcyjny
-
-Szczegóły: [`docs/IMPLEMENTATION_STATUS.md`](docs/IMPLEMENTATION_STATUS.md)
-
-## Uruchomienie – krok po kroku
-
-```bash
-cp .env.example .env
-make up
-# pierwsze uruchomienie:
-# - automatycznie: makemigrations + migrate
-# - automatycznie: seed_players --full  → 876 graczy Worlds
-# - automatycznie: create_daily --publish
-# poczekaj ~30-60s na pierwszy seed (jednorazowo)
-# Otwórz http://localhost
-```
-
-**Dane w bazie po starcie:**
-- **876 zawodników Worlds S1–S15** – auto-ładowane z `backend/apps/players/fixtures/worlds_players_full.json`
-- 1 Daily wygenerowany automatycznie
-- ScoringConfig, UserStats – gotowe
-
-Ręczne komendy:
-```bash
-make seed              # seed_players --full  (876 graczy, idempotentny)
-make seed-sample       # tylko 36 top graczy
-make seed-clear        # wyczyść + załaduj pełną bazę
-# lub Django fixtures:
-docker compose exec api python manage.py loaddata worlds_players_django
-# -> Installed 876 object(s)
-
-# stwórz nowy Daily:
+```sh
 docker compose exec api python manage.py create_daily --publish
+docker compose exec api python manage.py prepare_month --month 2026-10 --voters 10
 ```
 
-Test API:
-- http://localhost/api/docs/ – Swagger
-- http://localhost/api/v1/dailies/today/
-- http://localhost/api/v1/players/?search=faker
-- http://localhost/admin/ – Django Admin
+`prepare_month` tworzy cały miesiąc oraz oznaczone `is_seed` składy testowe. Te wybory tworzą przykładowe procenty popularności, ale nie trafiają do rankingów ani statystyk użytkowników. Ponowne uruchomienie zachowuje istniejące odpowiedzi. Przyszłe plansze otwierają się dopiero w dniu swojej daty w strefie Europe/Warsaw; API nie ujawnia ich wcześniej.
 
-Licencja: MIT (do ustalenia)
+## Dane i weryfikacja
+
+Kanoniczny plik zachowuje 882 tożsamości, z czego 738 ma potwierdzone występy w 1389 grach Worlds. Dostępne są 733 zdjęcia Leaguepedii i kompletne statystyki zarejestrowanej kariery 737 osób; sprzeczne źródło JackeyLove pozostaje niekompletne.
+
+Historia lig 738 zawodników została zweryfikowana na podstawie rzeczywistych występów i metadanych turniejów. Dla 17 osób źródło nie potwierdza konkretnej ligi regionalnej; rezydencja zawodnika nie zastępuje tego dowodu.
+
+- [Dane, ograniczenia źródeł i odtwarzalne odświeżanie](docs/WORLDS_DATA.md).
+- [Testy i aktualny zakres weryfikacji](docs/TESTING.md).
+
+Struktura: `frontend/` — interfejs; `backend/` — API, generowanie plansz, punktacja i import danych; `infra/` — konfiguracja Nginx. Historyczny scraper znajduje się w `scraper/`; bieżący import korzysta z poleceń Django opisanych w dokumentacji danych.

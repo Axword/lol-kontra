@@ -17,3 +17,11 @@ class DailySerializer(serializers.ModelSerializer):
     class Meta:
         model = Daily
         fields = ['id', 'date', 'status', 'reveal_mode', 'slots']
+
+    def validate(self, attrs):
+        if attrs.get('status') == 'published':
+            slots = list(self.instance.slots.prefetch_related('conditions')) if self.instance else []
+            if (len(slots) != 5 or {slot.role for slot in slots} != {'top', 'jungle', 'mid', 'adc', 'support'}
+                    or any(len(slot.conditions.all()) != 2 for slot in slots)):
+                raise serializers.ValidationError({'status': 'Każda z pięciu pozycji musi mieć dokładnie dwa warunki.'})
+        return attrs

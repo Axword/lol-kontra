@@ -1,0 +1,106 @@
+# Wdrożenie i dane
+
+## Co jest w repozytorium
+
+Zwykłe `python manage.py migrate --noinput` na pustym PostgreSQL instaluje schemat oraz zamrożony pakiet danych z 18.10.2026:
+
+- 882 tożsamości zawodników, w tym 738 ze zweryfikowanymi danymi Worlds;
+- statystyki, historię lig i turniejów, championów oraz metadane 733 zdjęć;
+- 31 plansz na październik 2026, po pięć ról i dokładnie dwa wymagania;
+- po 10 oznaczonych składów testowych na planszę: 310 składów i 1550 wyborów;
+- konfigurację punktacji.
+
+Zdjęcia są adresami źródłowymi Leaguepedii; migracja nie pobiera plików zdjęć. Wymagania oparte na niekompletnych danych pozostają wyłączone. Przyszłe plansze są zapisane, ale API udostępnia je dopiero w odpowiednim dniu według `Europe/Warsaw`. Składy testowe wpływają na procent wyborów, a nie na ranking prawdziwych graczy.
+
+Pliki wymagane w commicie:
+
+- `backend/apps/players/fixtures/releases/worlds_players_2026_10_18_v1.json.gz`;
+- `backend/apps/dailies/fixtures/releases/october_2026_v1.json.gz`;
+- wszystkie nowe migracje, w tym pomocniczy `_october_2026_release.py`;
+- komendy administracyjne, konfiguracja produkcyjna i `backend/requirements.lock`.
+
+Pakiety są sprawdzane przez SHA-256 przed zapisem. Migracje korzystają z modeli historycznych i nie wymagają połączenia z Leaguepedią. Nie zmieniaj istniejących pakietów ani zastosowanych migracji; kolejne aktualizacje danych powinny mieć nową migrację i nowy plik wydania.
+
+Na istniejącej bazie import zachowuje identyfikatory zawodników, plansze i postęp gry. Istniejące daty plansz nie są nadpisywane. Powtórne wdrożenie nie regeneruje kalendarza ani głosów. Nieprawidłowe stare rekordy zatrzymają migrację z informacją o problemie, bez automatycznego usuwania danych.
+
+**Konta i rozgrywki prawdziwych użytkowników nie są eksportowane do repozytorium.** Aby przenieść także te dane z istniejącego serwera, potrzebna jest jego kopia PostgreSQL. Sama migracja odtwarza dane gry, nie prywatne zapisy użytkowników.
+
+## Nowy serwer z Docker Compose
+
+Poniższe polecenia wykonuj w katalogu projektu. Produkcja ma osobny projekt Compose i trwałe wolumeny. Nie łącz pliku produkcyjnego z deweloperskim `docker-compose.yml`.
+
+```sh
+cp .env.prod.example .env.prod
+```
+
+Uzupełnij `.env.prod`: losowy `DJANGO_SECRET_KEY` o długości co najmniej 50 znaków, publiczną domenę w `DJANGO_ALLOWED_HOSTS` bez protokołu oraz dwa różne konta PostgreSQL z osobnymi silnymi hasłami (minimum 16 znaków). `POSTGRES_USER` jest właścicielem używanym przy migracjach, a `POSTGRES_APP_USER` kontem aplikacji. Nie zapisuj rzeczywistych sekretów w plikach przykładowych. `.env.prod` jest ignorowany przez Git.
+
+Ruch publiczny powinien przechodzić przez reverse proxy z HTTPS do `127.0.0.1:8080`. Proxy musi zachować publiczny nagłówek `Host` oraz nadpisać `X-Forwarded-Proto` wartością `https`. Backend ufa temu nagłówkowi w tym wariancie wdrożenia. Ustaw `HTTP_PORT`, jeśli potrzebujesz innego portu lokalnego. Przy wspólnej domenie frontendu i API listy CORS/CSRF mogą pozostać puste; dla osobnych originów podaj pełne adresy HTTPS.
+
+```sh
+docker compose --env-file .env.prod -f docker-compose.prod.yml config --quiet
+docker compose --env-file .env.prod -f docker-compose.prod.yml up --build -d
+docker compose --env-file .env.prod -f docker-compose.prod.yml logs release
+```
+
+Jednorazowa usługa `release` czeka na bazę, blokuje równoległe inicjalizacje blokadą PostgreSQL, wykonuje migracje, sprawdza komplet danych i uprawnienia aplikacji, a następnie zbiera pliki statyczne. API, worker i beat startują dopiero po jej sukcesie. Błąd nie jest ignorowany. Kontenery aplikacji korzystają z konta bez uprawnień administratora bazy i bez możliwości tworzenia tabel lub zmiany `django_migrations`.
+
+Baza i Redis mają wyłącznie sieć wewnętrzną, bez publicznie wystawionych portów. Obrazy backendu i frontendu uruchamiają aplikację jako użytkownik bez roota. Pythonowe zależności są przypięte wraz z hashami w `requirements.lock`; obrazy i CI weryfikują hashe podczas instalacji.
+
+Kontrola po wdrożeniu:
+
+```sh
+docker compose --env-file .env.prod -f docker-compose.prod.yml run --rm release python manage.py check_release_data
+```
+
+Na świeżej, niezmienianej instalacji można dodać `--strict`, aby porównać także dane zawodników z pakietem wydania i sprawdzić dziesięć składów testowych dla każdej daty. Zwykła kontrola pozwala na późniejsze aktualizacje danych źródłowych.
+
+Jeżeli dzień dzisiejszy nie jest objęty zapisanym kalendarzem, `bootstrap_database` tworzy go tylko wtedy, gdy taka data jeszcze nie istnieje. Endpoint dzisiejszej planszy również potrafi przygotować brakujący dzień na żądanie. Nie ma automatycznego zadania Celery generującego kalendarz. Bootstrap nie nadpisuje istniejącej planszy ani nie publikuje automatycznie istniejącego szkicu.
+
+## Kopia przed aktualizacją i przenoszenie istniejącej bazy
+
+Przed aktualizacją działającego serwera:
+
+```sh
+# Przygotowanie prywatnego katalogu na standardowym rootful Dockerze (jednorazowo).
+sudo install -d -o 0 -g 0 -m 0700 backups
+docker compose --env-file .env.prod -f docker-compose.prod.yml --profile maintenance run --rm backup
+```
+
+Kontener kopii działa jako UID 0 bez dodatkowych capabilities i musi mieć prawo zapisu do tego katalogu. Przy rootless Dockerze lub mapowaniu UID dostosuj właściciela katalogu do rzeczywistego UID procesu na hoście.
+
+Kopia w formacie `pg_dump --format=custom` trafia do prywatnego katalogu `backups/` na hoście. Skrypt kończy się błędem przy nieudanym eksporcie i sprawdza spis archiwum przez `pg_restore --list`, zanim nada plikowi końcową nazwę. Katalog jest ignorowany przez Git. Kopie przechowuj również poza serwerem. Usługa nie wykonuje automatycznego harmonogramu ani usuwania starszych kopii.
+
+Przy przenoszeniu rozgrywek odtwórz kopię **do osobnej, pustej bazy**, zanim wykonasz `bootstrap_database`. Użyj `pg_restore --no-owner --no-acl --exit-on-error` kontem właściciela. Nie używaj `--clean` na działającej bazie. Po odtworzeniu nadaj kontu aplikacji uprawnienia do istniejących tabel i sekwencji, a następnie uruchom nowe migracje. Właściciel musi być właścicielem odtwarzanych obiektów.
+
+Skrypt `infra/postgres/init-runtime-role.sh` zakłada konto i domyślne uprawnienia tylko podczas pierwszego startu **pustego** wolumenu PostgreSQL. Na istniejącym wolumenie lub u dostawcy zarządzanej bazy administrator musi zapewnić odpowiadające mu konto i granty. `bootstrap_database` sprawdza połączenie, brak praw administracyjnych, dostęp do tabel i sekwencji oraz blokadę historii migracji. Nie podmieniaj hasła w samym `.env.prod`, oczekując zmiany hasła już istniejącej roli w PostgreSQL.
+
+Nie używaj `docker compose down -v` ani poleceń czyszczących dane do aktualizacji produkcji. Migracje nie zastępują kopii zapasowej.
+
+## Hosting z zarządzanym PostgreSQL
+
+Komendy można uruchamiać bez Compose. W kroku wydania użyj konta właściciela i bezpośredniego połączenia PostgreSQL:
+
+```sh
+python manage.py bootstrap_database
+python manage.py collectstatic --noinput
+```
+
+Ustaw jednocześnie `POSTGRES_APP_USER` i `POSTGRES_APP_PASSWORD`, aby krok wydania zweryfikował osobną rolę aplikacji. W procesach API/Celery ustaw już jej własny `DATABASE_URL` albo `POSTGRES_USER`/`POSTGRES_PASSWORD`. Migracje i blokada sesyjna wymagają połączenia bez puli w trybie transakcyjnym. Parser `DATABASE_URL` zachowuje opcje TLS dostawcy, w tym `sslmode` i certyfikaty. Dla połączenia zewnętrznego ustaw TLS zgodnie z wymaganiami dostawcy. Konfiguracja `DEBUG=false` wymaga jawnych sekretów, hostów i danych połączenia.
+
+## Weryfikacja przed commitem
+
+```sh
+cd backend
+python manage.py makemigrations --check --dry-run
+python -m tests.deploy_smoke
+pytest -q
+```
+
+Test wdrożenia wymaga lokalnego PostgreSQL i konta z `CREATEDB`/`CREATEROLE`. Tworzy osobną losową bazę i rolę, sprawdza prawdziwe migracje od zera, ponowne wdrożenie, zachowanie postępu, ukrywanie przyszłych plansz i faktyczny brak praw DDL konta aplikacji. Usuwa tylko własną bazę i rolę testową; nie migruje bazy aplikacji.
+
+Zmiany zależności zapisuj najpierw w `requirements.txt`, następnie odtwórz lock i ponownie wykonaj testy:
+
+```sh
+uv pip compile requirements.txt --universal --python-version 3.12 --generate-hashes --output-file requirements.lock
+```

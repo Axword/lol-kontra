@@ -1,14 +1,90 @@
 import os
+import ipaddress
+import re
+import structlog
 from pathlib import Path
+from urllib.parse import urlsplit
+
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).resolve().parent.parent.parent / '.env')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret-change-me')
-DEBUG = os.getenv('DJANGO_DEBUG', 'true').lower() == 'true'
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
+def env_bool(name, default=False):
+    value = os.getenv(name, str(default)).strip().lower()
+    if value not in ('true', 'false', '1', '0'):
+        raise ImproperlyConfigured(f'{name} must be true or false')
+    return value in ('true', '1')
+
+
+def env_list(name, default=''):
+    return [value.strip() for value in os.getenv(name, default).split(',') if value.strip()]
+
+
+def valid_host(host):
+    if host.startswith('[') or host.endswith(']'):
+        if not (host.startswith('[') and host.endswith(']')):
+            return False
+        try:
+            return ipaddress.ip_address(host[1:-1]).version == 6
+        except ValueError:
+            return False
+    try:
+        ipaddress.ip_address(host)
+        return True
+    except ValueError:
+        return bool(len(host) <= 253 and all(
+            re.fullmatch(r'[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?', label, re.I)
+            for label in host.rstrip('.').split('.')
+        ))
+
+
+def origin_list(name, default=''):
+    origins = env_list(name, default)
+    for origin in origins:
+        try:
+            parsed = urlsplit(origin)
+            allowed_schemes = ('http', 'https') if DEBUG else ('https',)
+            valid = (
+                parsed.scheme in allowed_schemes and parsed.hostname
+                and valid_host(parsed.hostname) and '*' not in origin
+                and parsed.username is None and parsed.password is None
+                and not parsed.path and not parsed.query and not parsed.fragment
+                and (parsed.port is None or 0 < parsed.port <= 65535)
+                and not any(character.isspace() for character in origin)
+            )
+        except ValueError:
+            valid = False
+        if not valid:
+            raise ImproperlyConfigured(f'{name} must contain explicit origins with no path; production requires HTTPS')
+    return origins
+
+
+DEBUG = env_bool('DJANGO_DEBUG', True)
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'dev-secret-change-me' if DEBUG else '')
+ALLOWED_HOSTS = env_list('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,[::1]' if DEBUG else '')
+if not DEBUG:
+    if (
+        len(SECRET_KEY) < 50 or len(set(SECRET_KEY)) < 5
+        or SECRET_KEY.lower().startswith(('django-insecure-', 'dev-secret', 'change-me', 'changeme'))
+    ):
+        raise ImproperlyConfigured('DJANGO_SECRET_KEY must be a unique production secret of at least 50 characters')
+    if not ALLOWED_HOSTS or any(not valid_host(host) or '*' in host for host in ALLOWED_HOSTS):
+        raise ImproperlyConfigured('DJANGO_ALLOWED_HOSTS must contain explicit hostnames or IP addresses without wildcards or ports')
+
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
+# Enable only behind a proxy which overwrites this header and blocks direct access.
+SECURE_PROXY_SSL_HEADER = (
+    ('HTTP_X_FORWARDED_PROTO', 'https') if env_bool('DJANGO_TRUST_PROXY_HEADERS') else None
+)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -82,21 +158,28 @@ ASGI_APPLICATION = 'config.asgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'lolroster'),
-        'USER': os.getenv('POSTGRES_USER', 'lolroster'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'lolroster'),
-        'HOST': os.getenv('POSTGRES_HOST', 'db'),
+        'NAME': os.getenv('POSTGRES_DB', 'lolroster' if DEBUG else ''),
+        'USER': os.getenv('POSTGRES_USER', 'lolroster' if DEBUG else ''),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'lolroster' if DEBUG else ''),
+        'HOST': os.getenv('POSTGRES_HOST', 'db' if DEBUG else ''),
         'PORT': os.getenv('POSTGRES_PORT', '5432'),
     }
 }
 
 # Allow DATABASE_URL override
 if os.getenv('DATABASE_URL'):
+    from .database import postgres_config
     try:
-        import dj_database_url
-        DATABASES['default'] = dj_database_url.parse(os.getenv('DATABASE_URL'))
-    except ImportError:
-        pass
+        DATABASES['default'] = postgres_config(os.environ['DATABASE_URL'])
+    except ValueError:
+        raise ImproperlyConfigured('DATABASE_URL must be a valid PostgreSQL connection URL') from None
+
+if not DEBUG:
+    database = DATABASES['default']
+    if any(not database[name] for name in ('NAME', 'USER', 'PASSWORD', 'HOST')):
+        raise ImproperlyConfigured('Production database requires explicit POSTGRES_DB/USER/PASSWORD/HOST or DATABASE_URL credentials')
+    if len(database['PASSWORD']) < 16 or database['PASSWORD'].lower() in ('lolroster', 'postgres', 'password', 'change-me', 'changeme'):
+        raise ImproperlyConfigured('Production database password must be non-default and at least 16 characters')
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -149,8 +232,10 @@ REST_FRAMEWORK = {
 }
 
 # CORS
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:3000').split(',')
+CORS_ALLOWED_ORIGINS = origin_list('CORS_ALLOWED_ORIGINS', 'http://localhost:3000' if DEBUG else '')
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = origin_list('CSRF_TRUSTED_ORIGINS')
 
 # drf-spectacular
 SPECTACULAR_SETTINGS = {
@@ -203,11 +288,11 @@ LOGGING = {
     'formatters': {
         'json': {
             '()': 'structlog.stdlib.ProcessorFormatter',
-            'processor': 'structlog.processors.JSONRenderer',
+            'processor': structlog.processors.JSONRenderer(),
         },
         'console': {
             '()': 'structlog.stdlib.ProcessorFormatter',
-            'processor': 'structlog.dev.ConsoleRenderer',
+            'processor': structlog.dev.ConsoleRenderer(),
         },
     },
     'handlers': {

@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from apps.dailies.generator import generate_daily
 
@@ -16,7 +16,10 @@ class Command(BaseCommand):
             date = datetime.strptime(date_str, '%Y-%m-%d').date()
         else:
             date = timezone.localdate()
-        daily = generate_daily(date=date)
+        try:
+            daily = generate_daily(date=date)
+        except ValueError as error:
+            raise CommandError(str(error)) from error
         if options['publish']:
             daily.status = 'published'
             daily.published_at = timezone.now()

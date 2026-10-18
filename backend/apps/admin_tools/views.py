@@ -18,6 +18,11 @@ class AdminDailyViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def publish(self, request, pk=None):
         daily = self.get_object()
+        slots = list(daily.slots.prefetch_related('conditions'))
+        if (len(slots) != 5 or {slot.role for slot in slots} != {'top', 'jungle', 'mid', 'adc', 'support'}
+                or any(len(slot.conditions.all()) != 2 for slot in slots)):
+            return Response({'detail': 'Każda z pięciu pozycji musi mieć dokładnie dwa warunki.'},
+                            status=status.HTTP_400_BAD_REQUEST)
         from django.utils import timezone
         daily.status = 'published'
         daily.published_at = timezone.now()

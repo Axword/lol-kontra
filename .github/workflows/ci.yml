@@ -33,15 +33,18 @@ jobs:
       - name: Install deps
         run: |
           cd backend
-          pip install -r requirements.txt
+          pip install --require-hashes -r requirements.lock
       - name: Run tests
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/test
           DJANGO_SECRET_KEY: ci
           REDIS_URL: redis://localhost:6379/0
+          DJANGO_DEBUG: 'true'
         run: |
           cd backend
-          python manage.py test --settings=config.settings -v 2 || pytest -q
+          python manage.py makemigrations --check --dry-run
+          python -m tests.deploy_smoke
+          pytest -q
 
   frontend:
     runs-on: ubuntu-latest
@@ -54,3 +57,7 @@ jobs:
         run: cd frontend && npm ci
       - name: Build
         run: cd frontend && npm run build
+      - name: Lint
+        run: cd frontend && npm run lint
+      - name: Test
+        run: cd frontend && npm test -- --run

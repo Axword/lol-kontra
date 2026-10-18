@@ -1,30 +1,32 @@
 'use client'
+import { usePrefs } from '@/lib/store'
+import GameLayout from '@/components/layout/GameLayout'
+
 export default function ProfilePage() {
+  const locale = usePrefs((s) => s.locale)
+  const pl = locale === 'pl'
+
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Profil</h1>
-      <div className="card-lol">
-        <p className="text-lol-muted">Zaloguj się przez Google / Discord aby zapisywać historię gier, streaki i Diamond Picks.</p>
-        <div className="mt-4 flex gap-3">
-          <button className="pill">Zaloguj Google (wkrótce)</button>
-          <button className="pill">Zaloguj Discord (wkrótce)</button>
+    <GameLayout>
+      <div className="mx-auto w-full max-w-5xl space-y-7">
+        <header>
+          <h1 className="text-[28px] font-semibold leading-tight sm:text-[32px]">{pl ? 'Profil' : 'Profile'}</h1>
+        </header>
+
+        <div className="max-w-2xl border bg-white p-6 sm:p-8" style={{ borderColor: 'var(--line)' }}>
+          <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>
+            {pl
+              ? 'Grasz jako gość. Twoje wyniki są przypisane do tej przeglądarki – wyczyszczenie danych strony je usunie.'
+              : 'You are playing as a guest. Your results are tied to this browser and will be lost if you clear site data.'}
+          </p>
         </div>
+
+        {/*
+          Świadomie nie pokazujemy tu kart ze statystykami. Do czasu uruchomienia
+          logowania nie mamy czym ich wypełnić, a puste liczniki („0”, „—”)
+          sprawiały wrażenie zepsutej strony.
+        */}
       </div>
-      <div className="grid md:grid-cols-3 gap-4">
-        {[
-          ['Rozegrane', '0'],
-          ['Średni wynik', '—'],
-          ['Diamond Picks', '0'],
-          ['Legendary', '0'],
-          ['Best score', '—'],
-          ['Streak', '0'],
-        ].map(([k,v])=>(
-          <div key={k} className="card-lol">
-            <div className="text-xs text-lol-muted">{k}</div>
-            <div className="text-2xl font-bold text-lol-gold">{v}</div>
-          </div>
-        ))}
-      </div>
-    </div>
+    </GameLayout>
   )
 }
