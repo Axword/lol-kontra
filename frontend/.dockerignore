@@ -1,6 +1,7 @@
 .env*
 node_modules
 .next
+public/data
 .git
 coverage
 .cache

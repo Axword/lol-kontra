@@ -77,6 +77,26 @@ Skrypt `infra/postgres/init-runtime-role.sh` zakłada konto i domyślne uprawnie
 
 Nie używaj `docker compose down -v` ani poleceń czyszczących dane do aktualizacji produkcji. Migracje nie zastępują kopii zapasowej.
 
+## Frontend na Vercelu
+
+Projekt Vercel publikuje frontend z katalogu `frontend`. Django API, PostgreSQL, Redis oraz procesy Celery muszą działać na osobnym hostingu, przygotowanym według sekcji powyżej. W repozytorium nie ma publicznego adresu wdrożonego API; lokalny `localhost:8000` nie jest adresem dostępnym dla odwiedzających stronę.
+
+W ustawieniach projektu Vercel wybierz:
+
+- Root Directory: `frontend`;
+- Framework Preset: Next.js;
+- Production Branch: `master`;
+- Install Command: `npm ci`, Build Command: `npm run build`;
+- Output Directory: domyślne ustawienie Next.js, bez nadpisania na `out` lub `.next/standalone`.
+
+Przed wdrożeniem ustaw `NEXT_PUBLIC_API_URL` w środowisku Production, a jeśli korzystasz z podglądów, również Preview. Wartością musi być publiczny adres HTTPS Django z prefiksem API, przykładowo `https://api.example.com/api/v1` — to przykład, który trzeba zastąpić własnym hostem. Adres nie może zawierać loginu, hasła, query ani fragmentu, wskazywać localhost/loopback ani domeny tego frontendu. Samo `/api/v1` jest przeznaczone dla wariantu Docker z Nginx; ten projekt Next.js nie ma proxy ani własnych endpointów Django.
+
+Konfiguracja zatrzymuje build Vercela przy brakującym lub nieprawidłowym adresie API, zanim taki build zastąpi działającą wersję. Lokalne uruchamianie i Docker zachowują dotychczasowe adresy. `VERCEL_ENV=development` jest traktowane jako środowisko lokalne. Po zmianie adresu API wykonaj nowe wdrożenie: [Next.js zapisuje zmienne `NEXT_PUBLIC_` podczas builda](https://nextjs.org/docs/pages/guides/environment-variables#bundling-environment-variables-for-the-browser).
+
+Na hostingu Django ustaw `DJANGO_ALLOWED_HOSTS` na rzeczywisty host API, a `CORS_ALLOWED_ORIGINS` na dokładny adres HTTPS frontendu, np. `https://projekt.vercel.app`. Przy użyciu sesji lub żądań wymagających CSRF dodaj ten origin również do `CSRF_TRUSTED_ORIGINS`. Dodatkowe domeny podglądów wymagają jawnego dopisania odpowiednich originów; produkcyjna konfiguracja nie dopuszcza wildcardów. Sekrety PostgreSQL i Django pozostają na hostingu backendu.
+
+Test blokady konfiguracji uruchamia się przez `cd frontend && npm run test:config`; jest również częścią `npm test`. Zmienne i powiązanie Git projektu Vercel są ustawieniami hostingu — sam push nie konfiguruje API ani bazy.
+
 ## Hosting z zarządzanym PostgreSQL
 
 Komendy można uruchamiać bez Compose. W kroku wydania użyj konta właściciela i bezpośredniego połączenia PostgreSQL:
