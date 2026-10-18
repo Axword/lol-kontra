@@ -1,6 +1,6 @@
 # Vercel + Render + Neon
 
-Instrukcja dotyczy istniejących usług. Frontend to [lol-kontra.vercel.app](https://lol-kontra.vercel.app), a docelowy adres Django API to `https://lol-kontra.onrender.com/api/v1`. W Vercelu ustawiono już adres API dla Production i Preview. Wdrożenie nowej konfiguracji Rendera pozostaje w toku; poniższe ustawienia nie oznaczają jeszcze potwierdzonego uruchomienia API.
+Instrukcja dotyczy działających usług: [frontendu](https://lol-kontra.vercel.app) i Django API `https://lol-kontra.onrender.com/api/v1`. Dla commita `e686188` Render potwierdził Live (`dep-dbajr4u7bikc73etp5s0`, 2 min 05 s), a Vercel Production Ready (`GJrFKwDfGcHMdYQA7kjy6p6bZHWh`, 59 s). W Chrome sprawdzono jasny interfejs, planszę oraz podpowiedź Fakera ze zdjęciem.
 
 ## Frontend w Vercelu
 
@@ -32,7 +32,7 @@ Panel może wyświetlać ścieżki z prefiksem `backend/`; nie dodawaj go ponown
 
 ## Zmienne backendu
 
-Wprowadź je w prywatnym środowisku Rendera. Można użyć przygotowanego lokalnie, ignorowanego przez Git payloadu; nie dodawaj go do repozytorium ani logów.
+Do prywatnego środowiska Rendera bezpiecznie zaimportowano 18 kluczy z lokalnego payloadu ignorowanego przez Git. Przy odtwarzaniu konfiguracji użyj poniższych ustawień; nie zapisuj payloadu ani wartości sekretów w repozytorium lub logach.
 
 | Zmienna | Wartość lub źródło |
 | --- | --- |
@@ -54,15 +54,26 @@ Właściciel bazy służy do migracji, a ograniczona rola do ruchu API. Dane `PO
 
 ## Cache i zadania w tle
 
-Utworzono Free Key Value `lol-kontra-cache` we Frankfurcie: 25 MB, limit 50 połączeń, dostęp prywatny bez ruchu zewnętrznego. W chwili przygotowania instrukcji zasób miał status `Creating`; przed wdrożeniem sprawdź gotowość i ustaw jego wewnętrzny URL w `REDIS_URL`. Nie zastępuj go adresem publicznym.
+Free Key Value `lol-kontra-cache` we Frankfurcie działa: 25 MB, limit 50 połączeń, dostęp prywatny bez ruchu zewnętrznego. Backend używa wewnętrznego URL w `REDIS_URL`; publiczne zapytania API korzystające z PostgreSQL i Redisa zwróciły HTTP 200. Nie zastępuj połączenia adresem publicznym.
 
-Zwykła rozgrywka działa przez API bez workera Celery. Administracyjne przeliczanie wyników i nocna finalizacja wymagają osobnego workera oraz schedulera z tym samym środowiskiem i właściwymi `CELERY_BROKER_URL` / `CELERY_RESULT_BACKEND`. Te procesy nie zostały dotąd wdrożone. Instrukcja nie zakłada tworzenia płatnych zasobów.
+Zwykła rozgrywka działa przez API bez workera Celery. Administracyjne przeliczanie wyników i nocna finalizacja wymagają osobnego workera oraz schedulera z tym samym środowiskiem i właściwymi `CELERY_BROKER_URL` / `CELERY_RESULT_BACKEND`. Te procesy nie zostały dotąd wdrożone. Nie utworzono płatnych zasobów.
 
 ## Sprawdzenie po wdrożeniu
 
-Backend ma WhiteNoise do plików statycznych oraz `/healthz/` sprawdzający żywotność procesu bez zapytań do PostgreSQL ani Redisa. Lokalnie odpowiedni zakres 66 testów przeszedł; nie potwierdza to jeszcze wdrożenia Rendera.
+Backend ma WhiteNoise do plików statycznych oraz `/healthz/` sprawdzający żywotność procesu bez zapytań do PostgreSQL ani Redisa. Pełny zestaw backendu przeszedł na odizolowanej lokalnej bazie testowej: 431 testów, 175 ostrzeżeń, 187,48 s. Frontend: 119 testów i build zakończone powodzeniem.
 
-Po uzyskaniu statusu Live sprawdź:
+Publiczna kontrola po wdrożeniu przeszła bez zapisu danych użytkowników:
+
+- frontend i `/healthz/`: HTTP 200;
+- dzisiejsza plansza: pięć ról, każda z dokładnie dwoma wymaganiami;
+- wyszukiwanie Fakera ze zdjęciem oraz dostęp API do PostgreSQL i Redisa: HTTP 200;
+- CORS dla produkcyjnego originu i preflight dozwolone, niezaufany origin blokowany;
+- przyszła plansza i jej rozwiązania: HTTP 404;
+- plik CSS panelu administracyjnego z hashem w nazwie: HTTP 200.
+
+Neon zawiera 882 tożsamości, 738 zweryfikowanych uczestników Worlds, 733 zdjęcia, 737 kompletnych statystyk kariery, 31 plansz i 310 oznaczonych składów testowych. Nie migrowano kont użytkowników.
+
+Po kolejnych wdrożeniach powtórz:
 
 ```sh
 curl --fail https://lol-kontra.onrender.com/healthz/

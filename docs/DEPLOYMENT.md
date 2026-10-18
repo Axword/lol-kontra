@@ -5,7 +5,7 @@
 Zwykłe `python manage.py migrate --noinput` na pustym PostgreSQL instaluje schemat oraz zamrożony pakiet danych z 18.10.2026:
 
 - 882 tożsamości zawodników, w tym 738 ze zweryfikowanymi danymi Worlds;
-- statystyki, historię lig i turniejów, championów oraz metadane 733 zdjęć;
+- statystyki (w tym 737 kompletnych statystyk kariery), historię lig i turniejów, championów oraz metadane 733 zdjęć;
 - 31 plansz na październik 2026, po pięć ról i dokładnie dwa wymagania;
 - po 10 oznaczonych składów testowych na planszę: 310 składów i 1550 wyborów;
 - konfigurację punktacji.
@@ -79,7 +79,7 @@ Nie używaj `docker compose down -v` ani poleceń czyszczących dane do aktualiz
 
 ## Frontend na Vercelu
 
-Projekt Vercel publikuje frontend z katalogu `frontend`. Django API, PostgreSQL, Redis oraz procesy Celery wymagają osobnego hostingu. Dla istniejącego frontendu `https://lol-kontra.vercel.app` ustawiono w Production i Preview `NEXT_PUBLIC_API_URL=https://lol-kontra.onrender.com/api/v1`. Nowe wdrożenie Rendera pozostaje w toku, a procesów Celery jeszcze tam nie uruchomiono. Ustawienia tych usług i kontrolę po wdrożeniu opisuje [RENDER.md](RENDER.md). Lokalny `localhost:8000` nie jest adresem dostępnym dla odwiedzających stronę.
+Projekt Vercel publikuje frontend z katalogu `frontend`. [Jasny frontend](https://lol-kontra.vercel.app) i Django API `https://lol-kontra.onrender.com/api/v1` są uruchomione z commita `e686188`: Vercel Production Ready, Render Live. `NEXT_PUBLIC_API_URL` ustawiono dla Production i Preview; 18 kluczy backendu zaimportowano prywatnie do Rendera. PostgreSQL Neon i prywatny cache Redis działają, co potwierdziła publiczna kontrola API bez zapisu danych użytkowników oraz Chrome z planszą i podpowiedzią Fakera ze zdjęciem. Worker i scheduler Celery nadal nie są wdrożone; nie utworzono płatnych zasobów. Ustawienia usług, identyfikatory wdrożeń i wyniki kontroli opisuje [RENDER.md](RENDER.md).
 
 W ustawieniach projektu Vercel wybierz:
 

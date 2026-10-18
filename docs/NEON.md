@@ -32,14 +32,14 @@ Według [dokumentacji Neon](https://neon.com/docs/connect/connection-pooling), p
 
 Główny `.env`, lokalny kontekst `.neon` i kopie sekretów pozostają poza Gitem. [CLI `neon env pull`](https://neon.com/docs/cli/env) aktualizuje zmienne Neon w pliku środowiskowym; przed kolejnym pobraniem zachowaj prywatną kopię i sprawdź docelowy plik. Nie publikuj zawartości plików ani connection strings w logach.
 
-Kod przeglądarki nie otrzymuje danych połączenia z PostgreSQL. Publiczny jest wyłącznie `NEXT_PUBLIC_API_URL`, czyli adres Django API. Zmienne `DATABASE_*`, hasła i klucze Neon pozostają w środowisku backendu. Na Vercelu nadal potrzebny jest publiczny adres HTTPS Django; konfiguracja bazy Neon sama go nie tworzy.
+Kod przeglądarki nie otrzymuje danych połączenia z PostgreSQL. Publiczny jest wyłącznie `NEXT_PUBLIC_API_URL`, czyli adres Django API. Zmienne `DATABASE_*`, hasła i klucze Neon pozostają w środowisku backendu. Frontend Vercela używa `https://lol-kontra.onrender.com/api/v1`; API działa na Renderze.
 
 ## Potwierdzona weryfikacja
 
-W lokalnym uruchomieniu z bazą Neon potwierdzono:
+Potwierdzono lokalnie i po wdrożeniu:
 
-- Build frontendu, 119 testów frontendu i 120 testów wybranego zakresu backendu zakończyły się powodzeniem.
-- Wydanie na gałęzi `production` zawiera 882 rekordy graczy, w tym 738 zweryfikowanych uczestników Worlds, 31 plansz i 310 oznaczonych składów testowych. Nie przenoszono kont użytkowników.
+- Build frontendu i 119 testów frontendu przeszły. Pełny zestaw backendu na odizolowanej lokalnej bazie testowej: 431 PASS, 175 ostrzeżeń, 187,48 s.
+- Wydanie na gałęzi `production` zawiera 882 tożsamości, 738 zweryfikowanych uczestników Worlds, 733 zdjęcia, 737 kompletnych statystyk kariery, 31 plansz i 310 oznaczonych składów testowych. Nie przenoszono kont użytkowników.
 - Test gry obejmujący błędną odpowiedź i pięciu różnych poprawnych graczy zakończył się wynikiem 270 punktów: `500 − (50 + 40 + 50 + 40 + 50)`. Transakcję testową cofnięto.
 - Połączenia direct i pooled raportowały aktywne TLS. Ponowne wykonanie `bootstrap_database` nie zmieniło sum kontrolnych ośmiu sprawdzonych tabel.
 - Ograniczona rola aplikacji nie mogła wykonywać DDL ani zapisywać historii migracji.
@@ -47,7 +47,7 @@ W lokalnym uruchomieniu z bazą Neon potwierdzono:
 - Uruchomiony frontend (`http://localhost:3000/`) i API (`http://localhost:8000/api/v1/dailies/today/`) zwracają HTTP 200. W przeglądarce sprawdzono planszę oraz wyszukiwanie zawodnika ze zdjęciem.
 - Lokalny test `tests.deploy_smoke` sprawdził migracje od zera, zachowanie postępu przy ponownym wdrożeniu i uprawnienia rzeczywistej roli aplikacji. Losową bazę i rolę testową usunięto.
 
-W Vercelu ustawiono już publiczny adres API dla Production i Preview. Wdrożenie nowej konfiguracji Rendera pozostaje w toku; wymagane zmienne i kontrolę po uruchomieniu opisuje [RENDER.md](RENDER.md). Powyższe lokalne wyniki nie potwierdzają uruchomienia nowej konfiguracji na Renderze.
+Vercel Production i Render są uruchomione z commita `e686188`; adres API ustawiono dla Production i Preview. Publiczna kontrola odczytu oraz Chrome potwierdziły jasny interfejs, planszę i wyszukiwanie Fakera ze zdjęciem. API działa z PostgreSQL i prywatnym cache Redis. Nie zapisywano danych użytkowników podczas publicznej kontroli. Osobny worker i scheduler Celery nie są wdrożone; nie utworzono płatnych zasobów. Szczegóły i odtwarzanie konfiguracji opisuje [RENDER.md](RENDER.md).
 
 ## Integracje narzędzi agentów
 
