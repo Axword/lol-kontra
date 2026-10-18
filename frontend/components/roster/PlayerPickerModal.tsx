@@ -29,7 +29,7 @@ export default function PlayerPickerModal({ slot, open, busy, error, onClose, on
   const listId = useId()
 
   const waitingForQuery = q.trim() !== search
-  const query = usePlayerAutocomplete(open && !waitingForQuery ? search : '', slot?.role)
+  const query = usePlayerAutocomplete(open && !waitingForQuery ? search : '')
   const { data, isError, refetch } = query
   const isFetching = query.isFetching || waitingForQuery
   const results: Player[] = q.trim() ? data || [] : []

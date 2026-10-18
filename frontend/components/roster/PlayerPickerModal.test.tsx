@@ -8,7 +8,8 @@ const query = vi.hoisted(() => ({
   isError: false,
   refetch: vi.fn(),
 }))
-vi.mock('@/lib/api', () => ({ usePlayerAutocomplete: () => query }))
+const autocomplete = vi.hoisted(() => vi.fn())
+vi.mock('@/lib/api', () => ({ usePlayerAutocomplete: (...args: unknown[]) => autocomplete(...args) }))
 vi.mock('@/lib/store', () => ({ usePrefs: (select: (state: {locale: string}) => unknown) => select({ locale: 'pl' }) }))
 vi.mock('@/lib/sound', () => ({ sound: { pick: vi.fn() } }))
 
@@ -23,6 +24,7 @@ beforeEach(() => {
   query.isFetching = false
   query.isError = false
   query.refetch.mockClear()
+  autocomplete.mockReturnValue(query)
   query.data[0].portrait_url = null
 })
 
@@ -32,6 +34,23 @@ function search(text: string) {
 }
 
 describe('player picker interaction', () => {
+  it('lets a Top slot search and select Faker from mid without exposing extra player data', () => {
+    const faker = { id: 2, slug: 'faker', nickname: 'Faker', primary_role: 'mid',
+      portrait_url: 'https://static.wikia.nocookie.net/lolesports_gamepedia/images/faker.png',
+      country_code: 'KR', residency: 'LCK', real_name: 'Lee Sang-hyeok' }
+    autocomplete.mockReturnValue({ ...query, data: [faker] })
+    const select = vi.fn()
+    render(<PlayerPickerModal slot={slot} open onClose={vi.fn()} onSelect={select} />)
+    search('fa')
+    expect(autocomplete).toHaveBeenLastCalledWith('fa')
+    const option = screen.getByRole('option', { name: 'Faker' })
+    expect(option.textContent).toBe('Faker')
+    expect(option.querySelector('img')?.getAttribute('src')).toBe(faker.portrait_url)
+    expect(option.textContent).not.toMatch(/mid|LCK|KR|Lee Sang/)
+    fireEvent.click(option)
+    expect(select).toHaveBeenCalledWith(faker)
+  })
+
   it('shows only the nickname and an available portrait in search results', () => {
     query.data[0].portrait_url = 'https://static.wikia.nocookie.net/lolesports_gamepedia/images/test.png'
     render(<PlayerPickerModal slot={slot} open onClose={vi.fn()} onSelect={vi.fn()} />)

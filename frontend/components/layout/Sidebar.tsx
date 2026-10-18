@@ -46,7 +46,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
         style={{ background: '#fff', borderColor: 'var(--line)' }}
       >
         <div className="h-14 shrink-0 px-6 flex items-center border-b" style={{ borderColor: 'var(--line)' }}>
-          <Link href="/" onClick={onClose} className="font-bold text-[20px] tracking-[-.055em]" style={{ color: 'var(--text)' }}>Worlds XI</Link>
+          <Link href="/" onClick={onClose} className="font-bold text-[20px] tracking-[-.055em]" style={{ color: 'var(--text)' }}>WORDS V</Link>
           <button
             type="button"
             aria-label={locale === 'pl' ? 'Zamknij menu' : 'Close menu'}

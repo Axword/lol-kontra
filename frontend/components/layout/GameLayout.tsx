@@ -44,7 +44,7 @@ export default function GameLayout({
           {showGameHeader && (
             <div className="max-w-[1000px] mx-auto mb-4">
               <div className="flex flex-wrap items-end justify-between gap-2 mb-4">
-                <h1 className="text-[28px] sm:text-[34px] leading-none font-bold tracking-[-.045em]" style={{ color: 'var(--text)' }}>Worlds XI</h1>
+                <h1 className="text-[28px] sm:text-[34px] leading-none font-bold tracking-[-.045em]" style={{ color: 'var(--text)' }}>WORDS V</h1>
                 <div className="text-[12px] flex items-center gap-3" style={{ color: 'var(--text-faint)' }}>
                   {dateLabel && <span>{dateLabel}</span>}
                   <span className="tabular">#{dailyId}</span>

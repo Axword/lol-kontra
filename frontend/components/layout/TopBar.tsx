@@ -43,7 +43,7 @@ export default function TopBar({ onMenu, onHelp }: Props) {
         </button>
 
         <div className="min-w-0 flex items-center gap-3 text-[13px]">
-          <Link href="/" className="font-semibold whitespace-nowrap" style={{ color: 'var(--text)' }}><span className="sm:hidden">Worlds XI</span><span className="hidden sm:inline">League of Legends</span></Link>
+          <Link href="/" className="font-semibold whitespace-nowrap" style={{ color: 'var(--text)' }}><span className="sm:hidden">WORDS V</span><span className="hidden sm:inline">League of Legends</span></Link>
           {section && (
             <span className="hidden sm:flex items-center gap-3 min-w-0" style={{ color: 'var(--text-faint)' }}>
               <ChevronRight size={14} aria-hidden="true" />

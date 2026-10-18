@@ -18,10 +18,12 @@
   --ok: #226246;
   --bad: #b33432;
   --rarity-common: #536056;
-  --rarity-rare: #187240;
+  --rarity-uncommon: #187240;
+  --rarity-rare: #245b9e;
   --rarity-epic: #7850a5;
   --rarity-legendary: #865900;
-  --rarity-diamond: #087b8a;
+  --rarity-diamond: #126d8c;
+  --rarity-diamond-border: #35a9cc;
 }
 html, body {
   background: var(--bg);
@@ -57,15 +59,18 @@ button:disabled { cursor: default; }
 .field::placeholder { color: var(--text-faint); }
 .country-code { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 30px; padding: 2px 5px; font-size: 10px; font-weight: 700; border: 1px solid var(--line); color: var(--text-dim); background: var(--bg); }
 .rarity-common { color: var(--rarity-common); }
+.rarity-uncommon { color: var(--rarity-uncommon); }
 .rarity-rare { color: var(--rarity-rare); }
 .rarity-epic { color: var(--rarity-epic); }
 .rarity-legendary { color: var(--rarity-legendary); }
 .rarity-diamond { color: var(--rarity-diamond); }
 .rarity-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
 .rarity-surface[data-rarity="common"] { --rarity-bg: #ffffff; }
-.rarity-surface[data-rarity="rare"] { --rarity-bg: #baf0cf; }
+.rarity-surface[data-rarity="uncommon"] { --rarity-bg: #baf0cf; }
+.rarity-surface[data-rarity="rare"] { --rarity-bg: #d4e6fb; }
 .rarity-surface[data-rarity="epic"] { --rarity-bg: #e4c9f5; }
 .rarity-surface[data-rarity="legendary"] { --rarity-bg: #ffe58c; }
+.rarity-surface[data-rarity="diamond"] { --rarity-bg: #dcf7ff; }
 
 /* Conditions sit on the field. Mobile keeps them in a readable list. */
 .rift-surface { position: relative; isolation: isolate; width: 100%; max-width: 1000px; margin-inline: auto; aspect-ratio: 1.5; overflow: hidden; background: #142f29; border: 1px solid #234b3c; }
@@ -107,11 +112,16 @@ button:disabled { cursor: default; }
   .rift-marker img { width: 23px; height: 23px; filter: brightness(0) invert(1); }
   .rift-marker[data-state="solved"] { background: #f8faf5; color: var(--text); }
   .rift-marker[data-state="solved"] img { filter: brightness(.3); }
+  .rift-marker img.rift-player-portrait { filter: none; }
   .rift-marker[data-state="wrong"] { border-color: #ec9c8d; }
   .rift-marker:focus-visible { outline-color: #e1edc9; }
   .slot-list-mobile { display: grid; }
 }
 .rarity-surface[data-rarity], .rift-card[data-state="solved"][data-rarity] { background: var(--rarity-bg); }
+.rarity-surface[data-rarity="diamond"], .rift-card[data-state="solved"][data-rarity="diamond"] {
+  border-color: var(--rarity-diamond-border);
+  box-shadow: inset 0 0 0 2px var(--rarity-diamond-border);
+}
 @keyframes riseIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .rise { animation: riseIn .18s ease-out both; }
 @keyframes shakeX { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }

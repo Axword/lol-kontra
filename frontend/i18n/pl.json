@@ -5,7 +5,7 @@
     "profile": "Profil"
   },
   "game": {
-    "title": "Worlds XI",
+    "title": "WORDS V",
     "subtitle": "Ułóż skład 5 zawodników Worlds spełniających warunki",
     "submit": "Wyślij skład",
     "submitted": "Wysłane",
@@ -21,10 +21,11 @@
     "support": "Wspierający"
   },
   "rarity": {
-    "common": "Common",
-    "rare": "Rare",
-    "epic": "Epic",
-    "legendary": "Legendary",
-    "diamond": "Diamond Pick"
+    "common": "Pospolity",
+    "uncommon": "Niepospolity",
+    "rare": "Rzadki",
+    "epic": "Epicki",
+    "legendary": "Złoty",
+    "diamond": "Diamentowy"
   }
 }

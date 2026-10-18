@@ -92,12 +92,12 @@ describe('picker follows external game updates', () => {
     expect(mocks.mutate).not.toHaveBeenCalled()
   })
 
-  it('shows current real percentages on a saved unfinished board without changing its score or answers', () => {
+  it('keeps the scoring percentage and earned score on a saved unfinished board', () => {
     mocks.shares = { results: [{ slot_id: 11, player_slug: 'player-fixture', pick_percent: 25 }] }
     const saved = { ...initialState, total_points: 458.3, answers: [{ ...answer(11, true), rarity_percent: 41.7 }] }
     const snapshot = JSON.stringify(saved)
     render(<RosterBoard daily={daily} state={saved} />)
-    expect(mocks.boardAnswers[11].rarity_percent).toBe(25)
+    expect(mocks.boardAnswers[11].rarity_percent).toBe(41.7)
     expect(JSON.stringify(saved)).toBe(snapshot)
   })
 

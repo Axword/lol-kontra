@@ -65,9 +65,11 @@ export const ROLE_ORDER: Array<'top' | 'jungle' | 'mid' | 'adc' | 'support'> = [
 
 export const rarityNames: Record<string, { pl: string; en: string }> = {
   common: { pl: 'Pospolity', en: 'Common' },
+  uncommon: { pl: 'Niepospolity', en: 'Uncommon' },
   rare: { pl: 'Rzadki', en: 'Rare' },
   epic: { pl: 'Epicki', en: 'Epic' },
   legendary: { pl: 'Złoty', en: 'Gold' },
+  diamond: { pl: 'Diamentowy', en: 'Diamond' },
 }
 
 export function rarityLabel(tier?: string | null, locale: 'pl' | 'en' = 'pl'): string {
@@ -77,6 +79,7 @@ export function rarityLabel(tier?: string | null, locale: 'pl' | 'en' = 'pl'): s
 
 export const rarityColor: Record<string, string> = {
   common: 'var(--rarity-common)',
+  uncommon: 'var(--rarity-uncommon)',
   rare: 'var(--rarity-rare)',
   epic: 'var(--rarity-epic)',
   legendary: 'var(--rarity-legendary)',

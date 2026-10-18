@@ -43,18 +43,20 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
         const label = roleLabel(slot.role, locale)
         const count = candidateCounts?.[slot.id]
         const ariaLabel = `${label} – ${count != null ? `${count} ${locale === 'pl' ? 'pasujących zawodników' : 'matching players'}` : solved ? answer.player_nickname : locale === 'pl' ? 'puste' : 'empty'}`
-        const rarity = solved ? rarityForPercent(answer.rarity_percent) : null
+        const rarity = solved ? (answer.is_diamond_pick ? 'diamond' : rarityForPercent(answer.rarity_percent)) : null
+        const portrait = solved ? (portraits?.[answer.player] ?? answer.player_portrait_url) : null
+        const roleIcon = <span className="rift-role-icon">
+          {count != null ? <span className="text-lg font-semibold tabular">{count}</span> : <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/roles/${slot.role}.svg`} alt="" aria-hidden draggable={false} />
+          </>}
+        </span>
         const pick = () => { if (!disabled && (!solved || inspect)) onPick(slot) }
         return (
           <div key={slot.id} className="rift-position" style={{ '--left': pos.left, '--top': pos.top, zIndex: activeSlotId === slot.id ? 2 : 1 } as CSSProperties}>
             <button className="rift-card rarity-surface" data-state={nodeState} data-rarity={rarity ?? undefined} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
               <span className="rift-card-head">
-                {solved && portraits?.[answer.player] ? <PlayerPortrait url={portraits[answer.player]} /> : <span className="rift-role-icon">
-                  {count != null ? <span className="text-lg font-semibold tabular">{count}</span> : <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={`/roles/${slot.role}.svg`} alt="" aria-hidden draggable={false} />
-                  </>}
-                </span>}
+                {solved ? <PlayerPortrait url={portrait} fallback={roleIcon} /> : roleIcon}
                 <span className="flex-1 min-w-0">
                   <span className="rift-role-name">{label}</span>
                   {solved && <span className="rift-player-name">{answer.player_nickname}</span>}
@@ -67,17 +69,20 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
               {count != null && <div className="mt-3 text-xs tabular">{count} {locale === 'pl' ? 'zawodników' : 'players'}</div>}
               {solved && (
                 <div className="rift-result">
-                  <RarityIndicator percent={answer.rarity_percent} locale={locale} />
+                  <RarityIndicator percent={answer.rarity_percent} locale={locale} isDiamond={answer.is_diamond_pick} />
                 </div>
               )}
             </button>
             <button className="rift-marker rarity-surface" data-state={nodeState} data-rarity={rarity ?? undefined} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
-              {count != null ? <strong aria-hidden className="tabular">{count}</strong> : <>
+              {count != null ? <strong aria-hidden className="tabular">{count}</strong> : solved ? <PlayerPortrait url={portrait} className="rift-player-portrait" fallback={<>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/roles/${slot.role}.svg`} alt="" aria-hidden draggable={false} />
+              </>} /> : <>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`/roles/${slot.role}.svg`} alt="" aria-hidden draggable={false} />
               </>}
               <span>{solved ? answer.player_nickname : label}</span>
-              {solved && <RarityIndicator percent={answer.rarity_percent} locale={locale} className="text-[10px]" />}
+              {solved && <RarityIndicator percent={answer.rarity_percent} locale={locale} isDiamond={answer.is_diamond_pick} className="text-[10px]" />}
             </button>
           </div>
         )

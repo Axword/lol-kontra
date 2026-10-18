@@ -35,6 +35,50 @@ beforeEach(() => { prefs.locale = 'pl' })
 afterEach(cleanup)
 
 describe('the map and mobile roster show server answers', () => {
+  it.each([false, true])('shows a portrait from the saved answer without a separate portraits map, inspect=%s', (inspect) => {
+    const url = 'https://static.wikia.nocookie.net/lolesports_gamepedia/images/zeus.png'
+    const answer = { ...solved, player_portrait_url: url }
+    const { container, rerender } = render(<>
+      <RiftBoard slots={slots} answers={{ 11: answer }} onPick={vi.fn()} inspect={inspect} />
+      <SlotList slots={slots} answers={{ 11: answer }} onPick={vi.fn()} inspect={inspect} />
+    </>)
+    for (const selector of ['.rift-card', '.rift-marker', '.slot-list-mobile button']) {
+      const card = container.querySelector(selector)!
+      const image = card.querySelector('img')!
+      expect(image.getAttribute('src')).toBe(url)
+      expect(card.textContent).toContain('Zeus')
+      fireEvent.error(image)
+      expect(card.querySelector('img')?.getAttribute('src')).toBe('/roles/top.svg')
+      expect(card.textContent).toContain('Zeus')
+    }
+    // Reconstructing the saved state on page load supplies the photo again.
+    rerender(<>
+      <RiftBoard key="reloaded-map" slots={slots} answers={{ 11: JSON.parse(JSON.stringify(answer)) }} onPick={vi.fn()} inspect={inspect} />
+      <SlotList key="reloaded-list" slots={slots} answers={{ 11: JSON.parse(JSON.stringify(answer)) }} onPick={vi.fn()} inspect={inspect} />
+    </>)
+    expect(container.querySelectorAll(`img[src="${url}"]`).length).toBe(3)
+  })
+
+  it('falls back to role icons for absent portraits and never shows a wrong answer portrait', () => {
+    const { container } = render(<>
+      <RiftBoard slots={slots} answers={{ 11: { ...solved, player_portrait_url: null },
+        13: { ...missed, player_portrait_url: 'https://example.com/wrong.png' } }} onPick={vi.fn()} />
+      <SlotList slots={slots} answers={{ 11: { ...solved, player_portrait_url: null },
+        13: { ...missed, player_portrait_url: 'https://example.com/wrong.png' } }} onPick={vi.fn()} />
+    </>)
+    for (const selector of ['.rift-card', '.rift-marker', '.slot-list-mobile button']) {
+      expect(container.querySelector(selector)?.querySelector('img')?.getAttribute('src')).toBe('/roles/top.svg')
+    }
+    expect(container.querySelector('img[src="https://example.com/wrong.png"]')).toBeNull()
+  })
+
+  it('uses the saved answer portrait when a solutions portrait is null', () => {
+    const url = 'https://example.com/zeus.png'
+    const { container } = render(<RiftBoard slots={slots}
+      answers={{ 11: { ...solved, player_portrait_url: url } }} portraits={{ 101: null }} onPick={vi.fn()} />)
+    expect(container.querySelector('.rift-card img')?.getAttribute('src')).toBe(url)
+  })
+
   it.each(['pl', 'en'] as const)('shows zero and positive candidate counts on mobile and announces them in %s', (locale) => {
     prefs.locale = locale
     const candidateCounts = { 11: 0, 12: 8 }
@@ -90,7 +134,7 @@ describe('the map and mobile roster show server answers', () => {
 
   it.each([
     [0, 'legendary'], [1.99, 'legendary'], [2, 'epic'], [4.99, 'epic'],
-    [5, 'rare'], [9.09, 'rare'], [14.99, 'rare'], [15, 'common'], [100, 'common'],
+    [5, 'rare'], [9.09, 'rare'], [14.99, 'rare'], [15, 'uncommon'], [24.99, 'uncommon'], [25, 'common'], [100, 'common'],
   ])('uses the same rarity for %s%% while playing, reviewing and on mobile', (percent, tier) => {
     const { container } = render(<>
       <RiftBoard slots={slots} answers={{ 11: { ...solved, rarity_percent: Number(percent) } }} onPick={vi.fn()} />
@@ -103,7 +147,20 @@ describe('the map and mobile roster show server answers', () => {
       expect(surface.getAttribute('data-rarity')).toBe(tier)
       expect(surface.textContent).not.toMatch(/pkt|pts/)
     })
-    expect(container.querySelectorAll('svg[aria-label="Diamentowy wybór"]').length).toBe(percent === 0 ? 5 : 0)
+    expect(container.querySelectorAll('svg[aria-label="Diamentowy wybór"]').length).toBe(0)
+  })
+
+  it.each([0, 1, 40, null])('keeps a historical first pick diamond at %s%% on the map and mobile', (percent) => {
+    const answer = { ...solved, rarity_percent: percent, is_diamond_pick: true }
+    const { container } = render(<>
+      <RiftBoard slots={slots} answers={{ 11: answer }} onPick={vi.fn()} inspect />
+      <SlotList slots={slots} answers={{ 11: answer }} onPick={vi.fn()} inspect />
+    </>)
+    const surfaces = container.querySelectorAll('.rarity-surface[data-rarity]')
+    expect(surfaces.length).toBe(3)
+    surfaces.forEach((surface) => expect(surface.getAttribute('data-rarity')).toBe('diamond'))
+    expect(container.querySelectorAll('svg[aria-label="Diamentowy wybór"]').length).toBe(percent === null ? 0 : 3)
+    expect(container.querySelector('[data-rarity="legendary"]')).toBeNull()
   })
 })
 

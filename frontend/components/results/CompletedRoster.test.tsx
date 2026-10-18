@@ -27,14 +27,14 @@ const players: SolutionPlayer[] = names.map((nickname, index) => ({
   id: index + 1, slug: nickname.toLowerCase(), nickname,
   portrait_url: index === 0 ? 'https://static.wikia.nocookie.net/lolesports_gamepedia/images/faker.png' : null,
   primary_role: 'mid', country_code: 'KR', residency: 'LCK', real_name: `Hidden real name ${index}`,
-  pick_count: shares[index], pick_percent: shares[index],
+  pick_count: shares[index] * 2, pick_percent: shares[index],
 }))
 const mine = [1, 3, 5, 7, 8]
 const popular = [1, 2, 3, 4, 5]
 const rare = [4, 5, 6, 7, 8]
 const data: DailySolutions = {
   daily_id: daily.id,
-  slots: daily.slots.map((slot) => ({ slot_id: slot.id, role: slot.role, sample_size: 100, players })),
+  slots: daily.slots.map((slot) => ({ slot_id: slot.id, role: slot.role, sample_size: 200, players })),
   popular: Object.fromEntries(daily.slots.map((slot, index) => [String(slot.id), popular[index]])),
   rare: Object.fromEntries(daily.slots.map((slot, index) => [String(slot.id), rare[index]])),
 }
@@ -65,17 +65,73 @@ function selectedNames(container: HTMLElement) {
 }
 
 describe('completed roster choices', () => {
-  it('keeps the historical roster and earned score while displaying current real pick percentages', () => {
+  it('keeps my saved diamond at zero when the current answer share is 100%, including after reopening', () => {
+    const saved: GameState = { ...state, total_points: 500, answers: [
+      { ...state.answers[0], rarity_percent: 0, points_awarded: 0, deduction: 0, is_diamond_pick: true },
+      ...state.answers.slice(1),
+    ] }
+    query.data = { ...data, slots: data.slots.map((slot) => ({ ...slot, players: slot.players.map((player) =>
+      player.id === saved.answers[0].player ? { ...player, pick_percent: 100, pick_count: 1 } : player) })) }
+    const snapshot = JSON.stringify(saved)
+    const view = render(<CompletedRoster daily={daily} state={saved} />)
+    const ownCard = () => view.container.querySelector<HTMLElement>('.rift-card')!
+    expect(within(ownCard()).getByText('0%')).toBeTruthy()
+    expect(within(ownCard()).queryByText('100%')).toBeNull()
+    expect(ownCard().getAttribute('data-rarity')).toBe('diamond')
+    fireEvent.click(ownCard())
+    const candidate = within(screen.getByRole('dialog')).getByText('Faker').closest('li')!
+    expect(within(candidate).getByText('100%')).toBeTruthy()
+    expect(within(candidate).getByText('Odpowiedzi: 1')).toBeTruthy()
+    fireEvent.click(screen.getByRole('button', { name: 'Zamknij' }))
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'popular' } })
+    expect(within(ownCard()).getByText('100%')).toBeTruthy()
+    expect(ownCard().getAttribute('data-rarity')).toBe('common')
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'mine' } })
+    expect(within(ownCard()).getByText('0%')).toBeTruthy()
+    expect(JSON.stringify(saved)).toBe(snapshot)
+    view.unmount()
+    const reopened = render(<CompletedRoster daily={daily} state={JSON.parse(snapshot)} />)
+    const reopenedCard = reopened.container.querySelector<HTMLElement>('.rift-card')!
+    expect(within(reopenedCard).getByText('0%')).toBeTruthy()
+    expect(within(reopenedCard).getByRole('img', { name: 'Diamentowy wybór' })).toBeTruthy()
+    expect(reopenedCard.getAttribute('data-rarity')).toBe('diamond')
+    expect(saved.total_points).toBe(500)
+  })
+
+  it('preserves the awarded diamond on my historical roster without awarding it to alternative rosters', () => {
+    const historical = { ...state, answers: state.answers.map((answer, index) => ({ ...answer, is_diamond_pick: index === 0 })) }
+    const { container } = render(<CompletedRoster daily={daily} state={historical} />)
+    const firstCard = () => container.querySelector<HTMLElement>('.rift-card')!
+    expect(firstCard().getAttribute('data-rarity')).toBe('diamond')
+    expect(within(firstCard()).getByText('40%')).toBeTruthy()
+    expect(within(firstCard()).getByRole('img', { name: 'Diamentowy wybór' })).toBeTruthy()
+    const select = screen.getByRole('combobox', { name: 'Wyświetlany skład' })
+    for (const mode of ['popular', 'rare']) {
+      fireEvent.change(select, { target: { value: mode } })
+      expect(container.querySelector('[data-rarity="diamond"]')).toBeNull()
+      expect(screen.queryByRole('img', { name: 'Diamentowy wybór' })).toBeNull()
+    }
+    fireEvent.change(select, { target: { value: 'mine' } })
+    expect(firstCard().getAttribute('data-rarity')).toBe('diamond')
+    expect(historical.answers[0].is_diamond_pick).toBe(true)
+  })
+
+  it('keeps the historical roster, earned score and saved answer percentages when current popularity changes', () => {
     const historical = { ...state, total_points: 366.67,
       answers: state.answers.map((answer) => ({ ...answer, rarity_percent: 41.7, points_awarded: -41.7 })) }
     const snapshot = JSON.stringify(historical)
     const { container } = render(<CompletedRoster daily={daily} state={historical} />)
     expect(selectedNames(container)).toEqual(mine.map((id) => names[id - 1]))
     const card = container.querySelector<HTMLElement>('.rift-card')!
-    expect(within(card).getByText('40%')).toBeTruthy()
-    expect(container.textContent).not.toContain('41,7%')
+    expect(within(card).getByText('41,7%')).toBeTruthy()
+    expect(within(card).queryByText('40%')).toBeNull()
     expect(JSON.stringify(historical)).toBe(snapshot)
     expect(historical.total_points).toBe(366.67)
+    const select = screen.getByRole('combobox', { name: 'Wyświetlany skład' })
+    fireEvent.change(select, { target: { value: 'popular' } })
+    expect(within(container.querySelector<HTMLElement>('.rift-card')!).getByText('40%')).toBeTruthy()
+    fireEvent.change(select, { target: { value: 'mine' } })
+    expect(within(container.querySelector<HTMLElement>('.rift-card')!).getByText('41,7%')).toBeTruthy()
   })
 
   it('switches between the actual, popular, rare and all answers without reusing players', () => {
@@ -116,19 +172,19 @@ describe('completed roster choices', () => {
     expect(within(dialog).getByText('Warunek 1')).toBeTruthy()
     const input = within(dialog).getByRole('textbox', { name: 'Nick zawodnika' })
     expect(document.activeElement).toBe(input)
-    const expectedTiers = ['common', 'common', 'common', 'rare', 'rare', 'epic', 'epic', 'legendary']
+    const expectedTiers = ['common', 'common', 'uncommon', 'rare', 'rare', 'epic', 'epic', 'legendary']
     for (const [index, player] of players.entries()) {
       const row = within(dialog).getByText(player.nickname).closest('li')!
-      expect(row.textContent).toBe(`${player.nickname}${player.pick_percent}%`)
+      expect(row.textContent).toBe(`${player.nickname}Odpowiedzi: ${player.pick_count}${player.pick_percent}%`)
       expect(row.querySelector('[data-rarity]')?.getAttribute('data-rarity')).toBe(expectedTiers[index])
-      expect(Boolean(within(row).queryByRole('img', { name: 'Diamentowy wybór' }))).toBe(player.pick_percent === 0)
+      expect(within(row).queryByRole('img', { name: 'Diamentowy wybór' })).toBeNull()
       expect(row.querySelector('img')?.getAttribute('src') ?? null).toBe(player.portrait_url)
     }
     expect(dialog.textContent).not.toMatch(/Hidden real name|LCK|KR|pkt|pts/)
     const firstRow = within(dialog).getByText('Faker').closest('li')!
     fireEvent.error(firstRow.querySelector('img')!)
     expect(firstRow.querySelector('img')).toBeNull()
-    expect(firstRow.textContent).toBe('Faker40%')
+    expect(firstRow.textContent).toBe('FakerOdpowiedzi: 8040%')
     fireEvent.change(input, { target: { value: '  cAnYoN  ' } })
     expect(within(dialog).getByText('Canyon')).toBeTruthy()
     expect(within(dialog).queryByText('Faker')).toBeNull()
@@ -182,7 +238,8 @@ describe('completed roster choices', () => {
     expect(within(screen.getByRole('dialog')).getByText('Condition 1')).toBeTruthy()
     const zeroPickRow = within(screen.getByRole('dialog')).getByText('Deft').closest('li')!
     expect(within(zeroPickRow).getByText('0%')).toBeTruthy()
-    expect(within(zeroPickRow).getByRole('img', { name: 'Diamond pick' })).toBeTruthy()
+    expect(within(zeroPickRow).getByText('Answers: 0')).toBeTruthy()
+    expect(within(zeroPickRow).queryByRole('img', { name: 'Diamond pick' })).toBeNull()
     expect(screen.getByRole('textbox', { name: 'Player nickname' })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Close' }))
     expect(screen.queryByRole('dialog')).toBeNull()

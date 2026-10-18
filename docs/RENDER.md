@@ -1,8 +1,10 @@
 # Vercel + Render + Neon
 
-Instrukcja dotyczy działających usług: [frontendu](https://lol-kontra.vercel.app) i Django API `https://lol-kontra.onrender.com/api/v1`. Backend `3da0ff0` osiągnął Render Live 19.10.2026 (`dep-dbakukfbtjjs73firhqg`, 1 min 23 s). Poprzednie wydanie `e686188` miało potwierdzone Render Live i Vercel Production Ready; w Chrome sprawdzono wtedy jasny interfejs, planszę oraz podpowiedź Fakera ze zdjęciem.
+Instrukcja dotyczy działających usług: [frontendu](https://lol-kontra.vercel.app) i Django API `https://lol-kontra.onrender.com/api/v1`. Backend `0f78ae4` osiągnął Render Live 19.10.2026 (`dep-dbalg3u1egvs73b62f40`, 1 min 20 s). Poprzednie wydania miały potwierdzone Render Live i Vercel Production Ready; w Chrome sprawdzono jasny interfejs, planszę oraz wyszukiwanie ze zdjęciami.
 
 Nowy backend usuwa oznaczone syntetyczne głosy, obsługuje moderowane nicki gości i chroni wcześniejsze ukończone gry przed przeliczeniem przy zakończeniu kolejnej gry archiwalnej. Publiczna kontrola potwierdziła te migracje i ponowne odczytanie ośmiu dawnych składów wraz z punktacją; nie dodawała testowych rozgrywek.
+
+Aktualizacja WORDS V dodaje niepospolitą rzadkość 15–<25%, trwałe diamentowe pierwsze trafienie oraz zdjęcie zapisanej odpowiedzi. Kontrola migracji porównała 40 istniejących gier, 179 odpowiedzi i 245 prób z prywatną kopią. Wszystkie punkty, wybory i próby zostały zachowane; zweryfikowano też chronologię 104 diamentowych pierwszych trafień. Własne karty pokazują zapisany procent użyty przy punktacji, a lista wszystkich odpowiedzi bieżącą liczbę głosów i procent.
 
 ## Frontend w Vercelu
 

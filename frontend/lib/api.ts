@@ -12,7 +12,7 @@ export const api = axios.create({ baseURL: API, withCredentials: false })
 /* ------------------------------------------------------------------ */
 
 export type Role = 'top' | 'jungle' | 'mid' | 'adc' | 'support'
-export type RarityTier = 'common' | 'rare' | 'epic' | 'legendary'
+export type RarityTier = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
 
 export type DailySlotCondition = {
   id: number
@@ -61,6 +61,7 @@ export type GameAnswer = {
   player: number
   player_nickname: string
   player_slug: string
+  player_portrait_url?: string | null
   is_correct: boolean
   rarity_tier: RarityTier | null
   rarity_percent: number | null
@@ -185,6 +186,7 @@ export function useAnswerSlot(dailyId?: number) {
           player: data.player,
           player_nickname: data.player_nickname,
           player_slug: data.player_slug,
+          player_portrait_url: data.player_portrait_url,
           is_correct: data.is_correct,
           rarity_tier: data.rarity_tier,
           rarity_percent: data.rarity_percent,
@@ -222,12 +224,11 @@ export function useAnswerSlot(dailyId?: number) {
   })
 }
 
-export function usePlayerAutocomplete(q: string, role?: Role) {
+export function usePlayerAutocomplete(q: string) {
   return useQuery<Player[]>({
-    queryKey: ['players-ac', q, role],
+    queryKey: ['players-ac', q],
     queryFn: async ({ signal }) => {
-      const params: Record<string, string> = { q: q.trim() }
-      if (role) params.role = role
+      const params = { q: q.trim() }
       return (await api.get('/players/autocomplete/', { params, signal })).data.results
     },
     enabled: q.trim().length >= 1,

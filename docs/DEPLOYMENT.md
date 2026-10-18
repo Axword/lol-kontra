@@ -14,9 +14,9 @@ Zdjęcia są adresami źródłowymi Leaguepedii; migracja nie pobiera plików zd
 
 Historyczna migracja październikowego wydania tworzyła oznaczone składy testowe. Pozostaje niezmieniona, a osobna migracja usuwa te rozgrywki wraz z ich odpowiedziami. Na istniejącej bazie zachowuje rozgrywki i odpowiedzi prawdziwych graczy. Nowa instalacja kończy migracje z 31 planszami i bez syntetycznych głosów.
 
-Punktacja pozostaje równa 500 minus procenty wyborów. Kolor rzadkości wynika z dokładnego procentu: poniżej 2% złoty, od 2% do poniżej 5% epicki (fioletowy), od 5% do poniżej 15% rzadki (zielony), od 15% pospolity (biały). Dokładne 0% ma dodatkowo mały diament. Przy zawodniku wyświetlany jest sam procent; suma punktów pozostaje wynikiem całej gry.
+Punktacja pozostaje równa 500 minus procenty wyborów. Kolor rzadkości wynika z dokładnego procentu: poniżej 2% złoty, od 2% do poniżej 5% epicki (fioletowy), od 5% do poniżej 15% rzadki (niebieski), od 15% do poniżej 25% niepospolity (zielony), od 25% pospolity (biały). Pierwsza prawdziwa poprawna odpowiedź dla danej pary pozycja–zawodnik na planszy otrzymuje trwałą flagę diamentu: błękitną kartę, obramowanie i mały diament, niezależnie od późniejszej popularności. Sam procent 0% nie nadaje tej flagi. Przy zawodniku wyświetlany jest sam procent; suma punktów pozostaje wynikiem całej gry.
 
-Usunięcie syntetycznych głosów nie zmienia historycznie zdobytych punktów ani zapisanych składów prawdziwych graczy. Po powrocie do zakończonej planszy widać własne wybory i zachowany wynik, a popularność kart pochodzi z aktualnych prawdziwych odpowiedzi.
+Usunięcie syntetycznych głosów nie zmienia historycznie zdobytych punktów ani zapisanych składów prawdziwych graczy. Własny skład zachowuje procenty użyte do obliczenia jego wyniku. Aktualna popularność i liczba głosów są widoczne w liście wszystkich odpowiedzi oraz alternatywnych składach. Migracja diamentów odtwarza pierwsze prawdziwe trafienie z chronologii poprawnych prób, a przy jej braku z czasu zapisanej gry; nie zmienia punktów ani postępu.
 
 Ukończenie kolejnej gry archiwalnej zapisuje wyłącznie wynik jej gracza. Nowa odpowiedź używa udziałów z prawdziwych wyborów sprzed tej próby; nie przelicza wcześniejszych ukończonych gier. Polecenia administracyjnego przeliczania punktów są oddzielną, jawną operacją.
 
@@ -87,7 +87,7 @@ Nie używaj `docker compose down -v` ani poleceń czyszczących dane do aktualiz
 
 ## Frontend na Vercelu
 
-Projekt Vercel publikuje [jasny frontend](https://lol-kontra.vercel.app) z katalogu `frontend` i gałęzi `master`. Django API `https://lol-kontra.onrender.com/api/v1` działa na Renderze; backend `3da0ff0` osiągnął Live 19.10.2026. `NEXT_PUBLIC_API_URL` ustawiono dla Production i Preview; 18 kluczy backendu zaimportowano prywatnie do Rendera. PostgreSQL Neon i prywatny cache Redis działają. Publiczna kontrola API potwierdziła usunięcie syntetycznych głosów, profile gości oraz powrót do dawnych składów i wyników. Worker i scheduler Celery nadal nie są wdrożone; nie utworzono płatnych zasobów. Ustawienia usług, identyfikatory wdrożeń i wyniki kontroli opisuje [RENDER.md](RENDER.md).
+Projekt Vercel publikuje [jasny frontend](https://lol-kontra.vercel.app) z katalogu `frontend` i gałęzi `master`. Django API `https://lol-kontra.onrender.com/api/v1` działa na Renderze; backend `0f78ae4` osiągnął Live 19.10.2026. `NEXT_PUBLIC_API_URL` ustawiono dla Production i Preview; 18 kluczy backendu zaimportowano prywatnie do Rendera. PostgreSQL Neon i prywatny cache Redis działają. Publiczna kontrola API potwierdziła usunięcie syntetycznych głosów, profile gości oraz powrót do dawnych składów i wyników. Migracja pierwszych trafień zachowała punkty i postęp 40 wcześniejszych gier. Worker i scheduler Celery nadal nie są wdrożone; nie utworzono płatnych zasobów. Ustawienia usług, identyfikatory wdrożeń i wyniki kontroli opisuje [RENDER.md](RENDER.md).
 
 W ustawieniach projektu Vercel wybierz:
 

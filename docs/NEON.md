@@ -55,6 +55,8 @@ Aktualne migracje zachowują zamrożone wydanie, a następną migracją usuwają
 
 19.10.2026 backend `3da0ff0` osiągnął Render Live. Migracje na Neon usunęły 310 oznaczonych syntetycznych rozgrywek i dodały profile gości. Kontrola publicznego API potwierdziła brak sztucznych głosów, prawdziwy rozkład wyników, moderację nicków oraz ponowne otwarcie ośmiu historycznych ukończonych plansz z zachowanymi składami i punktami. Zakończenie nowej gry archiwalnej nie przelicza poprzednich graczy. Świeży test migracji oraz 448 testów backendu przeszły poprawnie. Początkowe 0% przy braku wcześniejszych wyborów jest prawidłowe.
 
+Aktualizacja WORDS V: backend `0f78ae4` osiągnął Live 19.10.2026 po migracji `scoring.0006_uncommon_and_permanent_first_picks`. Kontrola porównała 40 prawdziwych gier, 179 odpowiedzi i 245 prób z kopią sprzed migracji: punkty, wybory i postęp pozostały zachowane. Zweryfikowano 104 trwałe pierwsze trafienia; nowe metadane nie dodają premii punktowej. Zapisane odpowiedzi zwracają zdjęcia zawodników również przy ponownym otwarciu planszy.
+
 ## Integracje narzędzi agentów
 
 Instalacja CLI 8.8.0 skonfigurowała globalne integracje dla Codex, Claude, Cursor i VS Code oraz dziewięć umiejętności Neon. Dla Cline, Copilot i Zed zapisano integracje MCP jako ścieżkę zapasową. Istniejące pozostałe wpisy konfiguracji zachowano.

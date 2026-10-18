@@ -24,13 +24,14 @@ export default function CompletedRoster({ daily, state }: { daily: Daily; state:
   const titleId = useId()
   const actual = Object.fromEntries(state.answers.filter((answer) => answer.is_correct).map((answer) => [answer.daily_slot, answer]))
   const answers: Record<number, GameAnswer> = Object.fromEntries(
-    Object.entries(actual).map(([id, answer]) => [id, { ...answer, rarity_percent: null }]),
+    Object.entries(actual).map(([id, answer]) => [id, { ...answer }]),
   )
-  // Historical scores stay fixed; popularity reflects the current real votes.
+  // Own answers retain the percentages used for the saved result.
   for (const slot of data.data?.slots || []) {
     const answer = answers[slot.slot_id]
     const player = slot.players.find((candidate) => candidate.id === answer?.player)
-    if (answer && player) answers[slot.slot_id] = { ...answer, rarity_percent: player.pick_percent }
+    if (answer && player) answers[slot.slot_id] = { ...answer,
+      player_portrait_url: player.portrait_url ?? answer.player_portrait_url }
   }
   if (mode !== 'mine' && mode !== 'all' && data.data) {
     for (const slot of data.data.slots) {
@@ -38,6 +39,7 @@ export default function CompletedRoster({ daily, state }: { daily: Daily; state:
       if (!player) { delete answers[slot.slot_id]; continue }
       answers[slot.slot_id] = { id: -slot.slot_id, daily_slot: slot.slot_id, slot_role: slot.role,
         player: player.id, player_nickname: player.nickname, player_slug: player.slug, is_correct: true,
+        player_portrait_url: player.portrait_url,
         rarity_tier: null, rarity_percent: player.pick_percent, points_awarded: -player.pick_percent,
         deduction: player.pick_percent, is_diamond_pick: false }
     }
@@ -86,6 +88,7 @@ export default function CompletedRoster({ daily, state }: { daily: Daily; state:
           {visible.map((player) => <li key={player.id} className="flex items-center gap-3 border-b px-6 py-3" style={{ borderColor: 'var(--line-soft)' }}>
             <PlayerPortrait url={player.portrait_url} />
             <span className="min-w-0 flex-1 truncate font-semibold">{player.nickname}</span>
+            <span className="shrink-0 text-xs tabular" style={{ color: 'var(--text-dim)' }}>{pl ? 'Odpowiedzi' : 'Answers'}: {player.pick_count}</span>
             <RarityIndicator percent={player.pick_percent} locale={locale} className="ml-auto shrink-0 text-right text-xs" />
           </li>)}
         </ul>

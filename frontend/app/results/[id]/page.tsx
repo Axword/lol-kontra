@@ -6,11 +6,13 @@ import { useQuery } from '@tanstack/react-query'
 import { api, useDaily } from '@/lib/api'
 import { isAvailableDaily, isValidDailyId, useGameDate } from '@/lib/daily'
 import axios from 'axios'
-import { rarityColor, rarityLabel, roleLabel, ROLE_ORDER } from '@/lib/flags'
+import { rarityColor, roleLabel, ROLE_ORDER } from '@/lib/flags'
+import { rarityForPercent } from '@/lib/rarity'
 import { usePrefs } from '@/lib/store'
 import GameLayout from '@/components/layout/GameLayout'
 import DailyTop10 from '@/components/leaderboard/DailyTop10'
 import LoadError from '@/app/load-error'
+import RarityIndicator from '@/components/roster/RarityIndicator'
 
 type AnswerStat = {
   slot_id: number
@@ -128,19 +130,14 @@ export default function ResultsPage() {
                 >
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                     <span className="min-w-0 flex-1 break-words text-[15px] font-medium">{r.player}</span>
-                    <span className="text-xs" style={{ color: rarityColor[r.rarity_tier] }}>
-                      {rarityLabel(r.rarity_tier, locale)}
-                    </span>
-                    <span className="w-14 text-right text-sm tabular" style={{ color: 'var(--text-dim)' }}>
-                      {r.pick_percent.toFixed(1)}%
-                    </span>
+                    <RarityIndicator percent={r.pick_percent} locale={locale} className="ml-auto text-right text-sm" />
                   </div>
                   <div className="mt-3 h-[3px]" style={{ background: 'var(--line-soft)' }}>
                     <div
                       style={{
                         width: `${Math.max(1, Math.min(100, r.pick_percent))}%`,
                         height: '100%',
-                        background: rarityColor[r.rarity_tier],
+                        background: rarityColor[rarityForPercent(r.pick_percent) ?? 'common'],
                       }}
                     />
                   </div>

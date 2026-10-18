@@ -163,9 +163,9 @@ describe('answer reconciliation', () => {
 describe('autocomplete cancellation', () => {
   it('cancels the old search and never displays its results for a new query', async () => {
     const get = vi.spyOn(api, 'get').mockImplementation(() => new Promise(() => {}))
-    const hook = renderHook(({ q }) => usePlayerAutocomplete(q, 'mid'), { wrapper, initialProps: { q: ' fa ' } })
+    const hook = renderHook(({ q }) => usePlayerAutocomplete(q), { wrapper, initialProps: { q: ' fa ' } })
     await waitFor(() => expect(get).toHaveBeenCalledOnce())
-    expect(get.mock.calls[0][1]?.params).toEqual({ q: 'fa', role: 'mid' })
+    expect(get.mock.calls[0][1]?.params).toEqual({ q: 'fa' })
     const signal = get.mock.calls[0][1]?.signal
     hook.rerender({ q: 'faker' })
     await waitFor(() => expect(get).toHaveBeenCalledTimes(2))

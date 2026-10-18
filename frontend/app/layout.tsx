@@ -4,7 +4,7 @@ import { ReactNode } from 'react'
 import Providers from './providers'
 
 export const metadata: Metadata = {
-  title: 'Worlds XI',
+  title: 'WORDS V',
   description: 'Codzienna zagadka o zawodnikach League of Legends z mistrzostw świata.',
 }
 

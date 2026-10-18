@@ -5,6 +5,7 @@ export function rarityForPercent(percent: number | null | undefined): RarityTier
   if (percent < 2) return 'legendary'
   if (percent < 5) return 'epic'
   if (percent < 15) return 'rare'
+  if (percent < 25) return 'uncommon'
   return 'common'
 }
 

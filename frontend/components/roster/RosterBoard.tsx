@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Daily, DailySlot, GameAnswer, GameState, Player, formatApiError, useAnswerSlot, useAnswerStats } from '@/lib/api'
-import { useGameDate } from '@/lib/daily'
+import { Daily, DailySlot, GameAnswer, GameState, Player, formatApiError, useAnswerSlot } from '@/lib/api'
 import { usePrefs } from '@/lib/store'
 import { sound } from '@/lib/sound'
 import PlayerPickerModal from './PlayerPickerModal'
@@ -19,6 +18,7 @@ type Flash = {
   nickname: string
   percent: number | null
   provisional: boolean
+  isDiamond: boolean
 } | null
 
 export default function RosterBoard({ daily, state }: Props) {
@@ -34,19 +34,13 @@ export default function RosterBoard({ daily, state }: Props) {
   const pickerWasOpen = useRef(false)
 
   const answer = useAnswerSlot(daily.id)
-  const archived = daily.date < useGameDate()
-  const shares = useAnswerStats(daily.id, archived)
-
   const answersBySlot = useMemo(() => {
     const map: Record<number, GameAnswer> = {}
     for (const a of state.answers) {
-      const percent = shares.data?.results.find((row) => row.slot_id === a.daily_slot && row.player_slug === a.player_slug)?.pick_percent
-      map[a.daily_slot] = archived && a.is_correct
-        ? { ...a, rarity_percent: shares.data ? percent ?? 0 : null }
-        : a
+      map[a.daily_slot] = a
     }
     return map
-  }, [state.answers, archived, shares.data])
+  }, [state.answers])
 
   const over = state.is_over
   useEffect(() => {
@@ -99,6 +93,7 @@ export default function RosterBoard({ daily, state }: Props) {
             nickname: data.player_nickname,
             percent: data.pick_percent,
             provisional: data.is_provisional,
+            isDiamond: data.is_diamond_pick,
           })
         },
         onError: (e: any) => {
@@ -148,7 +143,7 @@ export default function RosterBoard({ daily, state }: Props) {
               </span>{' '}
               {flash.percent != null && (
                 <span>
-                  {' · '}<RarityIndicator percent={flash.percent} locale={locale} />
+                  {' · '}<RarityIndicator percent={flash.percent} locale={locale} isDiamond={flash.isDiamond} />
                 </span>
               )}
               {flash.provisional && (

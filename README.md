@@ -1,4 +1,4 @@
-# League of Legends Esports Roster Challenge — Worlds XI
+# League of Legends Esports Roster Challenge — WORDS V
 
 Codzienna gra inspirowana Kontra.games: ułóż skład TOP / JUNGLE / MID / ADC / SUPPORT. Każdy zawodnik musi spełniać dokładnie dwa wymagania pozycji, a pięć wyborów musi dotyczyć różnych osób. Interfejs jest dostępny po polsku i angielsku.
 
@@ -15,7 +15,7 @@ docker compose up --build
 
 Gra: <http://localhost>, API: <http://localhost/api/v1/>, Swagger: <http://localhost/api/docs/>, panel administracyjny: <http://localhost/admin/>. Konto administratora utworzysz przez `make createsuperuser`.
 
-Migracje instalują zamrożony pakiet 882 tożsamości z pełnymi dostępnymi metadanymi oraz 31 październikowych plansz. Ostatnia migracja usuwa oznaczone sztuczne rozgrywki i odbudowuje popularność z prawdziwych wyborów. Historyczne punkty, składy, odpowiedzi i postęp prawdziwych graczy pozostają zachowane. Nie potrzebuje dostępu do Leaguepedii. Entrypoint wykonuje `bootstrap_database`: blokadę równoległego startu, migracje i kontrolę kompletności; błąd przerywa start. Brakującą dzisiejszą planszę przygotowuje oddzielnie.
+Migracje instalują zamrożony pakiet 882 tożsamości z pełnymi dostępnymi metadanymi oraz 31 październikowych plansz. Usuwają oznaczone sztuczne rozgrywki, odbudowują popularność z prawdziwych wyborów i odtwarzają trwałe wyróżnienie pierwszych trafień. Historyczne punkty, składy, odpowiedzi i postęp prawdziwych graczy pozostają zachowane. Nie potrzebują dostępu do Leaguepedii. Entrypoint wykonuje `bootstrap_database`: blokadę równoległego startu, migracje i kontrolę kompletności; błąd przerywa start. Brakującą dzisiejszą planszę przygotowuje oddzielnie.
 
 Przed publicznym hostingiem użyj oddzielnego `docker-compose.prod.yml`, prywatnego `.env.prod` i zewnętrznego HTTPS proxy. [Instrukcja wdrożenia, uprawnienia i backup](docs/DEPLOYMENT.md).
 

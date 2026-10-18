@@ -95,6 +95,19 @@ describe('results pages', () => {
     expect(screen.queryByTestId('daily-ranking')).toBeNull()
   })
 
+  it('shows current pick percentages with their matching rarity, without treating an unpicked answer as a diamond', () => {
+    fixture.stats.data.results = [
+      { slot_id: 1, slot_role: 'top', player: 'Knight', player_slug: 'knight', pick_count: 1, pick_percent: 9.09, rarity_tier: 'common' },
+      { slot_id: 1, slot_role: 'top', player: 'Unpicked', player_slug: 'unpicked', pick_count: 0, pick_percent: 0, rarity_tier: 'common' },
+    ]
+    const { container } = render(<ResultsPage />)
+    expect(screen.getByText('9,1%').closest('[data-rarity]')?.getAttribute('data-rarity')).toBe('rare')
+    expect(screen.getByText('0%').closest('[data-rarity]')?.getAttribute('data-rarity')).toBe('legendary')
+    expect(container.querySelector('.rarity-diamond')).toBeNull()
+    expect(screen.queryByText('Pospolity')).toBeNull()
+    expect(screen.queryByText(/punkt/)).toBeNull()
+  })
+
   it('distinguishes a failed leaderboard from an empty one', () => {
     fixture.leaderboard = { ...query(), isError: true, error: new Error('offline') }
     render(<LeaderboardPage />)
