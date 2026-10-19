@@ -68,7 +68,7 @@ function NicknameDialog({ guestToken, profile, onClose, returnFocusRef }: {
   </IdentityDialog>
 }
 
-function TeamLogo({ team, small = false }: { team: SupportedTeam; small?: boolean }) {
+export function TeamLogo({ team, small = false }: { team: SupportedTeam; small?: boolean }) {
   const [failed, setFailed] = useState(false)
   const dark = ['dk', 'g2', 'hle', 'tlaw', 'tsw'].includes(team.id)
   if (failed) return <Shield size={small ? 18 : 28} strokeWidth={1.5} aria-hidden="true" />
@@ -79,7 +79,7 @@ function TeamLogo({ team, small = false }: { team: SupportedTeam; small?: boolea
     style={{ background: dark ? '#26312d' : '#f1f4f1' }} onError={() => setFailed(true)} />
 }
 
-function TeamDialog({ guestToken, team, onClose, returnFocusRef }: {
+export function TeamDialog({ guestToken, team, onClose, returnFocusRef }: {
   guestToken: string; team?: SupportedTeam | null; onClose: () => void; returnFocusRef: RefObject<HTMLElement>
 }) {
   const pl = usePrefs((state) => state.locale) === 'pl'

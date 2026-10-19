@@ -1,10 +1,12 @@
 'use client'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useRef, useState } from 'react'
+import { Shield } from 'lucide-react'
 import { usePrefs } from '@/lib/store'
 import { formatApiError } from '@/lib/errors'
 import { useGuestProfile, useGuestToken, useUpdateGuestNickname } from '@/lib/guest-profile'
 import GameLayout from '@/components/layout/GameLayout'
 import ProfileStatistics from '@/components/profile/ProfileStatistics'
+import { TeamDialog, TeamLogo } from '@/components/layout/GuestIdentity'
 
 export default function ProfilePage() {
   const locale = usePrefs((s) => s.locale)
@@ -13,6 +15,9 @@ export default function ProfilePage() {
   const profile = useGuestProfile(guestToken)
   const update = useUpdateGuestNickname()
   const [draft, setDraft] = useState<string | null>(null)
+  const [teamOpen, setTeamOpen] = useState(false)
+  const teamButton = useRef<HTMLButtonElement>(null)
+  const team = profile.data?.supported_team
   const nickname = draft ?? profile.data?.nickname ?? ''
 
   const save = (event: FormEvent<HTMLFormElement>) => {
@@ -52,6 +57,20 @@ export default function ProfilePage() {
                 : <p>{pl ? 'Zostaw puste, aby wrócić do domyślnego nicku.' : 'Leave blank to restore your default nickname.'}</p>}
             </div>
           </form>
+
+          <section aria-labelledby="profile-badge-title" className="space-y-3">
+            <h2 id="profile-badge-title" className="text-sm font-semibold">Badge</h2>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="flex min-h-11 items-center gap-2 text-sm font-medium" style={{ color: 'var(--text-dim)' }}>
+                {team ? <><TeamLogo key={team.id} team={team} /><span>{team.name}</span></> : <Shield size={24} strokeWidth={1.7} aria-hidden="true" />}
+              </span>
+              <button type="button" ref={teamButton} disabled={!guestToken || !profile.data} onClick={() => setTeamOpen(true)} aria-haspopup="dialog"
+                className="min-h-11 border px-5 text-sm font-semibold disabled:opacity-50" style={{ borderColor: 'var(--line)' }}>
+                {team ? (pl ? 'Zmień drużynę' : 'Change team') : (pl ? 'Wybierz drużynę' : 'Choose a team')}
+              </button>
+            </div>
+            {teamOpen && <TeamDialog guestToken={guestToken} team={team} onClose={() => setTeamOpen(false)} returnFocusRef={teamButton} />}
+          </section>
 
           <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>
             {pl

@@ -118,6 +118,13 @@ describe('the map and mobile roster show server answers', () => {
     const percent = locale === 'pl' ? '4,3%' : '4.3%'
     expect(within(cards[0]).getByText(percent)).toBeTruthy()
     expect(within(mobileRows[0]).getByText(percent)).toBeTruthy()
+    const rarityLabel = locale === 'pl' ? 'Epicki' : 'Epic'
+    for (const surface of [cards[0], mobileRows[0]]) {
+      const label = within(surface).getByText(rarityLabel)
+      expect(label.previousElementSibling?.textContent).toBe(percent)
+      expect(getComputedStyle(label).color).toBe('rgb(120, 80, 165)')
+    }
+    expect(within(container.querySelector<HTMLElement>('.rift-marker')!).queryByText(rarityLabel)).toBeNull()
     expect(cards[0].textContent).not.toMatch(/pkt|pts|−4/)
     expect(mobileRows[0].textContent).not.toMatch(/pkt|pts|−4/)
   })
@@ -152,6 +159,13 @@ describe('the map and mobile roster show server answers', () => {
       expect(surface.getAttribute('data-rarity')).toBe(tier)
       expect(getComputedStyle(surface).backgroundColor).toBe(background)
       expect(getComputedStyle(surface.querySelector('.rarity-indicator')!).color).toBe(text)
+      const labels: Record<string, string> = { legendary: 'Złoty', epic: 'Epicki', rare: 'Rzadki', uncommon: 'Niepospolity', common: 'Pospolity' }
+      if (surface.matches('.rift-marker')) expect(within(surface as HTMLElement).queryByText(labels[tier])).toBeNull()
+      else {
+        const label = within(surface as HTMLElement).getByText(labels[tier])
+        expect(label.previousElementSibling?.textContent).toContain('%')
+        expect(getComputedStyle(label).color).toBe(text)
+      }
       expect(surface.textContent).not.toMatch(/pkt|pts/)
     })
     expect(container.querySelectorAll('svg[aria-label="Diamentowy wybór"]').length).toBe(0)
@@ -168,7 +182,10 @@ describe('the map and mobile roster show server answers', () => {
     surfaces.forEach((surface) => {
       expect(surface.getAttribute('data-rarity')).toBe('diamond')
       expect(getComputedStyle(surface).backgroundColor).toBe('rgb(220, 247, 255)')
-      if (percent !== null) expect(getComputedStyle(surface.querySelector('.rarity-indicator')!).color).toBe('rgb(18, 109, 140)')
+      if (percent !== null) {
+        expect(getComputedStyle(surface.querySelector('.rarity-indicator')!).color).toBe('rgb(18, 109, 140)')
+        if (!surface.matches('.rift-marker')) expect(within(surface as HTMLElement).getByText('Diamentowy').previousElementSibling?.textContent).toContain('%')
+      }
     })
     expect(container.querySelectorAll('svg[aria-label="Diamentowy wybór"]').length).toBe(percent === null ? 0 : 3)
     expect(container.querySelector('[data-rarity="legendary"]')).toBeNull()

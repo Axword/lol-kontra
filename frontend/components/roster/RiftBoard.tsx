@@ -69,7 +69,7 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
               {count != null && <div className="mt-3 text-xs tabular">{count} {locale === 'pl' ? 'zawodników' : 'players'}</div>}
               {solved && (
                 <div className="rift-result">
-                  <RarityIndicator percent={answer.rarity_percent} locale={locale} isDiamond={answer.is_diamond_pick} />
+                  <RarityIndicator percent={answer.rarity_percent} locale={locale} isDiamond={answer.is_diamond_pick} showLabel />
                 </div>
               )}
             </button>

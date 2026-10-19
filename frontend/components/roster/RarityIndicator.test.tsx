@@ -6,18 +6,19 @@ afterEach(cleanup)
 
 describe('rarity percentage', () => {
   it('shows a miniature diamond only for an awarded historical first pick', () => {
-    const { container } = render(<RarityIndicator percent={41.7} locale="pl" isDiamond />)
+    const { container } = render(<RarityIndicator percent={41.7} locale="pl" isDiamond showLabel />)
     expect(screen.getByRole('img', { name: 'Diamentowy wybór' })).toBeTruthy()
-    expect(container.textContent).toBe('41,7%')
+    expect(container.textContent).toBe('41,7% Diamentowy')
+    expect(screen.getByText('Diamentowy').previousElementSibling?.textContent).toBe('41,7%')
     expect(container.firstElementChild?.getAttribute('title')).toBe('Diamentowy')
     expect(container.firstElementChild?.getAttribute('data-rarity')).toBe('diamond')
     expect(getComputedStyle(container.firstElementChild!).color).toBe('rgb(18, 109, 140)')
   })
 
   it('keeps a zero percentage gold when no first-pick award exists', () => {
-    const { container } = render(<RarityIndicator percent={0} locale="pl" />)
+    const { container } = render(<RarityIndicator percent={0} locale="pl" showLabel />)
     expect(screen.queryByRole('img')).toBeNull()
-    expect(container.textContent).toBe('0%')
+    expect(container.textContent).toBe('0% Złoty')
     expect(container.firstElementChild?.getAttribute('data-rarity')).toBe('legendary')
     expect(getComputedStyle(container.firstElementChild!).color).toBe('rgb(134, 89, 0)')
   })
@@ -44,8 +45,9 @@ describe('rarity percentage', () => {
   })
 
   it('uses English decimal formatting and labels', () => {
-    const { container } = render(<RarityIndicator percent={9.09} locale="en" />)
-    expect(container.textContent).toBe('9.1%')
+    const { container } = render(<RarityIndicator percent={9.09} locale="en" showLabel />)
+    expect(container.textContent).toBe('9.1% Rare')
+    expect(screen.getByText('Rare').previousElementSibling?.textContent).toBe('9.1%')
     expect(container.firstElementChild?.getAttribute('title')).toBe('Rare')
   })
 })

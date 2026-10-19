@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { GuestProfile, guestProfileKey } from '@/lib/guest-profile'
 import { usePrefs } from '@/lib/store'
 import ProfilePage from './page'
+import GuestIdentity from '@/components/layout/GuestIdentity'
 
 vi.mock('@/components/layout/GameLayout', () => ({ default: ({ children }: { children: React.ReactNode }) => <main>{children}</main> }))
 const token = '1234abcd-1111-4111-8111-111111111111'
@@ -125,5 +126,67 @@ describe('guest nickname and statistics', () => {
     expect(screen.queryByRole('list')).toBeNull()
     expect(within(screen.getByText('Skuteczność').parentElement!).getByRole('definition').textContent).toBe('0%')
     expect(screen.getByText('Najczęściej wybierani zawodnicy')).toBeTruthy()
+  })
+
+  it('shares the profile badge with the header and preserves an unsaved nickname when choosing or clearing a team', async () => {
+    const team = { id: 't1', code: 'T1', name: 'T1', region: 'LCK', logo_url: '/teams/worlds-2026/t1.png' }
+    const post = vi.spyOn(api, 'post').mockResolvedValueOnce({ data: { ...profile, supported_team: null } })
+      .mockResolvedValueOnce({ data: { ...profile, supported_team: team } })
+      .mockResolvedValueOnce({ data: { ...profile, supported_team: null } })
+    const get = vi.spyOn(api, 'get').mockResolvedValue({ data: { season: 2026, teams: [team], source_url: 'https://lolesports.com/' } })
+    const gameKey = ['game-state', 19, token, '2026-10-19']
+    const progress = { total_points: 15, correct_count: 5, is_over: true }
+    client.setQueryData(gameKey, progress)
+    render(<QueryClientProvider client={client}><GuestIdentity /><ProfilePage /></QueryClientProvider>)
+    const input = screen.getByRole('textbox', { name: 'Nick' }) as HTMLInputElement
+    await waitFor(() => expect(input.value).toBe('Old name'))
+    fireEvent.change(input, { target: { value: 'Unsaved nickname' } })
+    const badge = screen.getByRole('region', { name: 'Badge' })
+    fireEvent.click(within(badge).getByRole('button', { name: 'Wybierz drużynę' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'T1 T1 · LCK' }))
+    await screen.findByRole('button', { name: 'Kibicuję: T1' })
+    expect(within(badge).getByText('T1')).toBeTruthy()
+    expect(badge.querySelector('img')?.getAttribute('src')).toBe(team.logo_url)
+    expect(input.value).toBe('Unsaved nickname')
+    expect(post).toHaveBeenNthCalledWith(2, '/guest/profile/', { guest_token: token, supported_team: 't1' })
+    fireEvent.click(within(badge).getByRole('button', { name: 'Zmień drużynę' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Bez drużyny' }))
+    await waitFor(() => expect(client.getQueryData<GuestProfile>(guestProfileKey(token))?.supported_team).toBeNull())
+    expect(within(badge).getByRole('button', { name: 'Wybierz drużynę' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Zmień nick: Old name' })).toBeTruthy()
+    expect(input.value).toBe('Unsaved nickname')
+    expect(client.getQueryData<GuestProfile>(guestProfileKey(token))?.nickname).toBe('Old name')
+    expect(post).toHaveBeenNthCalledWith(3, '/guest/profile/', { guest_token: token, supported_team: null })
+    expect(get).toHaveBeenCalledTimes(1)
+    expect(client.getQueryData(gameKey)).toEqual(progress)
+    expect(usePrefs.getState()).toMatchObject({ guestToken: token, seenHelp: true })
+  })
+
+  it('retains the profile selection and nickname draft after a badge save fails, then returns focus with Escape', async () => {
+    const team = { id: 't1', code: 'T1', name: 'T1', region: 'LCK', logo_url: '/teams/worlds-2026/t1.png' }
+    const other = { id: 'g2', code: 'G2', name: 'G2', region: 'LEC', logo_url: '/teams/worlds-2026/g2.png' }
+    let fail!: (error: unknown) => void
+    vi.spyOn(api, 'post').mockResolvedValueOnce({ data: { ...profile, supported_team: team } })
+      .mockImplementationOnce(() => new Promise((_resolve, reject) => { fail = reject }))
+    vi.spyOn(api, 'get').mockResolvedValue({ data: { season: 2026, teams: [team, other], source_url: 'https://lolesports.com/' } })
+    mount()
+    const input = screen.getByRole('textbox', { name: 'Nick' }) as HTMLInputElement
+    await waitFor(() => expect(input.value).toBe('Old name'))
+    fireEvent.change(input, { target: { value: 'Draft stays' } })
+    const badge = screen.getByRole('region', { name: 'Badge' })
+    const open = within(badge).getByRole('button', { name: 'Zmień drużynę' })
+    fireEvent.click(open)
+    fireEvent.click(await screen.findByRole('button', { name: 'G2 G2 · LEC' }))
+    const dialog = screen.getByRole('dialog', { name: 'Kibicuję' })
+    await waitFor(() => expect(within(dialog).getByRole('status').textContent).toBe('Zapisywanie…'))
+    expect((within(dialog).getByRole('button', { name: 'G2 G2 · LEC' }) as HTMLButtonElement).disabled).toBe(true)
+    await act(async () => { fail({ isAxiosError: true, response: { status: 400, data: { supported_team: ['Nie udało się zmienić drużyny.'] } } }) })
+    expect((await within(dialog).findByRole('alert')).textContent).toBe('Nie udało się zmienić drużyny.')
+    expect(client.getQueryData<GuestProfile>(guestProfileKey(token))?.supported_team?.id).toBe('t1')
+    fireEvent.keyDown(document.activeElement!, { key: 'Escape' })
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(document.activeElement).toBe(open)
+    expect(input.value).toBe('Draft stays')
+    expect(within(badge).getByText('T1')).toBeTruthy()
   })
 })

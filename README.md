@@ -4,7 +4,7 @@ Codzienna gra inspirowana Kontra.games: ułóż skład TOP / JUNGLE / MID / ADC 
 
 Zaczynasz z 500 punktami: każda z pięciu pustych pozycji kosztuje 100. Poprawna odpowiedź zastępuje ten koszt zapisanym procentem popularności zawodnika. Po uzupełnieniu składu wynik to suma pięciu procentów; **mniej punktów oznacza lepszy wynik**, a pięć pierwszych trafień po 0% daje 0 punktów. Niewypełniona pozycja zachowuje koszt 100, więc pomijanie odpowiedzi nie poprawia wyniku. Masz 10 pomyłek. Gry archiwalne również liczą się do wyników i rankingów.
 
-Nick można zmienić bezpośrednio w nagłówku. Obok niego wybierzesz drużynę Worlds 2026, której kibicujesz. Profil pokazuje skuteczność, serie dni, diamenty i najczęściej wybieranych zawodników. Po zakończeniu gry można opublikować moderowany komentarz z automatycznym obrazem własnego składu; treść i obraz są ukryte przed osobami, które jeszcze nie skończyły tej planszy. Pole „Zapisz jako…” zapisuje wyłącznie nick i pojawia się tylko przed pierwszym ustawieniem własnego nicku.
+Nick można zmienić bezpośrednio w nagłówku. Obok niego lub w profilu wybierzesz badge drużyny Worlds 2026, której kibicujesz. Profil pokazuje skuteczność, serie dni, diamenty i najczęściej wybieranych zawodników. Po zakończeniu gry można opublikować moderowany komentarz z automatycznym obrazem własnego składu; treść i obraz są ukryte przed osobami, które jeszcze nie skończyły tej planszy. Pole „Zapisz jako…” zapisuje wyłącznie nick i pojawia się tylko przed pierwszym ustawieniem własnego nicku.
 
 Stack: Next.js 14, React, TypeScript, Tailwind, Django 5.2 LTS, DRF, PostgreSQL 16, Redis 7 i Celery.
 
