@@ -12,6 +12,8 @@ Nowe warunki „Urodzony w Europie” i „Urodzony w Ameryce Północnej” kor
 
 Stack: Next.js 14, React, TypeScript, Tailwind, Django 5.2 LTS, DRF, PostgreSQL 16, Redis 7 i Celery.
 
+Frontend zawiera Vercel Web Analytics we wspólnym layoucie, zgodnie z [instrukcją integracji Next.js](https://vercel.com/docs/analytics/quickstart?framework=nextjs). Funkcja Web Analytics musi być włączona w projekcie Vercel; po wdrożeniu skrypt `/_vercel/insights/script.js` powinien zwracać JavaScript. Zmiana nie dodaje elementów interfejsu gry.
+
 ## Uruchomienie
 
 ```sh
