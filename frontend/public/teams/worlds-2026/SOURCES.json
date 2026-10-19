@@ -1,0 +1,157 @@
+{
+  "catalogue_source": "https://lolesports.com/en-US/tournament/115660540725177488/overview",
+  "logos": [
+    {
+      "id": "al",
+      "code": "AL",
+      "source_url": "https://static.lolesports.com/teams/1641199582689_.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1641199582689_.png",
+      "bytes": 2433,
+      "sha256": "2d283dd0c93065d3d5c0d3628f47f3dee361f0cb6164abd57e33a461a7fb1a95"
+    },
+    {
+      "id": "blg",
+      "code": "BLG",
+      "source_url": "https://static.lolesports.com/teams/1682322954525_Bilibili_Gaming_logo_20211.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1682322954525_Bilibili_Gaming_logo_20211.png",
+      "bytes": 3310,
+      "sha256": "5c61d32098fd23c59431c13c1d8f469e20a7e544dd4ea5da9ae88140b76d5a05"
+    },
+    {
+      "id": "tes",
+      "code": "TES",
+      "source_url": "https://static.lolesports.com/teams/1592592064571_TopEsportsTES-01-FullonDark.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1592592064571_TopEsportsTES-01-FullonDark.png",
+      "bytes": 1478,
+      "sha256": "a1dd620362b95d078d7fe968c9542fd100e58a38cd06158a810f4214df9567fe"
+    },
+    {
+      "id": "ig",
+      "code": "IG",
+      "source_url": "https://static.lolesports.com/teams/1634762917340_300px-Invictus_Gaming_logo.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1634762917340_300px-Invictus_Gaming_logo.png",
+      "bytes": 6067,
+      "sha256": "72c244c9891dac21204c57e6fa01eb2221ed1bf9681f16637696fbccb7698a1f"
+    },
+    {
+      "id": "gen",
+      "code": "GEN",
+      "source_url": "https://static.lolesports.com/teams/1773829250929_GENGLOGO_GOLD.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1773829250929_GENGLOGO_GOLD.png",
+      "bytes": 1197,
+      "sha256": "a20715bdb40653139b2b42d099d52ff4ad44c80c2a90dc30b878dadade284807"
+    },
+    {
+      "id": "hle",
+      "code": "HLE",
+      "source_url": "https://static.lolesports.com/teams/1631819564399_hle-2021-worlds.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1631819564399_hle-2021-worlds.png",
+      "bytes": 2236,
+      "sha256": "8a8db2a7fc4122f84426335873790a983646182464ff86683701b43bf0d1f9fc"
+    },
+    {
+      "id": "t1",
+      "code": "T1",
+      "source_url": "https://static.lolesports.com/teams/1726801573959_539px-T1_2019_full_allmode.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1726801573959_539px-T1_2019_full_allmode.png",
+      "bytes": 1552,
+      "sha256": "2cb2cc49a4eec9c0bc0342935726966e8ded3ab87cc4b47344a9316f6bc88f9b"
+    },
+    {
+      "id": "dk",
+      "code": "DK",
+      "source_url": "https://static.lolesports.com/teams/1673260049703_DPlusKIALOGO11.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1673260049703_DPlusKIALOGO11.png",
+      "bytes": 1145,
+      "sha256": "d9590edec0a1e462742b5b861e2976330569c08f6732488fb5fbd0a5d86b1892"
+    },
+    {
+      "id": "g2",
+      "code": "G2",
+      "source_url": "https://static.lolesports.com/teams/G2-FullonDark.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2FG2-FullonDark.png",
+      "bytes": 3109,
+      "sha256": "6816cf65df97cd26392d6ac4202cf296e31daa47a9bff8db47570c0fecca9f29"
+    },
+    {
+      "id": "mkoi",
+      "code": "MKOI",
+      "source_url": "https://static.lolesports.com/teams/1734012609283_MKOI_FullColor_Blue.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1734012609283_MKOI_FullColor_Blue.png",
+      "bytes": 1992,
+      "sha256": "a9983e81b328b4458adc55dbc4dac5293365aef8e897ae0eb9cdb545412829be"
+    },
+    {
+      "id": "kc",
+      "code": "KC",
+      "source_url": "https://static.lolesports.com/teams/1704714951336_KC.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1704714951336_KC.png",
+      "bytes": 2441,
+      "sha256": "383e904e90d671ea80be7614fc5a30fa3914b79cbb7f8135a154075bc45a0c42"
+    },
+    {
+      "id": "tlaw",
+      "code": "TLAW",
+      "source_url": "https://static.lolesports.com/teams/1769357207762_TLAlienware_Minimal_Bug-White.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1769357207762_TLAlienware_Minimal_Bug-White.png",
+      "bytes": 3069,
+      "sha256": "e7585216033b843188dec74c0c4bb4539996e33aad959e9f3c072b787c037218"
+    },
+    {
+      "id": "lyon",
+      "code": "LYON",
+      "source_url": "https://static.lolesports.com/teams/1743717443673_isotypelyon-03.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1743717443673_isotypelyon-03.png",
+      "bytes": 4744,
+      "sha256": "7c273ce3b02014a8d1d01ec1b2c32cda8b14cc0423b58ee6d725be1b9d8867c0"
+    },
+    {
+      "id": "c9",
+      "code": "C9",
+      "source_url": "https://static.lolesports.com/teams/1736924120254_C9Kia_IconBlue_Transparent_2000x2000.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1736924120254_C9Kia_IconBlue_Transparent_2000x2000.png",
+      "bytes": 2361,
+      "sha256": "46f0e36028b08a3df4d712afd31863ff8933c9560e49579a1369b7a88fc6e81b"
+    },
+    {
+      "id": "tsw",
+      "code": "TSW",
+      "source_url": "https://static.lolesports.com/teams/1774598000328_White_EyeText_600p.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1774598000328_White_EyeText_600p.png",
+      "bytes": 2168,
+      "sha256": "c50411b84a247826fcd0195a31422af58dbf316e6557f34b8dfb5ddcef8f2e21"
+    },
+    {
+      "id": "cfo",
+      "code": "CFO",
+      "source_url": "https://static.lolesports.com/teams/1656307849320_CFO_Logo.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1656307849320_CFO_Logo.png",
+      "bytes": 8054,
+      "sha256": "caeca7b73f9a9bd2cbe40472e80dca8c243f7760f2c749441ee94f60220976f9"
+    },
+    {
+      "id": "mvk",
+      "code": "MVK",
+      "source_url": "https://static.lolesports.com/teams/1767089709161_White_Logo.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1767089709161_White_Logo.png",
+      "bytes": 2603,
+      "sha256": "da42f0074a5362e973fdf8ac6f45f76063ca8ec2c79f02dbd716d179ef26cc34"
+    },
+    {
+      "id": "los",
+      "code": "LOS",
+      "source_url": "https://static.lolesports.com/teams/1784013312149_LOS-OLaranja.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2F1784013312149_LOS-OLaranja.png",
+      "bytes": 1873,
+      "sha256": "bf94caeb9a71b29fd40dcc967f1706f378202fd30d8652aa1cdeb1c618c9df32"
+    },
+    {
+      "id": "fur",
+      "code": "FUR",
+      "source_url": "https://static.lolesports.com/teams/FURIA---black.png",
+      "download_url": "https://am-a.akamaihd.net/image?resize=64:&f=http%3A%2F%2Fstatic.lolesports.com%2Fteams%2FFURIA---black.png",
+      "bytes": 3934,
+      "sha256": "ce70530126eb27d5dd1653eb60b104d19435a41863c16561e0950264afaaef08"
+    }
+  ]
+}

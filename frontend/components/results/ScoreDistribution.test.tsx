@@ -43,19 +43,19 @@ describe('score comparison', () => {
     expect(screen.getByText(/Pojawi się po przeliczeniu punktów/)).toBeTruthy()
   })
   it.each([
-    [500, 16],
+    [0, 16],
     [250, 240],
-    [0, 464],
-  ])('places score %s correctly on the descending compact axis', (score, expectedX) => {
+    [500, 464],
+  ])('places score %s correctly on the ascending compact axis', (score, expectedX) => {
     result.data = { distribution: [{ score: 250, count: 1 }], total_submissions: 1, percentile: 75 }
     const { container } = render(<ScoreDistribution dailyId={7} userScore={score} compact />)
     const marker = container.querySelector('[data-user-score]')
     expect(marker?.getAttribute('x1')).toBe(String(expectedX))
     expect(marker?.getAttribute('x2')).toBe(String(expectedX))
-    expect(container.querySelector('[data-score-axis]')?.firstElementChild?.textContent).toBe('500')
-    expect(container.querySelector('[data-score-axis]')?.lastElementChild?.textContent).toBe('0')
+    expect(container.querySelector('[data-score-axis]')?.firstElementChild?.textContent).toBe('0')
+    expect(container.querySelector('[data-score-axis]')?.lastElementChild?.textContent).toBe('500')
     const chartDescription = screen.getByRole('img').getAttribute('aria-describedby')
-    expect(container.querySelector(`[id="${chartDescription}"]`)?.textContent).toContain('500 po lewej, 0 po prawej')
+    expect(container.querySelector(`[id="${chartDescription}"]`)?.textContent).toContain('0 po lewej, 500 po prawej. Im mniej, tym lepiej.')
     expect(screen.getByText('Twój wynik jest lepszy niż 75% wyników.')).toBeTruthy()
   })
   it('renders one real result as a finite smooth curve with a soft filled area', () => {
@@ -67,11 +67,12 @@ describe('score comparison', () => {
     expect(container.querySelector('linearGradient')).toBeTruthy()
     expect(container.querySelector('polyline')).toBeNull()
   })
-  it('keeps the full score at the left of the detailed histogram', () => {
+  it('keeps zero at the left and the full score at the right of the detailed histogram', () => {
     result.data = { distribution: [{ score: 500, count: 1 }], total_submissions: 1 }
     const { container } = render(<ScoreDistribution dailyId={7} userScore={500} />)
     expect(container.querySelector('[title="500–500: 1"]')).toBeTruthy()
-    expect(container.querySelector('[title]')?.getAttribute('title')).toBe('500–500: 1')
+    expect(container.querySelector('[title]')?.getAttribute('title')).toBe('0–9: 0')
+    expect(container.querySelector('[title]')?.parentElement?.lastElementChild?.getAttribute('title')).toBe('500–500: 1')
   })
   it.each([false, true])('removes the former test-game explanation (compact: %s)', (compact) => {
     result.data = { distribution: [{ score: 250, count: 1 }], total_submissions: 1, seeded_count: 10 }

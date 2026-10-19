@@ -9,7 +9,7 @@ const chartWidth = 480
 const chartHeight = 180
 const chartPadding = 16
 const chartBaseline = chartHeight - chartPadding
-const scoreX = (score: number) => chartPadding + (1 - Math.max(0, Math.min(500, score)) / 500) * (chartWidth - chartPadding * 2)
+const scoreX = (score: number) => chartPadding + Math.max(0, Math.min(500, score)) / 500 * (chartWidth - chartPadding * 2)
 
 function smoothPath(points: { x: number; y: number }[]) {
   if (!points.length) return ''
@@ -62,7 +62,7 @@ export default function ScoreDistribution({
         mine: roundedScore >= x && roundedScore < x + bin,
       })
     }
-    return out.reverse()
+    return out
   }, [data?.distribution, bin, roundedScore])
 
   const curve = useMemo(() => {
@@ -72,7 +72,7 @@ export default function ScoreDistribution({
     if (!raw.length) return ''
     // A fixed bandwidth softens real score counts without adding submissions.
     const density = Array.from({ length: 101 }, (_, index) => {
-      const score = 500 - index * 5
+      const score = index * 5
       const count = raw.reduce((sum, entry) => sum + entry.count * Math.exp(-0.5 * ((score - entry.score) / 18) ** 2), 0)
       return { score, count }
     })
@@ -126,14 +126,14 @@ export default function ScoreDistribution({
     return <div>
       {compactMetrics}
       <p className="my-5 text-center text-sm" style={{ color: 'var(--text-dim)' }}>
-        {locale === 'pl' ? `Twój wynik jest lepszy niż ${formatPoints(data?.percentile ?? 0, locale)}% wyników.` : `Your score is higher than ${formatPoints(data?.percentile ?? 0, locale)}% of scores.`}
+        {locale === 'pl' ? `Twój wynik jest lepszy niż ${formatPoints(data?.percentile ?? 0, locale)}% wyników.` : `Your score is better than ${formatPoints(data?.percentile ?? 0, locale)}% of scores.`}
       </p>
       <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} role="img"
         aria-label={locale === 'pl' ? 'Rozkład wyników z oznaczeniem Twojego wyniku' : 'Score distribution with your score marked'}
         aria-describedby={`${gradientId}-description`} className="w-full">
         <desc id={`${gradientId}-description`}>{locale === 'pl'
-          ? `500 po lewej, 0 po prawej. Twój wynik: ${formatPoints(userScore, locale)}.`
-          : `500 on the left, 0 on the right. Your score: ${formatPoints(userScore, locale)}.`}</desc>
+          ? `0 po lewej, 500 po prawej. Im mniej, tym lepiej. Twój wynik: ${formatPoints(userScore, locale)}.`
+          : `0 on the left, 500 on the right. Lower is better. Your score: ${formatPoints(userScore, locale)}.`}</desc>
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="var(--gold)" stopOpacity="0.22" />
@@ -148,7 +148,7 @@ export default function ScoreDistribution({
         <line data-user-score={userScore} x1={mine} x2={mine} y1={chartPadding} y2={chartBaseline} stroke="var(--gold)" strokeDasharray="3 5" />
         <rect x={mine - 3.5} y={chartBaseline - 3.5} width="7" height="7" fill="var(--gold)" stroke="white" strokeWidth="1.5" />
       </svg>
-      <div data-score-axis className="flex justify-between text-xs tabular" style={{ color: 'var(--text-dim)' }}><span>500</span><span>{locale === 'pl' ? 'Twój wynik' : 'Your score'}: {formatPoints(userScore, locale)}</span><span>0</span></div>
+      <div data-score-axis className="flex justify-between text-xs tabular" style={{ color: 'var(--text-dim)' }}><span>0</span><span>{locale === 'pl' ? 'Twój wynik' : 'Your score'}: {formatPoints(userScore, locale)}</span><span>500</span></div>
     </div>
   }
 
@@ -201,9 +201,9 @@ export default function ScoreDistribution({
       </div>
 
       <div className="mt-2 flex justify-between text-xs tabular" style={{ color: 'var(--text-dim)' }}>
-        <span>500</span>
-        <span>{locale === 'pl' ? 'punkty' : 'points'}</span>
         <span>0</span>
+        <span>{locale === 'pl' ? 'punkty' : 'points'}</span>
+        <span>500</span>
       </div>
 
       <dl className="mt-6 grid grid-cols-2 gap-x-5 gap-y-6 border-t pt-6 sm:grid-cols-4" style={{ borderColor: 'var(--line-soft)' }}>

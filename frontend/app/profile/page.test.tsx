@@ -91,4 +91,39 @@ describe('guest nickname and statistics', () => {
     expect(input.value).toBe('Newer edit')
     expect(screen.queryByText('Nick zapisany.')).toBeNull()
   })
+
+  it('shows expanded real statistics and the most picked players with portraits and counts', async () => {
+    vi.spyOn(api, 'post').mockResolvedValue({ data: { ...profile, stats: { ...profile.stats,
+      correct_answers: 14, incorrect_attempts: 2, accuracy_percent: 87.5, perfect_games: 2, average_pick_percent: 8.4,
+      top_players: [
+        { id: 1, slug: 'faker', nickname: 'Faker', portrait_url: 'https://static.wikia.nocookie.net/faker.png', pick_count: 4 },
+        { id: 2, slug: 'knight', nickname: 'Knight', portrait_url: null, pick_count: 2 },
+      ],
+    } } })
+    mount()
+    await screen.findByText('Faker')
+    for (const [label, value] of [
+      ['Poprawne odpowiedzi', '14'], ['Pomyłki', '2'], ['Skuteczność', '87,5%'], ['Gry bez pomyłki', '2'],
+      ['Średnia popularność wyborów', '8,4%'], ['Diamentowe wybory', '1'], ['Wybory poniżej 2%', '2'],
+      ['Obecna seria dni', '2'], ['Najdłuższa seria dni', '3'],
+    ]) {
+      expect(within(screen.getByText(label).parentElement!).getByRole('definition').textContent).toBe(value)
+    }
+    const list = screen.getByRole('list')
+    const rows = within(list).getAllByRole('listitem')
+    expect(rows).toHaveLength(2)
+    expect(rows[0].textContent).toBe('FakerWybory: 4')
+    expect(rows[0].querySelector('img')?.getAttribute('src')).toBe('https://static.wikia.nocookie.net/faker.png')
+    expect(rows[1].textContent).toBe('KnightWybory: 2')
+    expect(rows[1].querySelector('img')).toBeNull()
+  })
+
+  it('handles an empty profile and older profile responses without inventing player statistics', async () => {
+    vi.spyOn(api, 'post').mockResolvedValue({ data: { ...profile, stats: { ...profile.stats, games_played: 0 } } })
+    mount()
+    await screen.findByText('Brak poprawnych wyborów.')
+    expect(screen.queryByRole('list')).toBeNull()
+    expect(within(screen.getByText('Skuteczność').parentElement!).getByRole('definition').textContent).toBe('0%')
+    expect(screen.getByText('Najczęściej wybierani zawodnicy')).toBeTruthy()
+  })
 })

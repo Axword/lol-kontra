@@ -40,8 +40,8 @@ export default function CompletedRoster({ daily, state }: { daily: Daily; state:
       answers[slot.slot_id] = { id: -slot.slot_id, daily_slot: slot.slot_id, slot_role: slot.role,
         player: player.id, player_nickname: player.nickname, player_slug: player.slug, is_correct: true,
         player_portrait_url: player.portrait_url,
-        rarity_tier: null, rarity_percent: player.pick_percent, points_awarded: -player.pick_percent,
-        deduction: player.pick_percent, is_diamond_pick: false }
+        rarity_tier: null, rarity_percent: player.pick_percent, points_awarded: player.pick_percent - 100,
+        deduction: 100 - player.pick_percent, is_diamond_pick: false }
     }
   }
   const open = (slot: DailySlot) => { setQuery(''); setInspecting(slot) }

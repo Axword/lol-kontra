@@ -9,6 +9,7 @@ const distributionHook = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/api', () => ({ useScoreDistribution: (...args: unknown[]) => distributionHook(...args) }))
 vi.mock('@/lib/store', () => ({ usePrefs: (select: (state: typeof prefs) => unknown) => select(prefs) }))
 vi.mock('./CompletedRoster', () => ({ default: () => <div data-testid="completed-roster">Completed roster</div> }))
+vi.mock('./FinalNicknamePrompt', () => ({ default: () => null }))
 
 const daily: Daily = { id: 7, date: '2026-10-07', status: 'scored', slots: [] }
 const state: GameState = {

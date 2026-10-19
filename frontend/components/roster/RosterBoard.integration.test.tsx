@@ -50,9 +50,9 @@ describe('answer feedback with the real picker and query cache', () => {
     const start: GameState = { ...initialState, errors_used: 0, errors_left: 10, answers: [] }
     const result: AnswerResult = {
       ...previousMiss, player: 418, player_nickname: 'Faker', player_slug: 'faker',
-      is_correct: true, rarity_tier: 'legendary', rarity_percent: 0, points_awarded: 0, deduction: 0,
+      is_correct: true, rarity_tier: 'legendary', rarity_percent: 0, points_awarded: -100, deduction: 100,
       is_diamond_pick: true, pick_percent: 0, pick_count: 0, sample_size: 0, is_provisional: true,
-      unchanged: false, submission_id: 7, total_points: 500,
+      unchanged: false, submission_id: 7, total_points: 400,
       errors_used: 0, errors_left: 10, max_errors: 10, slots_total: 5,
       correct_count: 1, is_over: false, is_scored: false, is_practice: false,
     }
@@ -85,7 +85,7 @@ describe('answer feedback with the real picker and query cache', () => {
       expect(card.getAttribute('data-rarity')).toBe('diamond')
     }
     const saved = JSON.parse(JSON.stringify(client.getQueryData<GameState>(key))) as GameState
-    expect(saved).toMatchObject({ total_points: 500, answers: [{ rarity_percent: 0, is_diamond_pick: true }] })
+    expect(saved).toMatchObject({ total_points: 400, answers: [{ rarity_percent: 0, is_diamond_pick: true }] })
     view.unmount()
     client.clear()
     client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
@@ -96,7 +96,7 @@ describe('answer feedback with the real picker and query cache', () => {
     expect(within(card).getByText('0%')).toBeTruthy()
     expect(within(card).getByRole('img', { name: 'Diamentowy wybór' })).toBeTruthy()
     expect(within(card).queryByText('100%')).toBeNull()
-    expect(saved.total_points).toBe(500)
+    expect(saved.total_points).toBe(400)
   })
 
   it('finds Faker on Top and leaves the slot open with nine lives after the server rejects his role', async () => {
@@ -149,9 +149,9 @@ describe('answer feedback with the real picker and query cache', () => {
     const result: AnswerResult = {
       ...previousMiss, player: 417, player_nickname: 'Knight', player_slug: 'knight-zhuo-ding',
       is_correct: true, rarity_tier: 'epic', rarity_percent: 9.09,
-      points_awarded: -9.09, deduction: 9.09,
+      points_awarded: -90.91, deduction: 90.91,
       pick_percent: 9.09, pick_count: 1, sample_size: 11, is_provisional: true,
-      unchanged: false, submission_id: 7, total_points: 490.91,
+      unchanged: false, submission_id: 7, total_points: 409.09,
       errors_used: 1, errors_left: 9, max_errors: 10, slots_total: 5,
       correct_count: 1, is_over: false, is_scored: false, is_practice: false,
     }
@@ -185,7 +185,7 @@ describe('answer feedback with the real picker and query cache', () => {
     expect(screen.queryByText(/nie spełnia warunków/)).toBeNull()
     expect(screen.getAllByRole('button', { name: 'Mid – Knight' }).every((button) => (button as HTMLButtonElement).disabled)).toBe(true)
     expect(client.getQueryData<GameState>(gameStateKey(18, 'knight-regression', '2026-10-18'))).toMatchObject({
-      total_points: 490.91, correct_count: 1, errors_used: 1, errors_left: 9,
+      total_points: 409.09, correct_count: 1, errors_used: 1, errors_left: 9,
       answers: [{ player_slug: 'knight-zhuo-ding', is_correct: true }],
     })
   })

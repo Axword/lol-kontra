@@ -6,6 +6,7 @@ import CompletedRoster from './CompletedRoster'
 import { usePrefs } from '@/lib/store'
 import ScoreDistribution from './ScoreDistribution'
 import { useDialog } from '../ui/useDialog'
+import FinalNicknamePrompt from './FinalNicknamePrompt'
 
 export default function GameSummary({ daily, state }: { daily: Daily; state: GameState }) {
   const locale = usePrefs((s) => s.locale)
@@ -30,6 +31,7 @@ export default function GameSummary({ daily, state }: { daily: Daily; state: Gam
           <button onClick={() => setOpen(false)} aria-label={pl ? 'Zamknij' : 'Close'} className="h-8 w-8 shrink-0 text-2xl leading-none">×</button>
         </div>
         <ScoreDistribution dailyId={daily.id} userScore={state.total_points} compact />
+        <FinalNicknamePrompt eligible={state.is_over && !state.is_practice} />
         <div className="mt-6 flex flex-wrap justify-center gap-3 border-t pt-5" style={{ borderColor: 'var(--line)' }}>
           <Link href="/archiwum" className="btn">{pl ? 'Poprzednie plansze' : 'Previous boards'}</Link>
           <Link href="/leaderboard" className="btn">{pl ? 'Ranking' : 'Ranking'}</Link>

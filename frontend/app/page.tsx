@@ -7,6 +7,7 @@ import GameLayout from '@/components/layout/GameLayout'
 import RosterBoard from '@/components/roster/RosterBoard'
 import GameSummary from '@/components/results/GameSummary'
 import LoadError from './load-error'
+import DailyCommunity from '@/components/community/DailyCommunity'
 
 export default function HomePage() {
   const locale = usePrefs((s) => s.locale)
@@ -93,6 +94,7 @@ export default function HomePage() {
               {locale === 'pl' ? 'Wcześniejsze plansze' : 'Earlier boards'}
             </Link>
           </div>
+          <DailyCommunity key={`community-${daily.data.id}`} dailyId={daily.data.id} state={state} />
         </div>
       )}
     </GameLayout>

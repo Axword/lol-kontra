@@ -215,6 +215,7 @@ export function useAnswerSlot(dailyId?: number) {
       void qc.invalidateQueries({ queryKey: ['score-distribution', context.dailyId] })
       void qc.invalidateQueries({ queryKey: ['leaderboard'] })
       if (data.is_over) void qc.invalidateQueries({ queryKey: ['guest-profile', _payload.guest_token] })
+      if (data.is_over) void qc.invalidateQueries({ queryKey: ['daily-community', context.dailyId] })
     },
     onError: (_error, _payload, context) => {
       // A response can be lost after the server committed a move. Refresh before

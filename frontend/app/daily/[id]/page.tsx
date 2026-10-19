@@ -10,6 +10,7 @@ import GameLayout from '@/components/layout/GameLayout'
 import RosterBoard from '@/components/roster/RosterBoard'
 import GameSummary from '@/components/results/GameSummary'
 import LoadError from '@/app/load-error'
+import DailyCommunity from '@/components/community/DailyCommunity'
 
 export default function ArchivedDailyPage() {
   const params = useParams()
@@ -92,6 +93,7 @@ export default function ArchivedDailyPage() {
           </p>
         )}
 
+        <DailyCommunity key={`community-${daily.data.id}`} dailyId={daily.data.id} state={state} />
       </div>
     </GameLayout>
   )

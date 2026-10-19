@@ -2,9 +2,9 @@
 import { FormEvent, useState } from 'react'
 import { usePrefs } from '@/lib/store'
 import { formatApiError } from '@/lib/errors'
-import { formatPoints } from '@/lib/points'
 import { useGuestProfile, useGuestToken, useUpdateGuestNickname } from '@/lib/guest-profile'
 import GameLayout from '@/components/layout/GameLayout'
+import ProfileStatistics from '@/components/profile/ProfileStatistics'
 
 export default function ProfilePage() {
   const locale = usePrefs((s) => s.locale)
@@ -64,17 +64,7 @@ export default function ProfilePage() {
             <p>{formatApiError(profile.error, pl ? 'Nie udało się wczytać profilu.' : 'Could not load your profile.')}</p>
             <button type="button" onClick={() => { void profile.refetch() }} className="mt-2 underline">{pl ? 'Spróbuj ponownie' : 'Try again'}</button>
           </div>}
-          {profile.data && <dl className="grid grid-cols-2 gap-x-8 gap-y-5 border-t pt-5" style={{ borderColor: 'var(--line)' }}>
-            {[
-              [pl ? 'Rozegrane gry' : 'Games played', profile.data.stats.games_played],
-              [pl ? 'Suma punktów' : 'Total points', profile.data.stats.total_points],
-              [pl ? 'Najlepszy wynik' : 'Best score', profile.data.stats.best_score],
-              [pl ? 'Średni wynik' : 'Average score', profile.data.stats.avg_points],
-            ].map(([label, value]) => <div key={label}>
-              <dt className="text-xs" style={{ color: 'var(--text-faint)' }}>{label}</dt>
-              <dd className="mt-1 text-xl font-semibold tabular">{formatPoints(Number(value), locale)}</dd>
-            </div>)}
-          </dl>}
+          {profile.data && <ProfileStatistics stats={profile.data.stats} />}
         </div>
       </div>
     </GameLayout>

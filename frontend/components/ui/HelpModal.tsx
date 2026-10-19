@@ -47,18 +47,18 @@ export default function HelpModal({ open, onClose }: { open: boolean; onClose: (
             <h3 className="mb-3 text-base font-semibold">{pl ? 'Punktacja' : 'Scoring'}</h3>
             <p className="mb-5" style={{ color: 'var(--text-dim)' }}>
               {pl
-                ? 'Im mniej graczy wskazało tego samego zawodnika, tym więcej punktów zachowasz.'
-                : 'The fewer players picked the same person, the more points you keep.'}
+                ? 'Im rzadziej wybierani zawodnicy, tym niższy wynik. Im mniej, tym lepiej.'
+                : 'Rarer picks give you a lower score. Lower is better.'}
             </p>
             <p style={{ color: 'var(--text-dim)' }}>
               {pl
-                ? 'Zaczynasz z 500 punktami. Każdy poprawny wybór odejmuje tyle punktów, ile wynosi jego udział w odpowiedziach: 1% to −1 punkt, 20% to −20 punktów. Im więcej punktów zachowasz, tym lepiej.'
-                : 'Start with 500 points. Each correct choice deducts its pick share: 1% costs 1 point, 20% costs 20 points. Higher scores are better.'}
+                ? 'Zaczynasz z 500 punktami — po 100 za każdą otwartą pozycję. Poprawny wybór zastępuje te 100 punktów swoim procentem popularności. Pięć wyborów po 1%, 2%, 3%, 4% i 5% daje końcowy wynik 15. Najlepszy możliwy wynik to 0.'
+                : 'Start with 500 points — 100 for each open position. A correct pick replaces those 100 points with its pick percentage. Picks of 1%, 2%, 3%, 4% and 5% give a final score of 15. The best possible score is 0.'}
             </p>
             <p className="mt-4" style={{ color: 'var(--text-dim)' }}>
               {pl
-                ? 'Po wyczerpaniu żyć każda nieuzupełniona pozycja kosztuje 100 punktów. Procenty zależą od wyborów uczestników, a końcowy wykres pokazuje Twój wynik na ich tle. Wyniki archiwalnych plansz też liczą się do ich rankingów.'
-                : 'When you run out of lives, each unfilled position costs 100 points. Pick shares come from participants’ choices; the final chart compares your score with theirs. Archived boards also count towards their rankings.'}
+                ? 'Po wyczerpaniu żyć każda nieuzupełniona pozycja pozostaje warta 100 punktów. Procenty zależą od wyborów uczestników, a końcowy wykres pokazuje Twój wynik na ich tle. Wyniki archiwalnych plansz też liczą się do ich rankingów.'
+                : 'When you run out of lives, each unfilled position remains worth 100 points. Pick shares come from participants’ choices; the final chart compares your score with theirs. Archived boards also count towards their rankings.'}
             </p>
           </div>
         </div>
