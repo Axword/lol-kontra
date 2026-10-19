@@ -23,7 +23,7 @@ def refresh_user_stats(user_id):
     stats.games_played = len(games)
     stats.total_points = sum(game.total_points for game in games)
     stats.avg_points = stats.total_points / len(games) if games else 0
-    stats.best_score = max((game.total_points for game in games), default=0)
+    stats.best_score = min((game.total_points for game in games), default=0)
     answers = [answer for game in games for answer in game.answers.filter(is_correct=True)]
     stats.legendary_answers = sum(answer.rarity_tier == 'legendary' for answer in answers)
     stats.diamond_picks = sum(answer.is_diamond_pick for answer in answers)

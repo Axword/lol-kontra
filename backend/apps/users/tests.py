@@ -63,7 +63,7 @@ class UserPrivacyAndStatsTests(TestCase):
             self.assertEqual(result.games_played, 4)
             self.assertEqual(result.total_points, 69.5)
             self.assertEqual(result.avg_points, 17.375)
-            self.assertEqual(result.best_score, 30)
+            self.assertEqual(result.best_score, 8.75)
             self.assertEqual(result.current_streak, 1)
             self.assertEqual(result.max_streak, 3)
         leaderboard = self.client.get('/api/v1/leaderboard/')
@@ -93,12 +93,23 @@ class LeaderboardTests(TestCase):
         self.assertTrue(entry['is_guest'])
         self.assertRegex(entry['username'], r'^Gość-[A-F0-9]{8}$')
         self.assertEqual(entry['total_points'], 30.75)
-        self.assertEqual(entry['best_score'], 20.5)
+        self.assertEqual(entry['best_score'], 10.25)
+        self.assertEqual(entry['avg_points'], 15.375)
         self.assertEqual(entry['games_played'], 2)
         self.assertNotIn(secret_token, response.content.decode())
         self.assertNotIn('guest_token', response.content.decode())
         again = self.client.get('/api/v1/leaderboard/')
         self.assertEqual(again.data, response.data)
+
+    def test_global_ranking_uses_low_average_instead_of_sum_or_number_of_games(self):
+        Submission.objects.create(daily=self.today, guest_token='one-game', total_points=20, errors_used=MAX_ERRORS)
+        Submission.objects.create(daily=self.today, guest_token='two-games', total_points=10, errors_used=MAX_ERRORS)
+        Submission.objects.create(daily=self.yesterday, guest_token='two-games', total_points=20, is_scored=True)
+        rows = self.client.get('/api/v1/leaderboard/').data['results']
+        self.assertEqual([row['total_points'] for row in rows], [30, 20])
+        self.assertEqual([row['avg_points'] for row in rows], [15, 20])
+        self.assertEqual([row['best_score'] for row in rows], [10, 20])
+        self.assertEqual([row['games_played'] for row in rows], [2, 1])
 
     def test_daily_filter_preserves_user_and_guest_identity_and_excludes_other_days(self):
         user = get_user_model().objects.create_user(username='registered')
@@ -107,11 +118,11 @@ class LeaderboardTests(TestCase):
         Submission.objects.create(daily=self.yesterday, user=user, total_points=90, is_scored=True)
         global_rows = self.client.get('/api/v1/leaderboard/').data['results']
         daily_rows = self.client.get('/api/v1/leaderboard/', {'daily_id': self.today.pk}).data['results']
-        self.assertEqual([row['total_points'] for row in global_rows], [105.5, 10.25])
-        self.assertEqual([row['total_points'] for row in daily_rows], [15.5, 10.25])
-        self.assertEqual(daily_rows[0]['username'], 'registered')
-        self.assertFalse(daily_rows[0]['is_guest'])
-        self.assertEqual(global_rows[1]['username'], daily_rows[1]['username'])
+        self.assertEqual([row['total_points'] for row in global_rows], [10.25, 105.5])
+        self.assertEqual([row['total_points'] for row in daily_rows], [10.25, 15.5])
+        self.assertEqual(daily_rows[1]['username'], 'registered')
+        self.assertFalse(daily_rows[1]['is_guest'])
+        self.assertEqual(global_rows[0]['username'], daily_rows[0]['username'])
 
     def test_in_progress_and_unavailable_games_do_not_enter_ranking(self):
         Submission.objects.create(daily=self.today, guest_token='pending', total_points=500)

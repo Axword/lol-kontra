@@ -135,8 +135,15 @@ class GuestProfileTests(TestCase):
         stats = self.post().data['stats']
         self.assertEqual(stats, {
             'games_played': 3, 'total_points': 951.25, 'avg_points': 951.25 / 3,
-            'best_score': 450.5, 'legendary_answers': 1, 'diamond_picks': 1,
+            'best_score': 200.25, 'legendary_answers': 1, 'diamond_picks': 1,
             'current_streak': 2, 'max_streak': 2,
+            'correct_answers': 1, 'incorrect_attempts': MAX_ERRORS,
+            'accuracy_percent': 100 / (MAX_ERRORS + 1), 'perfect_games': 1,
+            'average_pick_percent': 0,
+            'most_used_player': {'id': player.pk, 'slug': 'top', 'nickname': 'Top',
+                                 'portrait_url': None, 'pick_count': 1},
+            'top_players': [{'id': player.pk, 'slug': 'top', 'nickname': 'Top',
+                             'portrait_url': None, 'pick_count': 1}],
         })
 
     def test_leaderboard_uses_custom_or_default_names_without_private_keys(self):
@@ -147,10 +154,10 @@ class GuestProfileTests(TestCase):
         profile = self.post('Knight')
         response = self.client.get('/api/v1/leaderboard/')
         rows = response.data['results']
-        self.assertEqual(rows[0]['username'], 'Registered')
-        self.assertFalse(rows[0]['is_guest'])
+        self.assertEqual(rows[2]['username'], 'Registered')
+        self.assertFalse(rows[2]['is_guest'])
         self.assertEqual(rows[1]['username'], profile.data['display_name'])
-        self.assertRegex(rows[2]['username'], r'^Gość-[A-F0-9]{8}$')
+        self.assertRegex(rows[0]['username'], r'^Gość-[A-F0-9]{8}$')
         self.assertTrue(rows[1]['is_guest'])
         for private in [self.token, self.other_token, guest_identity_key(self.token), guest_identity_key(self.other_token), 'guest_token', 'guest_key']:
             self.assertNotIn(private, response.content.decode())

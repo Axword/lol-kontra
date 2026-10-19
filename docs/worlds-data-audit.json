@@ -1,17 +1,17 @@
 {
   "source": "Leaguepedia",
   "scope": "worlds_including_play_in",
-  "as_of": "2026-10-18T09:46:04+00:00",
+  "as_of": "2026-10-19T07:18:52+00:00",
   "coverage_verified": true,
-  "expected_games": 1389,
-  "input_rows": 13890,
-  "unique_rows": 13890,
+  "expected_games": 1392,
+  "input_rows": 13920,
+  "unique_rows": 13920,
   "duplicate_rows": 0,
-  "games": 1389,
+  "games": 1392,
   "confirmed_players": 738,
   "complete_players": 738,
-  "existing_records": 837,
-  "new_players": 45,
+  "existing_records": 882,
+  "new_players": 0,
   "preserved_unverified_players": 144,
   "metadata_missing_pages": [],
   "unknown_metadata": {
@@ -435,12 +435,12 @@
     {
       "page": "2026 Season World Championship/Play-In",
       "year": 2026,
-      "games": 19,
-      "player_rows": 190
+      "games": 22,
+      "player_rows": 220
     }
   ],
   "achievements": {
-    "enriched_players": 661,
+    "enriched_players": 738,
     "expected_game_counts": {
       "2014 Season World Championship": 78,
       "2015 Season World Championship": 73,
@@ -463,10 +463,18 @@
       "2024 Season World Championship/Play-In": 24,
       "2025 Season World Championship/Main Event": 80,
       "2025 Season World Championship/Play-In": 4,
-      "2026 Season World Championship/Play-In": 19,
+      "2026 Season World Championship/Play-In": 22,
       "Season 1 World Championship": 28,
       "Season 2 World Championship": 31,
       "Season 3 World Championship": 63
+    },
+    "source": "Leaguepedia",
+    "source_as_of": "2026-10-19T07:18:52+00:00",
+    "source_url": "https://lol.fandom.com/wiki/Special:CargoExport",
+    "rules_source": {
+      "page": "Season 1 World Championship",
+      "revid": 4492166,
+      "source_url": "https://lol.fandom.com/wiki/Season_1_World_Championship?oldid=4492166"
     },
     "schedule_coverage": {
       "2014 Season World Championship": {
@@ -580,8 +588,8 @@
         "complete": true
       },
       "2026 Season World Championship/Play-In": {
-        "expected": 19,
-        "observed": 19,
+        "expected": 22,
+        "observed": 22,
         "complete": true
       },
       "Season 1 World Championship": {
@@ -627,6 +635,21 @@
         "match_id": "Season 1 World Championship_Finals_1",
         "winner": "Fnatic",
         "ff": 2
+      }
+    ],
+    "confirmed_playin_outcomes": [
+      {
+        "year": 2026,
+        "event": "2026 Season World Championship/Play-In",
+        "winner": "Karmine Corp",
+        "eliminated": [
+          "Cloud9",
+          "FURIA",
+          "MVK Esports"
+        ],
+        "deciding_match_id": "2026 Season World Championship/Play-In_Round 3_1",
+        "source_url": "https://lolesports.com/en-US/tournament/115660540725177488/overview",
+        "rule_sha256": "fafcde8ecb797fa41c4276ad4bf4879cfbcc983d32c016f06d1b8208e8cf9daa"
       }
     ],
     "known_years": {
@@ -713,7 +736,8 @@
         2022,
         2023,
         2024,
-        2025
+        2025,
+        2026
       ],
       "worlds_playin_appearances": [
         2011,
@@ -735,824 +759,1663 @@
       ]
     }
   },
-  "source_manifest": [
-    {
-      "params": {
-        "tables": "Tournaments",
-        "fields": "COUNT(*)=n",
-        "where": "OverviewPage LIKE '%World%Championship%'",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "e24a5176ae1be44dc4e04fb4afce3a1445c0cd7a616de857f19856de6068b391"
-    },
-    {
-      "params": {
-        "tables": "Tournaments",
-        "fields": "OverviewPage,Name,StandardName,Year,BasePage,IsQualifier,IsOfficial",
-        "where": "OverviewPage LIKE '%World%Championship%'",
-        "order_by": "OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 65,
-      "sha256": "d94b0b03873af9b8133771a5f7c603e6ce1c228ddcc0ed0bee5d0c7a30e4d9b4"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "COUNT(*)=n",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "530e9879fb17531d8a4f9854e873d9f3e34365a875c09dff0c112f360a24b807"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "6ab12c24237c4e9a49b76f242e8cf45c52a28b9bf0f0812fcff6105100182aea"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "e024021dc32b75c2a302f4a6f6172a8c25a804beeab9f8c7d6f3a6f04948e8e8"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 1000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "a61ef4cf479c0ab2748ad9a7b5aa4fac3421cb287597875bc55644a6c4480496"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 1500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "ff8698cb3be77beba6a60b4eacd1b1d6afe57b6fb6ff2b4534d0c4ff3020fc3d"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 2000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "ad0c244d49fce797eafc5159d253c9a0fc1e17e6ce0b362f10c87124e0b69ee5"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 2500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "8491faed9fd7d372dc14263e5edf4ec78545cd6625717b9302602aee67db5fab"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 3000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "2c44b23b8239837fea9b5a2bcac3872a7f3413b85abcc9fa69f6c8cc1c195f66"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 3500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "adc7efc5a901c7c0154303aa2bc33ebb8ecf91eab2348831755699a6bd7c96cb"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 4000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "b8d68a95f42ce2050ada50e42e9fe9ddf364c7563f645e8bf1671fbe15e5e8b9"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 4500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "bf29a7bc062fc997a1eb19f72ae3bc79ac16c1f03eff92dff7b7532701558eae"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 5000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "4bed9751e7fcce0f3ad42c6afa8edbc4ff1cc0f18f57fccc45cfe2fd4874f69d"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 5500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "3d083bba7d70fca29151956f9d30b36058398dc863008724b6d1b5f6baa2da69"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 6000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "080237f95d249f13173fb18a46d5df9b9c4eefd1709593d613cb340409f14b91"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 6500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "1713d34d756f1896475853074985807adb99aa6f73095d4dd9fff951b3d9bab0"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 7000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "323c7e0147b84a33a6b2d7c5abb94e9e61a9fe9bb5591e797a9d7bdd2ed9606d"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 7500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "988d2769f494b71a14db97a6a38e0e3d5bc59318c04c3abba37e1df5e738a964"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 8000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "3bdbf13bcb915326074454acde834051c9372c6ee9975ded70bffc8f7c56fdcf"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 8500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "b9824ba2c95e091319226e27c482d3e0cc6e33d8c8ad53b417959043a4041da0"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 9000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "b8d1ae5293bd42e947a99bf0ee9d4938564c06d8a030d10556dd41af4b62e416"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 9500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "16bbf4b8353c91416cf93b5d65ac57f0c392631cb819b2dea0318230e9528a28"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 10000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "370962e6bce6cf3a6e30c9a361f4b2ca8ab34552b30e6665edad0021c15942b8"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 10500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "3112e29cd8e3f96f1398dd523031d246c2c8da46eb77c31a9f303a48140fe669"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 11000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "addc07ca0ddff673f5379a9c6aff5fe088b31e80d4c774368ef19218e08aa14b"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 11500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "3ec1bf096c9207511050b8f5cf55a2c84d95396f268fb9dfec47832db06f2def"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 12000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "3cf4e0a951c11247ec768d6554f7982355728b9e484e4967225bf711466340b8"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 12500,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "917de9a286ab5f5d8dc5e27b26d0b54493600e087a8eca9da9a44d102d20c2b9"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 13000,
-        "format": "json"
-      },
-      "rows": 500,
-      "sha256": "57024e98d0e94bb64c92e604c2b296675b18cef3ec33e936a6b1a7cd027f852e"
-    },
-    {
-      "params": {
-        "tables": "ScoreboardPlayers=SP",
-        "fields": "SP.Link=player,SP.Champion=champion,SP.PlayerWin=win,SP.GameId=game_id,SP.DateTime_UTC=date,SP.OverviewPage=tournament,SP.Team=team,SP.Role=role,SP.IngameRole=ingame_role,SP.Pentakills=pentakills",
-        "where": "SP.OverviewPage IN ('2014 Season World Championship','2015 Season World Championship','2016 Season World Championship','2017 Season World Championship/Main Event','2017 Season World Championship/Play-In','2018 Season World Championship/Main Event','2018 Season World Championship/Play-In','2019 Season World Championship/Main Event','2019 Season World Championship/Play-In','2020 Season World Championship/Main Event','2020 Season World Championship/Play-In','2021 Season World Championship/Main Event','2021 Season World Championship/Play-In','2022 Season World Championship/Main Event','2022 Season World Championship/Play-In','2023 Season World Championship/Main Event','2023 Season World Championship/Play-In','2024 Season World Championship/Main Event','2024 Season World Championship/Play-In','2025 Season World Championship/Main Event','2025 Season World Championship/Play-In','2026 Season World Championship/Main Event','2026 Season World Championship/Play-In','Season 1 World Championship','Season 2 World Championship','Season 3 World Championship') AND SP.DateTime_UTC < '2026-10-18 09:46:04'",
-        "order_by": "SP.DateTime_UTC ASC,SP.GameId ASC,SP.Link ASC",
-        "limit": 500,
-        "offset": 13500,
-        "format": "json"
-      },
-      "rows": 240,
-      "sha256": "6966ba05feb2bf38f7fc6fc43b92ae532a31253cac5674a841117feb0712ea32"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "COUNT(*)=n",
-        "where": "PR.AllName IN ('007x','0N','369','3Z','4LaN','957','ADD','AHaHaCiK','AN','APA (Eain Stearns)','Abbedagge','Absolut','Acce','Ace (Kotoji Mugita)','Achie','Ackerman (Gabriel Aparicio)','Acorn','Adam (Adam Maanane)','Aegis (Gabriel Lemos)','Aiming','Aladoric','Albis','Ale','Alex (Chen Yu-Ming)','Alex Ich','Alive','Aloned','Alphari','Alunir','Alvaro (Álvaro Fernández)','Amazing (Maurice Stückenschneider)','AmazingJ','Ambition','AnDa','Angel (Xiang Tao)','Apex (Hsieh Chia-Wei)','Araneae','Arce','Archer (Lee Keun-hee)','Archie (Trần Minh Nhựt)','Argonavt','Argonavtt','Aria (Lee Ga-eul)','Armut','Arrow','Artemis (Trần Quốc Hưng)','Arthur (Park Mi-reu)','Artifact','Athena','Atlen','Attila','Avenger (Adriano Perassoli)','Avoidless','Axion','Ayu (Andrey Saraiva)','Azhi','BEAN (Louis Schmitz)','BOSS (Vladislav Fomin)','Babip','BaeMe','Balls','Bang','Baolan','Bdd','BeBe (Chang Bo-Wei)','BeanJ','Beichuan','Ben','Bengi','Benny (Lien Hsiu-Chi)','Berserker (Kim Min-cheol)','BeryL','Betty','Bie','BigKoro','Bigpomelo','Bin (Chen Ze-Bin)','BioPanther','Biofrost','Bjergsen','Blaber','Blank (Kang Sun-gu)','Blasting','BloodWater','Boal','Bolulu','Bong (Cho Bo-woong)','Brance','Breathe','Breeze','Broken Blade','BrokenBlade','Broxah','Bruce','Brucer','Buggax','Bugi','Burdol','Busio','Bwipo')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "58cd72fb622a9ea4dbb4ed6160a04ca268498acaf88f87c7f2d1f3f8cd551666"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "PR.AllName=alias,PR.OverviewPage=page",
-        "where": "PR.AllName IN ('007x','0N','369','3Z','4LaN','957','ADD','AHaHaCiK','AN','APA (Eain Stearns)','Abbedagge','Absolut','Acce','Ace (Kotoji Mugita)','Achie','Ackerman (Gabriel Aparicio)','Acorn','Adam (Adam Maanane)','Aegis (Gabriel Lemos)','Aiming','Aladoric','Albis','Ale','Alex (Chen Yu-Ming)','Alex Ich','Alive','Aloned','Alphari','Alunir','Alvaro (Álvaro Fernández)','Amazing (Maurice Stückenschneider)','AmazingJ','Ambition','AnDa','Angel (Xiang Tao)','Apex (Hsieh Chia-Wei)','Araneae','Arce','Archer (Lee Keun-hee)','Archie (Trần Minh Nhựt)','Argonavt','Argonavtt','Aria (Lee Ga-eul)','Armut','Arrow','Artemis (Trần Quốc Hưng)','Arthur (Park Mi-reu)','Artifact','Athena','Atlen','Attila','Avenger (Adriano Perassoli)','Avoidless','Axion','Ayu (Andrey Saraiva)','Azhi','BEAN (Louis Schmitz)','BOSS (Vladislav Fomin)','Babip','BaeMe','Balls','Bang','Baolan','Bdd','BeBe (Chang Bo-Wei)','BeanJ','Beichuan','Ben','Bengi','Benny (Lien Hsiu-Chi)','Berserker (Kim Min-cheol)','BeryL','Betty','Bie','BigKoro','Bigpomelo','Bin (Chen Ze-Bin)','BioPanther','Biofrost','Bjergsen','Blaber','Blank (Kang Sun-gu)','Blasting','BloodWater','Boal','Bolulu','Bong (Cho Bo-woong)','Brance','Breathe','Breeze','Broken Blade','BrokenBlade','Broxah','Bruce','Brucer','Buggax','Bugi','Burdol','Busio','Bwipo')",
-        "order_by": "PR.AllName ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 100,
-      "sha256": "dd71f9e3b873c2132b45c8c414f62271b57ec259af4ec46c8a35e827ba8926aa"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "COUNT(*)=n",
-        "where": "PR.AllName IN ('Cabochard','Cain','Caliste','Candy (Kim Seung-ju)','CandyPanda','Canna','Canyon','Caomei','Caps','CarioK','Carzzy','Celebrity','Ceo','Ceos','Ceros','Chaox','Chasy','Chauster','Chawy','Chika','Chippys','Chovy','ClearLove','Clearlove','Clearlove7','Clid','Closer (Can Çelik)','Cloud (Hu Zhen-Wei)','CloudTemplar','CndyPnda','Cody Sun','Cola (Jiang Nan)','Comp','Condi','Contractz','Cool','CoreJJ','Cotopaco','Crash','Crazy (Kim Jae-hee)','Creme','Crisp','Croc','Crown','Crownie','Crumbzz','Cryin','Crystal','CuVee','Cupcake','Cuzz','Cyanide','Cyanide FI','Cyeol','DNK','DaDa777','Dade','Damonte','Dan Dinh','DanDy','Danagorn','Dandy','Dara','Darien','Darshan','DasheR','DeadlyBrother','Dee','Deft','Deftly','Delight','Destiny (Mitchell Shaw)','DeuL','Dexter','Dhokla','Diamondprox','Dioud','Dire','Disamis','Doggo','Doinb','Doran (Choi Hyeon-jun)','Doublelift','Driver','Duke (Lee Ho-seong)','Duro','Dyrus','EDward','EMENES','Easyhoon','Easylove','Eddie','Edward','Effort','Elementz','Elio','Elk','Elyoya','Emo','Empt2y')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "0c587f2ada83693079e613ea97d094a26b7cd1bab0dac4913fa4f4446faa673f"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "PR.AllName=alias,PR.OverviewPage=page",
-        "where": "PR.AllName IN ('Cabochard','Cain','Caliste','Candy (Kim Seung-ju)','CandyPanda','Canna','Canyon','Caomei','Caps','CarioK','Carzzy','Celebrity','Ceo','Ceos','Ceros','Chaox','Chasy','Chauster','Chawy','Chika','Chippys','Chovy','ClearLove','Clearlove','Clearlove7','Clid','Closer (Can Çelik)','Cloud (Hu Zhen-Wei)','CloudTemplar','CndyPnda','Cody Sun','Cola (Jiang Nan)','Comp','Condi','Contractz','Cool','CoreJJ','Cotopaco','Crash','Crazy (Kim Jae-hee)','Creme','Crisp','Croc','Crown','Crownie','Crumbzz','Cryin','Crystal','CuVee','Cupcake','Cuzz','Cyanide','Cyanide FI','Cyeol','DNK','DaDa777','Dade','Damonte','Dan Dinh','DanDy','Danagorn','Dandy','Dara','Darien','Darshan','DasheR','DeadlyBrother','Dee','Deft','Deftly','Delight','Destiny (Mitchell Shaw)','DeuL','Dexter','Dhokla','Diamondprox','Dioud','Dire','Disamis','Doggo','Doinb','Doran (Choi Hyeon-jun)','Doublelift','Driver','Duke (Lee Ho-seong)','Duro','Dyrus','EDward','EMENES','Easyhoon','Easylove','Eddie','Edward','Effort','Elementz','Elio','Elk','Elyoya','Emo','Empt2y')",
-        "order_by": "PR.AllName ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 97,
-      "sha256": "a54ea955cec6da794af9a9c50d90fd3d16d83757c94ee4c1d11acb542269a452"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "COUNT(*)=n",
-        "where": "PR.AllName IN ('Envy (Bruno Farias)','Evi','Exo (Eric Gubatan)','Expect','Expession','Eyla','FBI','FORG1VEN','Faker','Farfetch','Febiven','Ferret','Finn','Fix','Flakked','Flame','Flandre','FoFo','Forest (Lee Hyeon-seo)','Fresskowy','Froggen','Froggy','Frozen (Kim Tae-il)','Fudge','Fzzf','G4','GALA','GBM','GODV (Wei Zhen)','Gadget','Gaeng','GarnetDevil','Gavotto','Gemini','Genja','Genthix','Ggoong','Ghost (Jang Yong-jun)','Gilius','GimGoon','Gloryy','GoDlike','GoSu Pepper','Godkwai','Gogoing','Goku','GorillA','GreenTea','Grell','Grevthar','Guigo','Gumayusi','Gury','Hai','Hana','Hanabi (Su Chia-Hsiang)','Hang','Hani','Hans Sama','Hans sama','Harky','Haro','Harp','Haru','Hasmed','Hauntzer','Heart','Hieu3','Hiro02','Hizto','Hjarnan','Hojin','HolyPhoenix','HongQ','Hope (Wang Jie)','HotshotGG','Huhi','Humanoid','Huni','Husha','Hylissang','IWillDominate','IgNar','Imaqtpie','Impact','Incarnati0n','Innaxe','Inspired','Inspirro','Isles','Iwandy','JackeyLove','Jactroll','Jankos','Japone','Jay (Li Chieh)','Jelly (Son Ho-gyeong)','Jensen','Jesiz','JieJie')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "8716eb657239c35b5a850ed22a97c0ecff9ef6b39d089b933ce23ef348c7dcae"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "PR.AllName=alias,PR.OverviewPage=page",
-        "where": "PR.AllName IN ('Envy (Bruno Farias)','Evi','Exo (Eric Gubatan)','Expect','Expession','Eyla','FBI','FORG1VEN','Faker','Farfetch','Febiven','Ferret','Finn','Fix','Flakked','Flame','Flandre','FoFo','Forest (Lee Hyeon-seo)','Fresskowy','Froggen','Froggy','Frozen (Kim Tae-il)','Fudge','Fzzf','G4','GALA','GBM','GODV (Wei Zhen)','Gadget','Gaeng','GarnetDevil','Gavotto','Gemini','Genja','Genthix','Ggoong','Ghost (Jang Yong-jun)','Gilius','GimGoon','Gloryy','GoDlike','GoSu Pepper','Godkwai','Gogoing','Goku','GorillA','GreenTea','Grell','Grevthar','Guigo','Gumayusi','Gury','Hai','Hana','Hanabi (Su Chia-Hsiang)','Hang','Hani','Hans Sama','Hans sama','Harky','Haro','Harp','Haru','Hasmed','Hauntzer','Heart','Hieu3','Hiro02','Hizto','Hjarnan','Hojin','HolyPhoenix','HongQ','Hope (Wang Jie)','HotshotGG','Huhi','Humanoid','Huni','Husha','Hylissang','IWillDominate','IgNar','Imaqtpie','Impact','Incarnati0n','Innaxe','Inspired','Inspirro','Isles','Iwandy','JackeyLove','Jactroll','Jankos','Japone','Jay (Li Chieh)','Jelly (Son Ho-gyeong)','Jensen','Jesiz','JieJie')",
-        "order_by": "PR.AllName ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 99,
-      "sha256": "c14a4219ebd73e4a5e34756367945dcad211527a10f20645e0b0bff91bfa3f59"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "COUNT(*)=n",
-        "where": "PR.AllName IN ('Jiizuke','JimieN','Jinjiao','Jirall','JoJo (Gabriel Dzelme)','Jockster','Jojo (Gabriel Dzelme)','Jojopyun','Josedeodo','Juhan','Jun (Yoon Se-jun)','JunJia','Junie','K','KAKAO','KaKAO','Kael (Kim Jin-hong)','Kaigu','Kaiser','Kaiwing','Kami (Gabriel Bohm Santos)','Kanavi','Kaori','Karsa','Kati','Keine','Kellin','Keria','Kev1n','Kevin (Kevin Rubiszewski)','Khan','Kiaya','Kid','Kiin','Kikis','Kingen','Kino','Kira','Kitties','Kkramer','Knight (Zhuo Ding)','Koala (Lin Chih-Chiang)','Kobbe','Kongyue','Koro1','Kramer','Kratos (Ngô Đức Khánh)','Krepo','Kuri','Kuro','LEP','LaMiaZlt','Labrov','Langx','Larssen','Lehends','LemonNation','Letme','Levi','Leyan','Leza','Liang','Licorice','Life','Light (Wang Guang-Yu)','Likai','Likkrit','Lilballz','Lilv','Linak','Lira','Lloyd','Lodik','LokeN','Loki (Lee Sang-min)','Looper','LoveLin','Loveling','Luci','Lucid (Choi Yong-hyeok)','Lucky (Liu Jun-Jie)','Lustboy','LvMao','Lwx','Lyonz','M1ssion','MANTARRAYA','MISSING','MMD','MaKNooN','MaRin','MadLife','Malrang','Maoan','Maple (Huang Yi-Tang)','Marble','Marf','Mark (Ling Xu)','Massu','Mata')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "d56f4eb3a37eca1ca87b3f81d7098b63d9a1ebed943cd8255cb8c2168e7f1228"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "PR.AllName=alias,PR.OverviewPage=page",
-        "where": "PR.AllName IN ('Jiizuke','JimieN','Jinjiao','Jirall','JoJo (Gabriel Dzelme)','Jockster','Jojo (Gabriel Dzelme)','Jojopyun','Josedeodo','Juhan','Jun (Yoon Se-jun)','JunJia','Junie','K','KAKAO','KaKAO','Kael (Kim Jin-hong)','Kaigu','Kaiser','Kaiwing','Kami (Gabriel Bohm Santos)','Kanavi','Kaori','Karsa','Kati','Keine','Kellin','Keria','Kev1n','Kevin (Kevin Rubiszewski)','Khan','Kiaya','Kid','Kiin','Kikis','Kingen','Kino','Kira','Kitties','Kkramer','Knight (Zhuo Ding)','Koala (Lin Chih-Chiang)','Kobbe','Kongyue','Koro1','Kramer','Kratos (Ngô Đức Khánh)','Krepo','Kuri','Kuro','LEP','LaMiaZlt','Labrov','Langx','Larssen','Lehends','LemonNation','Letme','Levi','Leyan','Leza','Liang','Licorice','Life','Light (Wang Guang-Yu)','Likai','Likkrit','Lilballz','Lilv','Linak','Lira','Lloyd','Lodik','LokeN','Loki (Lee Sang-min)','Looper','LoveLin','Loveling','Luci','Lucid (Choi Yong-hyeok)','Lucky (Liu Jun-Jie)','Lustboy','LvMao','Lwx','Lyonz','M1ssion','MANTARRAYA','MISSING','MMD','MaKNooN','MaRin','MadLife','Malrang','Maoan','Maple (Huang Yi-Tang)','Marble','Marf','Mark (Ling Xu)','Massu','Mata')",
-        "order_by": "PR.AllName ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 98,
-      "sha256": "b91afa9a68bb0a36bc310a3c6871b95eb21e40eecd6789b6de9bd5d53f617e8b"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "COUNT(*)=n",
-        "where": "PR.AllName IN ('Maxlore','Mazzerin','Meiko','Meliodas (Hoàng Tiến Nhật)','Mellisan','Meteos','MiSTakE','Mikyx','Minerva','Ming (Shi Sen-Ming)','Minji','Mireu','Misaya','Missing','Mission','Mithy','Mlxg','MnM (Wong Ka Chun)','MoMa','Moham','Mojito','Moojin','Mor','Morgan','Morning','Morttheus','Moss (Sorawat Boonphrom)','Mountain (Xue Zhao-Hong)','Mouse','Mowgli','Mylon','Myrwn','Mystic','NAZ (Chen Tien-Chih)','NIXWATER','NL (Hsiung Wen-An)','NaMei','Nagne','Nanaue (Phùng Đức Tài)','Naru (Koray Bıçak)','Nate','Naul','Nbs','Nemesis','Nevan','NhocTy','Niels','Niksar','Ning','Nisqy','NoName (Zhou Qi-Lin)','Noah (Oh Hyeon-taek)','Nomanz','Norskeren','Noway (Nguyễn Vũ Long)','Nuclear','Nuguri','Nukeduck','Nyph','ON','Oddie','Odoamne','Olleh','Oner','Optimus','Orome','Oscarinin','PK','Padden','Palafox','Palette','Patoy','PawN','Paz','Pdd','Peanut','PerfecT (Lee Seung-min)','Perkz','Peter (Jeong Yoon-su)','Peyz','Phantiks','Piccaboo','Piglet','Pilot (Na Woo-hyung)','Plugo','PoP','Pobelter','Poby','PoohManDu','PowerOfEvil','PraY','Pray','Prydz','Pun','Puszu','PvPStejos','Pyl (Chen Bo)','Pyosik','QTV','Quad')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "8716eb657239c35b5a850ed22a97c0ecff9ef6b39d089b933ce23ef348c7dcae"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "PR.AllName=alias,PR.OverviewPage=page",
-        "where": "PR.AllName IN ('Maxlore','Mazzerin','Meiko','Meliodas (Hoàng Tiến Nhật)','Mellisan','Meteos','MiSTakE','Mikyx','Minerva','Ming (Shi Sen-Ming)','Minji','Mireu','Misaya','Missing','Mission','Mithy','Mlxg','MnM (Wong Ka Chun)','MoMa','Moham','Mojito','Moojin','Mor','Morgan','Morning','Morttheus','Moss (Sorawat Boonphrom)','Mountain (Xue Zhao-Hong)','Mouse','Mowgli','Mylon','Myrwn','Mystic','NAZ (Chen Tien-Chih)','NIXWATER','NL (Hsiung Wen-An)','NaMei','Nagne','Nanaue (Phùng Đức Tài)','Naru (Koray Bıçak)','Nate','Naul','Nbs','Nemesis','Nevan','NhocTy','Niels','Niksar','Ning','Nisqy','NoName (Zhou Qi-Lin)','Noah (Oh Hyeon-taek)','Nomanz','Norskeren','Noway (Nguyễn Vũ Long)','Nuclear','Nuguri','Nukeduck','Nyph','ON','Oddie','Odoamne','Olleh','Oner','Optimus','Orome','Oscarinin','PK','Padden','Palafox','Palette','Patoy','PawN','Paz','Pdd','Peanut','PerfecT (Lee Seung-min)','Perkz','Peter (Jeong Yoon-su)','Peyz','Phantiks','Piccaboo','Piglet','Pilot (Na Woo-hyung)','Plugo','PoP','Pobelter','Poby','PoohManDu','PowerOfEvil','PraY','Pray','Prydz','Pun','Puszu','PvPStejos','Pyl (Chen Bo)','Pyosik','QTV','Quad')",
-        "order_by": "PR.AllName ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 99,
-      "sha256": "364655991d917f5b8c1d3f725470addaf9f8ef094a8ae5433c1aae2f348b1196"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "COUNT(*)=n",
-        "where": "PR.AllName IN ('Quid','Radeon6870','Raes','Raina','Rainbow (Kim Soo-gi)','Ramune','Ranger','RapidStar','Rascal','Ray','Razork','RedBert','Reginald','Reignover','Rekkles','Relic','Ren','Renyu','Rest','Revolta','Reyk','Rhuckz','Rich (Warich Kittiwattanawong)','Rikara','Riris','River (Kim Dong-woo)','Riyev','Road (Yun Han-gil)','Robo','Rockky','Rookie','Route','Ruler','Ryu','SSONG','SaNTaS','SaintVicious','Salce','San (Guo Jun-Liang)','SanSan','Santorin','Save','Score','Scout','Seiya','Selfmade','Sencux','Serin','Shad0w','Shadow (Facundo Cuello)','Shanks','Sheo','Shernfire','ShiauC','Shini','Shogun (Nguyễn Văn Huy)','Shook','ShowMaker','Shrimp','Shunn','Shushei','Shy','SirT','SiuLoong','SkewMond','Slay','Slayder','Slow','Smeb','Smoothie','Smurf (Dmitri Ivanov)','Sneaky','Sniper','Snoopeh','SnowFlower','Snoy','Soaz','SofM','SolidSnake','Solo (Colin Earnest)','Sparda','Spica','Spirit','Ssumday','Stanley','StarScreen','Steak','Steal (Mun Geon-yeong)','Stitch','Stixxay','Stomaged','Sty1e','Summit','Supa','Svenskeren','Sword (Choi Sung-won)','SwordArT','SwordArt','Sya','Sycho Sid')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "8716eb657239c35b5a850ed22a97c0ecff9ef6b39d089b933ce23ef348c7dcae"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "PR.AllName=alias,PR.OverviewPage=page",
-        "where": "PR.AllName IN ('Quid','Radeon6870','Raes','Raina','Rainbow (Kim Soo-gi)','Ramune','Ranger','RapidStar','Rascal','Ray','Razork','RedBert','Reginald','Reignover','Rekkles','Relic','Ren','Renyu','Rest','Revolta','Reyk','Rhuckz','Rich (Warich Kittiwattanawong)','Rikara','Riris','River (Kim Dong-woo)','Riyev','Road (Yun Han-gil)','Robo','Rockky','Rookie','Route','Ruler','Ryu','SSONG','SaNTaS','SaintVicious','Salce','San (Guo Jun-Liang)','SanSan','Santorin','Save','Score','Scout','Seiya','Selfmade','Sencux','Serin','Shad0w','Shadow (Facundo Cuello)','Shanks','Sheo','Shernfire','ShiauC','Shini','Shogun (Nguyễn Văn Huy)','Shook','ShowMaker','Shrimp','Shunn','Shushei','Shy','SirT','SiuLoong','SkewMond','Slay','Slayder','Slow','Smeb','Smoothie','Smurf (Dmitri Ivanov)','Sneaky','Sniper','Snoopeh','SnowFlower','Snoy','Soaz','SofM','SolidSnake','Solo (Colin Earnest)','Sparda','Spica','Spirit','Ssumday','Stanley','StarScreen','Steak','Steal (Mun Geon-yeong)','Stitch','Stixxay','Stomaged','Sty1e','Summit','Supa','Svenskeren','Sword (Choi Sung-won)','SwordArT','SwordArt','Sya','Sycho Sid')",
-        "order_by": "PR.AllName ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 99,
-      "sha256": "529aa558504264e4c164c76fe8407cb7f13dcfdfd897f7f685b01fe544caecc3"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "COUNT(*)=n",
-        "where": "PR.AllName IN ('TBQ','Tabe','Tabzz','Tactical','Taki (Đinh Anh Tài)','Tally','Tank','Targamas','Tarzan (Lee Seung-yong)','Tatu (Pedro Seixas)','Tay','Teddy','Tgee','Thaldrin','Thanatos (Park Seung-kyu)','TheOddOne','TheRainMan','TheShy','Tian','Tierwulf','Time (Tang Jing-Tai)','TinOwns','TitaN','Titan','Tolerant','Tomo','Topoon','Touch','Toyz','Trashy','Trick','Triple','Trymbi','TusiN','Tussle','Tutsz','U','UDYSOF','UNF0RGIVEN','Ucal','UmTi','Uniboy','Unified','Upset','Uzi (Jian Zi-Hao)','VVvert','Vander','Vasilii','Vech','Venus','Violet (Ngô Mạnh Quyền)','Violet (Vincent Wong)','Viper (Park Do-hyeon)','Vizicsacsi','Voidle','Voyboy','Vsta','Vulcan (Philippe Laflamme)','Wadid','Wako','WarL0cK','Warangelus','Watch','Wayward','Wei (Yan Yang-Wei)','Weiwei','Weixiao','Westdoor','Westrice','Wh1t3zZ','WhiteLotus','Whitelotus','Wickd','WildTurtle','Willer','Winds','Wizer','Wolf (Lee Jae-wan)','Woody','Woong (Jang Gun-woong)','Wraith','Wunder','XUN','Xerxe','XiaoWeiXiao','XiaoXiao','Xiaohu','Xmithie','Xpecial','XuHao','Yagao','Yaharong','Yang (Felipe Zhao)','YellOwStaR','YellOwStar','Yellowstar','Yeon (Sean Sung)','Yike','Ysera','Yume (Danyll Jann Balisi)')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "bbe2c7bf4b5d73112c8110bc8432d7d8d8f78a31e6aed3c620eea78b17be48a4"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "PR.AllName=alias,PR.OverviewPage=page",
-        "where": "PR.AllName IN ('TBQ','Tabe','Tabzz','Tactical','Taki (Đinh Anh Tài)','Tally','Tank','Targamas','Tarzan (Lee Seung-yong)','Tatu (Pedro Seixas)','Tay','Teddy','Tgee','Thaldrin','Thanatos (Park Seung-kyu)','TheOddOne','TheRainMan','TheShy','Tian','Tierwulf','Time (Tang Jing-Tai)','TinOwns','TitaN','Titan','Tolerant','Tomo','Topoon','Touch','Toyz','Trashy','Trick','Triple','Trymbi','TusiN','Tussle','Tutsz','U','UDYSOF','UNF0RGIVEN','Ucal','UmTi','Uniboy','Unified','Upset','Uzi (Jian Zi-Hao)','VVvert','Vander','Vasilii','Vech','Venus','Violet (Ngô Mạnh Quyền)','Violet (Vincent Wong)','Viper (Park Do-hyeon)','Vizicsacsi','Voidle','Voyboy','Vsta','Vulcan (Philippe Laflamme)','Wadid','Wako','WarL0cK','Warangelus','Watch','Wayward','Wei (Yan Yang-Wei)','Weiwei','Weixiao','Westdoor','Westrice','Wh1t3zZ','WhiteLotus','Whitelotus','Wickd','WildTurtle','Willer','Winds','Wizer','Wolf (Lee Jae-wan)','Woody','Woong (Jang Gun-woong)','Wraith','Wunder','XUN','Xerxe','XiaoWeiXiao','XiaoXiao','Xiaohu','Xmithie','Xpecial','XuHao','Yagao','Yaharong','Yang (Felipe Zhao)','YellOwStaR','YellOwStar','Yellowstar','Yeon (Sean Sung)','Yike','Ysera','Yume (Danyll Jann Balisi)')",
-        "order_by": "PR.AllName ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 96,
-      "sha256": "7ba452ac9ea6ff7135ce8a800510eaf5a598c40e57157315cf8158cf82f8fcb8"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "COUNT(*)=n",
-        "where": "PR.AllName IN ('Yutapon','YutoriMoyasi','Zantins','Zefa','Zeitnot','Zeka (Kim Geon-woo)','Zergsting','Zero (Yoon Kyung-sup)','Zeros','Zeus','Zeyzal','Zika','Zin','ZionSpartan','Ziv (Chen Yi)','Zoom','Zorozero','Zuna','Zven','Zylor','Zz1tai','aMiracle','ackerman (Xiao Wang)','apaMEN','aphromoo','baybay','bebe (Chang Bo-Wei)','bengi','bigfatlp','brTT','caPs','cody','comA (Fang Hong-Ri)','cool','corn (Lei Wen)','d4rkness','dabe','dans','deokdam','dyNquedo','fabFabulous','fredy122','gibo','huanfeng','huhi','iBoy','iNtrigueD','icon','iddo','illuSioN (Chen Xin-Lin)','imp','inSec','jojopyun','k1ng','kaSing','kid','knight (Zhuo Ding)','kujaa','kyeahoo','loulex','mancloud','micaO','mithy','nRated','nuc','ocelote','padden','sOAZ','san (Guo Jun-Liang)','scarra','seiya','shernfire','tinowns','tockers','viviD','vy','westdoor','wewillfailer','wormy','xPeke','xiye','yellowpete','yuyanjia','zz1tai')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "d32aff30a29f64d6f98cbeb312e466801916c57cf15eb319021f93d8c7c795ec"
-    },
-    {
-      "params": {
-        "tables": "PlayerRedirects=PR",
-        "fields": "PR.AllName=alias,PR.OverviewPage=page",
-        "where": "PR.AllName IN ('Yutapon','YutoriMoyasi','Zantins','Zefa','Zeitnot','Zeka (Kim Geon-woo)','Zergsting','Zero (Yoon Kyung-sup)','Zeros','Zeus','Zeyzal','Zika','Zin','ZionSpartan','Ziv (Chen Yi)','Zoom','Zorozero','Zuna','Zven','Zylor','Zz1tai','aMiracle','ackerman (Xiao Wang)','apaMEN','aphromoo','baybay','bebe (Chang Bo-Wei)','bengi','bigfatlp','brTT','caPs','cody','comA (Fang Hong-Ri)','cool','corn (Lei Wen)','d4rkness','dabe','dans','deokdam','dyNquedo','fabFabulous','fredy122','gibo','huanfeng','huhi','iBoy','iNtrigueD','icon','iddo','illuSioN (Chen Xin-Lin)','imp','inSec','jojopyun','k1ng','kaSing','kid','knight (Zhuo Ding)','kujaa','kyeahoo','loulex','mancloud','micaO','mithy','nRated','nuc','ocelote','padden','sOAZ','san (Guo Jun-Liang)','scarra','seiya','shernfire','tinowns','tockers','viviD','vy','westdoor','wewillfailer','wormy','xPeke','xiye','yellowpete','yuyanjia','zz1tai')",
-        "order_by": "PR.AllName ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 83,
-      "sha256": "bbf8c72ede65dda3e0d572dd7c248b3a69f10162d8b5c3d638a9dd23888f911d"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "COUNT(*)=n",
-        "where": "P.OverviewPage IN ('007x','1116','369','3Z','3z','4LaN','957','ADD','AHaHaCiK','AN','APA (Eain Stearns)','Abbedagge','Absolut','Acce','Acee','Achie','Ackerman (Gabriel Aparicio)','Acorn','Adam (Adam Maanane)','Aegis (Gabriel Lemos)','Aiming','Aladoric','Albis','Ale','Alex (Chen Yu-Ming)','Alex Ich','Alive','Aloned','Alphari','Alunir','Alvaro (Álvaro Fernández)','Amazing (Maurice Stückenschneider)','AmazingJ','Ambition','An','AnDa','Angel (Xiang Tao)','ApaMEN','Apex (Hsieh Chia-Wei)','Aphromoo','Araneae','Arce','Archer (Lee Keun-hee)','Archie (Trần Minh Nhựt)','Aria (Lee Ga-eul)','Armut','Arrow','Artemis (Trần Quốc Hưng)','Artifact','Astarte (Judge Cruz)','Athena','Atlen','Attila','Avenger (Adriano Perassoli)','Avoidless','Axion','Ayu (Andrey Saraiva)','Azhi','BEAN (Louis Schmitz)','BOSS (Vladislav Fomin)','Babip','BaeMe','Balls','Bang','Baolan','Baybay','Bdd','BeBe (Chang Bo-Wei)','Bean (Louis Schmitz)','BeanJ','Beichuan','Ben','Bengi','Benny (Benny Hung)','Benny (Lien Hsiu-Chi)','Berserker (Kim Min-cheol)','BeryL','Betty','Bie','BigKoro','Bigfatlp','Bigkoro','Bin (Chen Ze-Bin)','BioPanther','Biofrost','Bjergsen','Blaber','Blank (Kang Sun-gu)','Blasting','BloodWater','Boal','Bolulu','Bong (Cho Bo-woong)','BrTT','Brance','Breathe','Breeze','BrokenBlade','Broxah','Bruce')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "bbe2c7bf4b5d73112c8110bc8432d7d8d8f78a31e6aed3c620eea78b17be48a4"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "P.OverviewPage=page,P.ID=id,P.Name=name,P.Country=country,P.Residency=residency,P.Role=role,P.Birthdate=birthdate,P.IsRetired=retired,P.FavChamps=favorite_champions",
-        "where": "P.OverviewPage IN ('007x','1116','369','3Z','3z','4LaN','957','ADD','AHaHaCiK','AN','APA (Eain Stearns)','Abbedagge','Absolut','Acce','Acee','Achie','Ackerman (Gabriel Aparicio)','Acorn','Adam (Adam Maanane)','Aegis (Gabriel Lemos)','Aiming','Aladoric','Albis','Ale','Alex (Chen Yu-Ming)','Alex Ich','Alive','Aloned','Alphari','Alunir','Alvaro (Álvaro Fernández)','Amazing (Maurice Stückenschneider)','AmazingJ','Ambition','An','AnDa','Angel (Xiang Tao)','ApaMEN','Apex (Hsieh Chia-Wei)','Aphromoo','Araneae','Arce','Archer (Lee Keun-hee)','Archie (Trần Minh Nhựt)','Aria (Lee Ga-eul)','Armut','Arrow','Artemis (Trần Quốc Hưng)','Artifact','Astarte (Judge Cruz)','Athena','Atlen','Attila','Avenger (Adriano Perassoli)','Avoidless','Axion','Ayu (Andrey Saraiva)','Azhi','BEAN (Louis Schmitz)','BOSS (Vladislav Fomin)','Babip','BaeMe','Balls','Bang','Baolan','Baybay','Bdd','BeBe (Chang Bo-Wei)','Bean (Louis Schmitz)','BeanJ','Beichuan','Ben','Bengi','Benny (Benny Hung)','Benny (Lien Hsiu-Chi)','Berserker (Kim Min-cheol)','BeryL','Betty','Bie','BigKoro','Bigfatlp','Bigkoro','Bin (Chen Ze-Bin)','BioPanther','Biofrost','Bjergsen','Blaber','Blank (Kang Sun-gu)','Blasting','BloodWater','Boal','Bolulu','Bong (Cho Bo-woong)','BrTT','Brance','Breathe','Breeze','BrokenBlade','Broxah','Bruce')",
-        "order_by": "P.OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 96,
-      "sha256": "dc6a27df8b0abcf2d83e6cf3e392ee9c9f82e2225dd9390fd32e935822717890"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "COUNT(*)=n",
-        "where": "P.OverviewPage IN ('Brucer','Buggax','Bugi','Burdol','Busio','Bwipo','C7N','CL0UD','Cabochard','Cain','Caliste','Candy (Kim Seung-ju)','CandyPanda','Canna','Canyon','CaoMei','Caomei','Caps','CarioK','Carzzy','Celebrity','Ceo','Ceos','Ceros','Chaox','Chasy','Chauster','Chawy','Chieh','Chika','Chippys','Chovy','ClearLove','Clearlove','Clid','Closer (Can Çelik)','CloudTemplar','Cody','Cody Sun','Cola (Jiang Nan)','Comp','Condi','Contractz','Cool','CoreJJ','Corn (Lei Wen)','Cotopaco','Crash','Crazy (Kim Jae-hee)','Creme','Crisp','Croc','Crown','Crownie','Crumbz','Cryin','Crystal','CuVee','Cupcake','Cuzz','Cyanide','Cyeol','DNK','Da7','Dabe','Dade','Damonte','Dan Dinh','DanDy','Danagorn','Dandy','Dans','Dara','Darien','Darshan','DasheR','DeadlyBrother','Dee','Deft','Deftly','Delight','Deokdam','Destiny (Mitchell Shaw)','DeuL','Dexter','Dhokla','Diamondprox','Dioud','Dire','Disamis','Doggo','Doinb','Doran (Choi Hyeon-jun)','Doublelift','Driver','Duke (Lee Ho-seong)','Duro','DyNquedo','Dyrus','EDward')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "0c587f2ada83693079e613ea97d094a26b7cd1bab0dac4913fa4f4446faa673f"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "P.OverviewPage=page,P.ID=id,P.Name=name,P.Country=country,P.Residency=residency,P.Role=role,P.Birthdate=birthdate,P.IsRetired=retired,P.FavChamps=favorite_champions",
-        "where": "P.OverviewPage IN ('Brucer','Buggax','Bugi','Burdol','Busio','Bwipo','C7N','CL0UD','Cabochard','Cain','Caliste','Candy (Kim Seung-ju)','CandyPanda','Canna','Canyon','CaoMei','Caomei','Caps','CarioK','Carzzy','Celebrity','Ceo','Ceos','Ceros','Chaox','Chasy','Chauster','Chawy','Chieh','Chika','Chippys','Chovy','ClearLove','Clearlove','Clid','Closer (Can Çelik)','CloudTemplar','Cody','Cody Sun','Cola (Jiang Nan)','Comp','Condi','Contractz','Cool','CoreJJ','Corn (Lei Wen)','Cotopaco','Crash','Crazy (Kim Jae-hee)','Creme','Crisp','Croc','Crown','Crownie','Crumbz','Cryin','Crystal','CuVee','Cupcake','Cuzz','Cyanide','Cyeol','DNK','Da7','Dabe','Dade','Damonte','Dan Dinh','DanDy','Danagorn','Dandy','Dans','Dara','Darien','Darshan','DasheR','DeadlyBrother','Dee','Deft','Deftly','Delight','Deokdam','Destiny (Mitchell Shaw)','DeuL','Dexter','Dhokla','Diamondprox','Dioud','Dire','Disamis','Doggo','Doinb','Doran (Choi Hyeon-jun)','Doublelift','Driver','Duke (Lee Ho-seong)','Duro','DyNquedo','Dyrus','EDward')",
-        "order_by": "P.OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 97,
-      "sha256": "d2234aa087d5e6f435a12d8ab5a48a013167baf431c59abdbe808da971a8d296"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "COUNT(*)=n",
-        "where": "P.OverviewPage IN ('EMENES','Easyhoon','Easylove','Eddie','Edward','Effort','Elementz','Elio','Elk','Elyoya','Emo','Empt2y','Envy (Bruno Farias)','Evi','Exo (Eric Gubatan)','Exosen','Expect','Expession','Eyla','FBI','FEBIVEN','FIX','FORG1VEN','FabFabulous','Faker','Farfetch','Febiven','Ferret','Finn','Fix','Flakked','Flame','Flandre','FoFo','Forest (Lee Hyeon-seo)','Fredy122','Fresskowy','Froggen','Froggy','Frozen (Kim Tae-il)','Fudge','Fzzf','G4','GALA','GBM','GODV (Wei Zhen)','Gadget','Gaeng','GarnetDevil','Gavotto','Gemini','Genja','Genthix','Ggoong','Ghost (Jang Yong-jun)','Gibo','Gilius','GimGoon','Gloryy','GoDlike','GodKwai','GodLike','GodV (Wei Zhen)','Godkwai','Gogoing','Goku','GorillA','GreenTea','Grell','Grevthar','Guigo','Gumayusi','Gury','Hai','Hana','Hanabi (Su Chia-Hsiang)','Hang','Hani','Hans Sama','Hans sama','Harky','Haro','Harp','Haru','Hasmed','Hauntzer','Heart','Hieu3','Hiro02','Hizto','Hjarnan','Hojin','HolyPhoenix','HongQ','Hope (Wang Jie)','HotshotGG','Huanfeng','Huhi','Humanoid','Huni')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "c96b16a429a08da1d8a38794fe5cfc5ed730b50929a56fadcada00091187a25e"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "P.OverviewPage=page,P.ID=id,P.Name=name,P.Country=country,P.Residency=residency,P.Role=role,P.Birthdate=birthdate,P.IsRetired=retired,P.FavChamps=favorite_champions",
-        "where": "P.OverviewPage IN ('EMENES','Easyhoon','Easylove','Eddie','Edward','Effort','Elementz','Elio','Elk','Elyoya','Emo','Empt2y','Envy (Bruno Farias)','Evi','Exo (Eric Gubatan)','Exosen','Expect','Expession','Eyla','FBI','FEBIVEN','FIX','FORG1VEN','FabFabulous','Faker','Farfetch','Febiven','Ferret','Finn','Fix','Flakked','Flame','Flandre','FoFo','Forest (Lee Hyeon-seo)','Fredy122','Fresskowy','Froggen','Froggy','Frozen (Kim Tae-il)','Fudge','Fzzf','G4','GALA','GBM','GODV (Wei Zhen)','Gadget','Gaeng','GarnetDevil','Gavotto','Gemini','Genja','Genthix','Ggoong','Ghost (Jang Yong-jun)','Gibo','Gilius','GimGoon','Gloryy','GoDlike','GodKwai','GodLike','GodV (Wei Zhen)','Godkwai','Gogoing','Goku','GorillA','GreenTea','Grell','Grevthar','Guigo','Gumayusi','Gury','Hai','Hana','Hanabi (Su Chia-Hsiang)','Hang','Hani','Hans Sama','Hans sama','Harky','Haro','Harp','Haru','Hasmed','Hauntzer','Heart','Hieu3','Hiro02','Hizto','Hjarnan','Hojin','HolyPhoenix','HongQ','Hope (Wang Jie)','HotshotGG','Huanfeng','Huhi','Humanoid','Huni')",
-        "order_by": "P.OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 93,
-      "sha256": "b361b5cb18139edd75524b7bfedcd452d30474721a71da88f5eb0af69cee1e5c"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "COUNT(*)=n",
-        "where": "P.OverviewPage IN ('Husha','Hylissang','IBoy','ICON','INtrigueD','IWDominate','IgNar','Ignar','Illusion (Chen Xin-Lin)','Imaqtpie','Imp','Impact','InSec','Innaxe','Inspired','Inspirro','Isles','Iwandy','JackeyLove','Jactroll','Jankos','Japone','Jelly (Son Ho-gyeong)','Jensen','Jesiz','JieJie','Jiejie','Jiizuke','JimieN','Jinjiao','Jirall','JoJo (Gabriel Dzelme)','Jockster','Jojo (Gabriel Dzelme)','Jojopyun','Josedeodo','Juhan','Jun (Yoon Se-jun)','JunJia','Junie','K','K1ng','KAKAO','KaKAO','Kael (Kim Jin-hong)','Kaigu','Kaiser','Kaiwing','Kami (Gabriel Bohm Santos)','Kanavi','Kaori','Karsa','Kasing','Kati','Keine','Kellin','Keria','Kev1n','Khan','Kiaya','Kid','Kiin','Kikis','Kingen','Kino','Kira','Kitties','Knight (Zhuo Ding)','Koala (Lin Chih-Chiang)','Kobbe','Kold','Kongyue','Korol','Kramer','Kratos (Ngô Đức Khánh)','Krepo','Kujaa','Kuri','Kuro','Kyeahoo','LEP','LaMiaZeaLoT','Labrov','Langx','Larssen','Lehends','LemonNation','Lep','Letme','Levi','Leyan','Leza','Liang','Licorice','Life','Light (Wang Guang-Yu)','Likai','Likkrit','Lilballz','Lilv')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "a3f6c666b3105c98022297fd88a32dc7600b256a08953b97f463e2a3d9f434ba"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "P.OverviewPage=page,P.ID=id,P.Name=name,P.Country=country,P.Residency=residency,P.Role=role,P.Birthdate=birthdate,P.IsRetired=retired,P.FavChamps=favorite_champions",
-        "where": "P.OverviewPage IN ('Husha','Hylissang','IBoy','ICON','INtrigueD','IWDominate','IgNar','Ignar','Illusion (Chen Xin-Lin)','Imaqtpie','Imp','Impact','InSec','Innaxe','Inspired','Inspirro','Isles','Iwandy','JackeyLove','Jactroll','Jankos','Japone','Jelly (Son Ho-gyeong)','Jensen','Jesiz','JieJie','Jiejie','Jiizuke','JimieN','Jinjiao','Jirall','JoJo (Gabriel Dzelme)','Jockster','Jojo (Gabriel Dzelme)','Jojopyun','Josedeodo','Juhan','Jun (Yoon Se-jun)','JunJia','Junie','K','K1ng','KAKAO','KaKAO','Kael (Kim Jin-hong)','Kaigu','Kaiser','Kaiwing','Kami (Gabriel Bohm Santos)','Kanavi','Kaori','Karsa','Kasing','Kati','Keine','Kellin','Keria','Kev1n','Khan','Kiaya','Kid','Kiin','Kikis','Kingen','Kino','Kira','Kitties','Knight (Zhuo Ding)','Koala (Lin Chih-Chiang)','Kobbe','Kold','Kongyue','Korol','Kramer','Kratos (Ngô Đức Khánh)','Krepo','Kujaa','Kuri','Kuro','Kyeahoo','LEP','LaMiaZeaLoT','Labrov','Langx','Larssen','Lehends','LemonNation','Lep','Letme','Levi','Leyan','Leza','Liang','Licorice','Life','Light (Wang Guang-Yu)','Likai','Likkrit','Lilballz','Lilv')",
-        "order_by": "P.OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 95,
-      "sha256": "8c392524cedabf535b420bf403924c95aa171e17657c4175d85f38dce507ebba"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "COUNT(*)=n",
-        "where": "P.OverviewPage IN ('Linak','Lira','Lloyd','Lodik','LokeN','Loki (Lee Sang-min)','Looper','Loulex','LoveLin','LoveLing','Loveling','Luci','Lucid (Choi Yong-hyeok)','Lucky (Liu Jun-Jie)','Lustboy','LvMao','Lwx','Lyonz','MANTARRAYA','MDB','MISSING','MMD','MaKNooN','MaRin','MadLife','MakNooN','Malrang','Mancloud','Maple (Huang Yi-Tang)','Marble','Marfz','Mark (Ling Xu)','Massu','Mata','Maxlore','Mazzerin','Meiko','Meliodas (Hoàng Tiến Nhật)','Mellisan','Meteos','MiSTakE','MicaO','Mikyx','Minerva','Ming (Shi Sen-Ming)','Minji','Mir (Park Mi-reu)','Mireu','Misaya','Missing','Mission','Mithy','Mlxg','MnM (Wong Ka Chun)','MoMa','Moham','Mojito','MooJin','Moojin','Mor','Morgan','Morning','Morttheus','Moss (Sorawat Boonphrom)','Mountain (Xue Zhao-Hong)','Mouse','Mowgli','Moyashi','Mylon','Myrwn','Mystic','NAZ (Chen Tien-Chih)','NIXWATER','NL (Hsiung Wen-An)','NONAME (Zhou Qi-Lin)','NRated','NaMei','Nagne','Nanaue (Phùng Đức Tài)','Naru (Koray Bıçak)','Nate','Naul','Naz (Chen Tien-Chih)','Nbs','Nemesis','Nevan','Niksar','Ning','Nisqy','Nixwater','NoName (Zhou Qi-Lin)','Noah (Oh Hyeon-taek)','Nomanz','Noway (Nguyễn Vũ Long)','Nuc','Nuclear','Nuguri','Nukeduck','Nyph','ON')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "cce7cbf1bbbb8fae97757c6dc6370aafa0c9c80ba06c33d8109d5b64b4b0234d"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "P.OverviewPage=page,P.ID=id,P.Name=name,P.Country=country,P.Residency=residency,P.Role=role,P.Birthdate=birthdate,P.IsRetired=retired,P.FavChamps=favorite_champions",
-        "where": "P.OverviewPage IN ('Linak','Lira','Lloyd','Lodik','LokeN','Loki (Lee Sang-min)','Looper','Loulex','LoveLin','LoveLing','Loveling','Luci','Lucid (Choi Yong-hyeok)','Lucky (Liu Jun-Jie)','Lustboy','LvMao','Lwx','Lyonz','MANTARRAYA','MDB','MISSING','MMD','MaKNooN','MaRin','MadLife','MakNooN','Malrang','Mancloud','Maple (Huang Yi-Tang)','Marble','Marfz','Mark (Ling Xu)','Massu','Mata','Maxlore','Mazzerin','Meiko','Meliodas (Hoàng Tiến Nhật)','Mellisan','Meteos','MiSTakE','MicaO','Mikyx','Minerva','Ming (Shi Sen-Ming)','Minji','Mir (Park Mi-reu)','Mireu','Misaya','Missing','Mission','Mithy','Mlxg','MnM (Wong Ka Chun)','MoMa','Moham','Mojito','MooJin','Moojin','Mor','Morgan','Morning','Morttheus','Moss (Sorawat Boonphrom)','Mountain (Xue Zhao-Hong)','Mouse','Mowgli','Moyashi','Mylon','Myrwn','Mystic','NAZ (Chen Tien-Chih)','NIXWATER','NL (Hsiung Wen-An)','NONAME (Zhou Qi-Lin)','NRated','NaMei','Nagne','Nanaue (Phùng Đức Tài)','Naru (Koray Bıçak)','Nate','Naul','Naz (Chen Tien-Chih)','Nbs','Nemesis','Nevan','Niksar','Ning','Nisqy','Nixwater','NoName (Zhou Qi-Lin)','Noah (Oh Hyeon-taek)','Nomanz','Noway (Nguyễn Vũ Long)','Nuc','Nuclear','Nuguri','Nukeduck','Nyph','ON')",
-        "order_by": "P.OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 92,
-      "sha256": "a29af60810aaf6b63bca9b6ada34e87be152cf8abe88334e93776755ae0443a6"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "COUNT(*)=n",
-        "where": "P.OverviewPage IN ('Ocelote','Oddie','Odoamne','Olleh','Oner','Onesh0tiq','Orome','Oscarinin','PDD','PK','Padden','Palafox','Palette','Patoy','PawN','Paz','Pdd','Peanut','PerfecT (Lee Seung-min)','Perkz','Peter (Jeong Yoon-su)','Peyz','Piccaboo','Piglet','Pilot (Na Woo-hyung)','Plugo','PoP','Pobelter','Poby','Pomelo','PoohManDu','Pop','PowerOfEvil','PraY','Pray','Prydz','Pun','Puszu','PvPStejos','Pyl (Chen Bo)','Pyosik','QTV','Quad','Quid','Radeon6870','Raes','Raina','Rainbow (Kim Soo-gi)','Ramune','Ranger','RapidStar','Rascal','Ray','Razork','RedBert','Reginald','Reignover','Rekkles','Relic','Ren','Renyu','Rest','Revolta','Reyk','Rhuckz','Rich (Warich Kittiwattanawong)','Richard','Rikara','Riris','River (Kim Dong-woo)','Riyev','Road (Yun Han-gil)','Robo','Rockky','Rookie','Route','Ruler','Ryu','SOAZ','SSONG','SaNTaS','SaintVicious','Saintvicious','Salce','San (Guo Jun-Liang)','SanSan','Santorin','Save','Scarra','Score','Scout','Seiya','Selfmade','Sencux','Serin','Shad0w','Shadow (Facundo Cuello)','Shanks','Sheo','Shernfire')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "bbe2c7bf4b5d73112c8110bc8432d7d8d8f78a31e6aed3c620eea78b17be48a4"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "P.OverviewPage=page,P.ID=id,P.Name=name,P.Country=country,P.Residency=residency,P.Role=role,P.Birthdate=birthdate,P.IsRetired=retired,P.FavChamps=favorite_champions",
-        "where": "P.OverviewPage IN ('Ocelote','Oddie','Odoamne','Olleh','Oner','Onesh0tiq','Orome','Oscarinin','PDD','PK','Padden','Palafox','Palette','Patoy','PawN','Paz','Pdd','Peanut','PerfecT (Lee Seung-min)','Perkz','Peter (Jeong Yoon-su)','Peyz','Piccaboo','Piglet','Pilot (Na Woo-hyung)','Plugo','PoP','Pobelter','Poby','Pomelo','PoohManDu','Pop','PowerOfEvil','PraY','Pray','Prydz','Pun','Puszu','PvPStejos','Pyl (Chen Bo)','Pyosik','QTV','Quad','Quid','Radeon6870','Raes','Raina','Rainbow (Kim Soo-gi)','Ramune','Ranger','RapidStar','Rascal','Ray','Razork','RedBert','Reginald','Reignover','Rekkles','Relic','Ren','Renyu','Rest','Revolta','Reyk','Rhuckz','Rich (Warich Kittiwattanawong)','Richard','Rikara','Riris','River (Kim Dong-woo)','Riyev','Road (Yun Han-gil)','Robo','Rockky','Rookie','Route','Ruler','Ryu','SOAZ','SSONG','SaNTaS','SaintVicious','Saintvicious','Salce','San (Guo Jun-Liang)','SanSan','Santorin','Save','Scarra','Score','Scout','Seiya','Selfmade','Sencux','Serin','Shad0w','Shadow (Facundo Cuello)','Shanks','Sheo','Shernfire')",
-        "order_by": "P.OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 96,
-      "sha256": "4954aa3b63b6063adab7cae9e248e7f6d5cde5cf3af48c843b93d90618fc9754"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "COUNT(*)=n",
-        "where": "P.OverviewPage IN ('ShiauC','Shini','Shogun (Nguyễn Văn Huy)','Shook','ShowMaker','Shrimp','Shunn','Shushei','Shy','SirT','Sirt','SiuLoong','SkewMond','Slay','Slayder','Slow','Smeb','Smoothie','Smurf (Dmitri Ivanov)','Sneaky','Sniper','Snoopeh','SnowFlower','Snoy','Soaz','SofM','Solid (Diego Vallejo)','SolidSnake','Solo (Colin Earnest)','Sparda','Spica','Spirit','Ssong','Ssumday','Stanley','StarScreen','Steak','Steal (Mun Geon-yeong)','Stitch','Stixxay','Stomaged','Sty1e','Summit','Supa','Svenskeren','Sw0rd','SwordArT','SwordArt','Sya','TBQ','Tabe','Tabzz','Tactical','Taki (Đinh Anh Tài)','Tally','Tank','Targamas','Tarzan (Lee Seung-yong)','Tatu (Pedro Seixas)','Tay','Tbq','Teddy','Tgee','Thaldrin','Thanatos (Park Seung-gyu)','The Rain Man','TheOddOne','TheShy','Tian','Tierwulf','Time (Tang Jing-Tai)','TinOwns','Tinowns','TitaN','Titan','Tockers','Tolerant','Tomo','Topoon','Tore','Touch','Toyz','Trick','Triple','Trymbi','TusiN','Tussle','Tutsz','U','UDYSOF','UNF0RGIVEN','Ucal','Udysof','UmTi','Uniboy','Unified','Upset','Uzi (Jian Zi-Hao)','VVvert','VYY')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "c96b16a429a08da1d8a38794fe5cfc5ed730b50929a56fadcada00091187a25e"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "P.OverviewPage=page,P.ID=id,P.Name=name,P.Country=country,P.Residency=residency,P.Role=role,P.Birthdate=birthdate,P.IsRetired=retired,P.FavChamps=favorite_champions",
-        "where": "P.OverviewPage IN ('ShiauC','Shini','Shogun (Nguyễn Văn Huy)','Shook','ShowMaker','Shrimp','Shunn','Shushei','Shy','SirT','Sirt','SiuLoong','SkewMond','Slay','Slayder','Slow','Smeb','Smoothie','Smurf (Dmitri Ivanov)','Sneaky','Sniper','Snoopeh','SnowFlower','Snoy','Soaz','SofM','Solid (Diego Vallejo)','SolidSnake','Solo (Colin Earnest)','Sparda','Spica','Spirit','Ssong','Ssumday','Stanley','StarScreen','Steak','Steal (Mun Geon-yeong)','Stitch','Stixxay','Stomaged','Sty1e','Summit','Supa','Svenskeren','Sw0rd','SwordArT','SwordArt','Sya','TBQ','Tabe','Tabzz','Tactical','Taki (Đinh Anh Tài)','Tally','Tank','Targamas','Tarzan (Lee Seung-yong)','Tatu (Pedro Seixas)','Tay','Tbq','Teddy','Tgee','Thaldrin','Thanatos (Park Seung-gyu)','The Rain Man','TheOddOne','TheShy','Tian','Tierwulf','Time (Tang Jing-Tai)','TinOwns','Tinowns','TitaN','Titan','Tockers','Tolerant','Tomo','Topoon','Tore','Touch','Toyz','Trick','Triple','Trymbi','TusiN','Tussle','Tutsz','U','UDYSOF','UNF0RGIVEN','Ucal','Udysof','UmTi','Uniboy','Unified','Upset','Uzi (Jian Zi-Hao)','VVvert','VYY')",
-        "order_by": "P.OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 93,
-      "sha256": "2283c6f3647f08c413871a9a6607f7ff2582023593ffb6174a98d29d9583dcf5"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "COUNT(*)=n",
-        "where": "P.OverviewPage IN ('Vander','Vas1lii','Vech','Venus','Violet (Ngô Mạnh Quyền)','Violet (Vincent Wong)','Viper (Park Do-hyeon)','ViviD','Vizicsacsi','Voidle','Voyboy','Vsta','Vulcan (Philippe Laflamme)','Wadid','Wako','WarL0cK','Warangelus','Watch','Wayward','Wei (Yan Yang-Wei)','Weiwei','Westdoor','Westrice','Wewillfailer','Wh1t3zZ','WhiteLotus','Whitelotus','Wickd','WildTurtle','Willer','Winds','Wizer','Wolf (Lee Jae-wan)','Woody','Woong (Jang Gun-woong)','Wormy','Wraith','Wunder','Wx','XPeke','XUN','Xerxe','XiaoWeiXiao','XiaoXiao','Xiaohu','Xiaoweixiao','Xiye','Xmithie','Xpecial','XuHao','Xun','YT','Yagao','Yaharong','Yang (Felipe Zhao)','YellOwStaR','YellOwStar','Yellowpete','Yellowstar','Yeon (Sean Sung)','Yike','Ysera','Yume (Danyll Jann Balisi)','Yutapon','YutoriMoyasi','Yuyanjia','Zantins','Zappy','Zefa','Zeitnot','Zeka (Kim Geon-woo)','Zergsting','Zero (Yoon Kyung-sup)','Zeros','Zeus','Zeyzal','Zika','Zin','ZionSpartan','Ziv (Chen Yi)','Zoom','Zorozero','Zuna','Zven','Zylor','Zz1tai','aMiracle','ackerman (Xiao Wang)','apaMEN','aphromoo','baybay','bebe (Chang Bo-Wei)','bengi','bigfatlp','brTT','caPs','cody','comA (Fang Hong-Ri)','cool','corn (Lei Wen)')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "46ca30adb2be8a833c23df7e8a7366fa7ca585472aa1c538106364217ab53419"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "P.OverviewPage=page,P.ID=id,P.Name=name,P.Country=country,P.Residency=residency,P.Role=role,P.Birthdate=birthdate,P.IsRetired=retired,P.FavChamps=favorite_champions",
-        "where": "P.OverviewPage IN ('Vander','Vas1lii','Vech','Venus','Violet (Ngô Mạnh Quyền)','Violet (Vincent Wong)','Viper (Park Do-hyeon)','ViviD','Vizicsacsi','Voidle','Voyboy','Vsta','Vulcan (Philippe Laflamme)','Wadid','Wako','WarL0cK','Warangelus','Watch','Wayward','Wei (Yan Yang-Wei)','Weiwei','Westdoor','Westrice','Wewillfailer','Wh1t3zZ','WhiteLotus','Whitelotus','Wickd','WildTurtle','Willer','Winds','Wizer','Wolf (Lee Jae-wan)','Woody','Woong (Jang Gun-woong)','Wormy','Wraith','Wunder','Wx','XPeke','XUN','Xerxe','XiaoWeiXiao','XiaoXiao','Xiaohu','Xiaoweixiao','Xiye','Xmithie','Xpecial','XuHao','Xun','YT','Yagao','Yaharong','Yang (Felipe Zhao)','YellOwStaR','YellOwStar','Yellowpete','Yellowstar','Yeon (Sean Sung)','Yike','Ysera','Yume (Danyll Jann Balisi)','Yutapon','YutoriMoyasi','Yuyanjia','Zantins','Zappy','Zefa','Zeitnot','Zeka (Kim Geon-woo)','Zergsting','Zero (Yoon Kyung-sup)','Zeros','Zeus','Zeyzal','Zika','Zin','ZionSpartan','Ziv (Chen Yi)','Zoom','Zorozero','Zuna','Zven','Zylor','Zz1tai','aMiracle','ackerman (Xiao Wang)','apaMEN','aphromoo','baybay','bebe (Chang Bo-Wei)','bengi','bigfatlp','brTT','caPs','cody','comA (Fang Hong-Ri)','cool','corn (Lei Wen)')",
-        "order_by": "P.OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 90,
-      "sha256": "0360200945864e650da857541237d85d73e830c2a8f4e76e80100b80d86117d9"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "COUNT(*)=n",
-        "where": "P.OverviewPage IN ('d4rkness','dabe','dans','deokdam','dyNquedo','fabFabulous','fredy122','gibo','huanfeng','huhi','iBoy','iNtrigueD','icon','iddo','illuSioN (Chen Xin-Lin)','imp','inSec','jojopyun','k1ng','kaSing','kid','knight (Zhuo Ding)','kujaa','kyeahoo','loulex','mancloud','micaO','mithy','nRated','nuc','ocelote','padden','sOAZ','san (Guo Jun-Liang)','scarra','seiya','shernfire','tinowns','tockers','viviD','vy','westdoor','wewillfailer','wormy','xPeke','xiye','yellowpete','yuyanjia','zz1tai')",
-        "limit": 1,
-        "format": "json"
-      },
-      "rows": 1,
-      "sha256": "8272c7d53fa53500ccbbaf94b9b959d5385069ee0fa62522c13b9fd8049de875"
-    },
-    {
-      "params": {
-        "tables": "Players=P",
-        "fields": "P.OverviewPage=page,P.ID=id,P.Name=name,P.Country=country,P.Residency=residency,P.Role=role,P.Birthdate=birthdate,P.IsRetired=retired,P.FavChamps=favorite_champions",
-        "where": "P.OverviewPage IN ('d4rkness','dabe','dans','deokdam','dyNquedo','fabFabulous','fredy122','gibo','huanfeng','huhi','iBoy','iNtrigueD','icon','iddo','illuSioN (Chen Xin-Lin)','imp','inSec','jojopyun','k1ng','kaSing','kid','knight (Zhuo Ding)','kujaa','kyeahoo','loulex','mancloud','micaO','mithy','nRated','nuc','ocelote','padden','sOAZ','san (Guo Jun-Liang)','scarra','seiya','shernfire','tinowns','tockers','viviD','vy','westdoor','wewillfailer','wormy','xPeke','xiye','yellowpete','yuyanjia','zz1tai')",
-        "order_by": "P.OverviewPage ASC",
-        "limit": 500,
-        "offset": 0,
-        "format": "json"
-      },
-      "rows": 46,
-      "sha256": "a8b1acba8b64cc039523b863e6a9bdc25052aeab7f15bba944e36e1ee8c0b016"
-    }
+  "eliminations": {
+    "source": "Leaguepedia",
+    "as_of": "2026-10-19T07:18:52+00:00",
+    "coverage": {
+      "players": 738,
+      "complete_players": 713,
+      "play_in": 223,
+      "group": 387,
+      "quarterfinal": 197,
+      "semifinal": 116,
+      "final": 74
+    },
+    "unknown_teams": [
+      {
+        "year": 2011,
+        "team": "Epik Gamer",
+        "reason": "Completed event but non-standard knockout stage cannot be mapped safely"
+      },
+      {
+        "year": 2011,
+        "team": "TSM",
+        "reason": "Completed event but non-standard knockout stage cannot be mapped safely"
+      },
+      {
+        "year": 2011,
+        "team": "Counter Logic Gaming",
+        "reason": "Completed event but non-standard knockout stage cannot be mapped safely"
+      },
+      {
+        "year": 2011,
+        "team": "Team gamed!de",
+        "reason": "Completed event but non-standard knockout stage cannot be mapped safely"
+      }
+    ],
+    "evidence": [
+      {
+        "year": 2026,
+        "team": "Cloud9",
+        "stage": "play_in",
+        "match_id": "2026 Season World Championship/Play-In_Round 3_1",
+        "reason": "Completed Play-In; official one-berth rules and all other final placements",
+        "rules_source": "https://lolesports.com/en-US/tournament/115660540725177488/overview"
+      },
+      {
+        "year": 2026,
+        "team": "FURIA",
+        "stage": "play_in",
+        "match_id": "2026 Season World Championship/Play-In_Round 3_1",
+        "reason": "Completed Play-In; official one-berth rules and all other final placements",
+        "rules_source": "https://lolesports.com/en-US/tournament/115660540725177488/overview"
+      },
+      {
+        "year": 2026,
+        "team": "MVK Esports",
+        "stage": "play_in",
+        "match_id": "2026 Season World Championship/Play-In_Round 3_1",
+        "reason": "Completed Play-In; official one-berth rules and all other final placements",
+        "rules_source": "https://lolesports.com/en-US/tournament/115660540725177488/overview"
+      },
+      {
+        "year": 2014,
+        "team": "TSM",
+        "stage": "quarterfinal",
+        "match_id": "2014 Season World Championship_Quarterfinals_1"
+      },
+      {
+        "year": 2014,
+        "team": "Cloud9",
+        "stage": "quarterfinal",
+        "match_id": "2014 Season World Championship_Quarterfinals_2"
+      },
+      {
+        "year": 2014,
+        "team": "EDward Gaming",
+        "stage": "quarterfinal",
+        "match_id": "2014 Season World Championship_Quarterfinals_3"
+      },
+      {
+        "year": 2014,
+        "team": "NaJin White Shield",
+        "stage": "quarterfinal",
+        "match_id": "2014 Season World Championship_Quarterfinals_4"
+      },
+      {
+        "year": 2014,
+        "team": "Samsung Blue",
+        "stage": "semifinal",
+        "match_id": "2014 Season World Championship_Semifinals_1"
+      },
+      {
+        "year": 2014,
+        "team": "Oh My God",
+        "stage": "semifinal",
+        "match_id": "2014 Season World Championship_Semifinals_2"
+      },
+      {
+        "year": 2014,
+        "team": "Star Horn Royal Club",
+        "stage": "final",
+        "match_id": "2014 Season World Championship_Finals_1"
+      },
+      {
+        "year": 2015,
+        "team": "Flash Wolves",
+        "stage": "quarterfinal",
+        "match_id": "2015 Season World Championship_Quarterfinals_1"
+      },
+      {
+        "year": 2015,
+        "team": "ahq eSports Club",
+        "stage": "quarterfinal",
+        "match_id": "2015 Season World Championship_Quarterfinals_2"
+      },
+      {
+        "year": 2015,
+        "team": "EDward Gaming",
+        "stage": "quarterfinal",
+        "match_id": "2015 Season World Championship_Quarterfinals_3"
+      },
+      {
+        "year": 2015,
+        "team": "KT Rolster",
+        "stage": "quarterfinal",
+        "match_id": "2015 Season World Championship_Quarterfinals_4"
+      },
+      {
+        "year": 2015,
+        "team": "Origen",
+        "stage": "semifinal",
+        "match_id": "2015 Season World Championship_Semifinals_1"
+      },
+      {
+        "year": 2015,
+        "team": "Fnatic",
+        "stage": "semifinal",
+        "match_id": "2015 Season World Championship_Semifinals_2"
+      },
+      {
+        "year": 2015,
+        "team": "KOO Tigers",
+        "stage": "final",
+        "match_id": "2015 Season World Championship_Finals_1"
+      },
+      {
+        "year": 2016,
+        "team": "Cloud9",
+        "stage": "quarterfinal",
+        "match_id": "2016 Season World Championship_Quarterfinals_1"
+      },
+      {
+        "year": 2016,
+        "team": "Royal Never Give Up",
+        "stage": "quarterfinal",
+        "match_id": "2016 Season World Championship_Quarterfinals_2"
+      },
+      {
+        "year": 2016,
+        "team": "EDward Gaming",
+        "stage": "quarterfinal",
+        "match_id": "2016 Season World Championship_Quarterfinals_3"
+      },
+      {
+        "year": 2016,
+        "team": "Albus NoX Luna",
+        "stage": "quarterfinal",
+        "match_id": "2016 Season World Championship_Quarterfinals_4"
+      },
+      {
+        "year": 2016,
+        "team": "ROX Tigers",
+        "stage": "semifinal",
+        "match_id": "2016 Season World Championship_Semifinals_1"
+      },
+      {
+        "year": 2016,
+        "team": "H2k-Gaming",
+        "stage": "semifinal",
+        "match_id": "2016 Season World Championship_Semifinals_2"
+      },
+      {
+        "year": 2016,
+        "team": "Samsung Galaxy",
+        "stage": "final",
+        "match_id": "2016 Season World Championship_Finals_1"
+      },
+      {
+        "year": 2017,
+        "team": "Longzhu Gaming",
+        "stage": "quarterfinal",
+        "match_id": "2017 Season World Championship/Main Event_Quarterfinals_1"
+      },
+      {
+        "year": 2017,
+        "team": "Misfits Gaming",
+        "stage": "quarterfinal",
+        "match_id": "2017 Season World Championship/Main Event_Quarterfinals_2"
+      },
+      {
+        "year": 2017,
+        "team": "Fnatic",
+        "stage": "quarterfinal",
+        "match_id": "2017 Season World Championship/Main Event_Quarterfinals_3"
+      },
+      {
+        "year": 2017,
+        "team": "Cloud9",
+        "stage": "quarterfinal",
+        "match_id": "2017 Season World Championship/Main Event_Quarterfinals_4"
+      },
+      {
+        "year": 2017,
+        "team": "Royal Never Give Up",
+        "stage": "semifinal",
+        "match_id": "2017 Season World Championship/Main Event_Semifinals_1"
+      },
+      {
+        "year": 2017,
+        "team": "Team WE",
+        "stage": "semifinal",
+        "match_id": "2017 Season World Championship/Main Event_Semifinals_2"
+      },
+      {
+        "year": 2017,
+        "team": "SK Telecom T1",
+        "stage": "final",
+        "match_id": "2017 Season World Championship/Main Event_Finals_1"
+      },
+      {
+        "year": 2018,
+        "team": "KT Rolster",
+        "stage": "quarterfinal",
+        "match_id": "2018 Season World Championship/Main Event_Quarterfinals_1"
+      },
+      {
+        "year": 2018,
+        "team": "Royal Never Give Up",
+        "stage": "quarterfinal",
+        "match_id": "2018 Season World Championship/Main Event_Quarterfinals_2"
+      },
+      {
+        "year": 2018,
+        "team": "Afreeca Freecs",
+        "stage": "quarterfinal",
+        "match_id": "2018 Season World Championship/Main Event_Quarterfinals_3"
+      },
+      {
+        "year": 2018,
+        "team": "EDward Gaming",
+        "stage": "quarterfinal",
+        "match_id": "2018 Season World Championship/Main Event_Quarterfinals_4"
+      },
+      {
+        "year": 2018,
+        "team": "G2 Esports",
+        "stage": "semifinal",
+        "match_id": "2018 Season World Championship/Main Event_Semifinals_1"
+      },
+      {
+        "year": 2018,
+        "team": "Cloud9",
+        "stage": "semifinal",
+        "match_id": "2018 Season World Championship/Main Event_Semifinals_2"
+      },
+      {
+        "year": 2018,
+        "team": "Fnatic",
+        "stage": "final",
+        "match_id": "2018 Season World Championship/Main Event_Finals_1"
+      },
+      {
+        "year": 2019,
+        "team": "Griffin (Korean Team)",
+        "stage": "quarterfinal",
+        "match_id": "2019 Season World Championship/Main Event_Quarterfinals_1"
+      },
+      {
+        "year": 2019,
+        "team": "Fnatic",
+        "stage": "quarterfinal",
+        "match_id": "2019 Season World Championship/Main Event_Quarterfinals_2"
+      },
+      {
+        "year": 2019,
+        "team": "Splyce",
+        "stage": "quarterfinal",
+        "match_id": "2019 Season World Championship/Main Event_Quarterfinals_3"
+      },
+      {
+        "year": 2019,
+        "team": "DAMWON Gaming",
+        "stage": "quarterfinal",
+        "match_id": "2019 Season World Championship/Main Event_Quarterfinals_4"
+      },
+      {
+        "year": 2019,
+        "team": "Invictus Gaming",
+        "stage": "semifinal",
+        "match_id": "2019 Season World Championship/Main Event_Semifinals_1"
+      },
+      {
+        "year": 2019,
+        "team": "SK Telecom T1",
+        "stage": "semifinal",
+        "match_id": "2019 Season World Championship/Main Event_Semifinals_2"
+      },
+      {
+        "year": 2019,
+        "team": "G2 Esports",
+        "stage": "final",
+        "match_id": "2019 Season World Championship/Main Event_Finals_1"
+      },
+      {
+        "year": 2020,
+        "team": "DRX",
+        "stage": "quarterfinal",
+        "match_id": "2020 Season World Championship/Main Event_Quarterfinals_1"
+      },
+      {
+        "year": 2020,
+        "team": "JD Gaming",
+        "stage": "quarterfinal",
+        "match_id": "2020 Season World Championship/Main Event_Quarterfinals_2"
+      },
+      {
+        "year": 2020,
+        "team": "Fnatic",
+        "stage": "quarterfinal",
+        "match_id": "2020 Season World Championship/Main Event_Quarterfinals_3"
+      },
+      {
+        "year": 2020,
+        "team": "Gen.G",
+        "stage": "quarterfinal",
+        "match_id": "2020 Season World Championship/Main Event_Quarterfinals_4"
+      },
+      {
+        "year": 2020,
+        "team": "G2 Esports",
+        "stage": "semifinal",
+        "match_id": "2020 Season World Championship/Main Event_Semifinals_1"
+      },
+      {
+        "year": 2020,
+        "team": "Top Esports",
+        "stage": "semifinal",
+        "match_id": "2020 Season World Championship/Main Event_Semifinals_2"
+      },
+      {
+        "year": 2020,
+        "team": "Suning",
+        "stage": "final",
+        "match_id": "2020 Season World Championship/Main Event_Finals_1"
+      },
+      {
+        "year": 2021,
+        "team": "Hanwha Life Esports",
+        "stage": "quarterfinal",
+        "match_id": "2021 Season World Championship/Main Event_Quarterfinals_1"
+      },
+      {
+        "year": 2021,
+        "team": "Royal Never Give Up",
+        "stage": "quarterfinal",
+        "match_id": "2021 Season World Championship/Main Event_Quarterfinals_2"
+      },
+      {
+        "year": 2021,
+        "team": "MAD Lions",
+        "stage": "quarterfinal",
+        "match_id": "2021 Season World Championship/Main Event_Quarterfinals_3"
+      },
+      {
+        "year": 2021,
+        "team": "Cloud9",
+        "stage": "quarterfinal",
+        "match_id": "2021 Season World Championship/Main Event_Quarterfinals_4"
+      },
+      {
+        "year": 2021,
+        "team": "T1",
+        "stage": "semifinal",
+        "match_id": "2021 Season World Championship/Main Event_Semifinals_1"
+      },
+      {
+        "year": 2021,
+        "team": "Gen.G",
+        "stage": "semifinal",
+        "match_id": "2021 Season World Championship/Main Event_Semifinals_2"
+      },
+      {
+        "year": 2021,
+        "team": "DWG KIA",
+        "stage": "final",
+        "match_id": "2021 Season World Championship/Main Event_Finals_1"
+      },
+      {
+        "year": 2022,
+        "team": "Rogue (European Team)",
+        "stage": "quarterfinal",
+        "match_id": "2022 Season World Championship/Main Event_Quarterfinals_1"
+      },
+      {
+        "year": 2022,
+        "team": "Royal Never Give Up",
+        "stage": "quarterfinal",
+        "match_id": "2022 Season World Championship/Main Event_Quarterfinals_2"
+      },
+      {
+        "year": 2022,
+        "team": "DWG KIA",
+        "stage": "quarterfinal",
+        "match_id": "2022 Season World Championship/Main Event_Quarterfinals_3"
+      },
+      {
+        "year": 2022,
+        "team": "EDward Gaming",
+        "stage": "quarterfinal",
+        "match_id": "2022 Season World Championship/Main Event_Quarterfinals_4"
+      },
+      {
+        "year": 2022,
+        "team": "JD Gaming",
+        "stage": "semifinal",
+        "match_id": "2022 Season World Championship/Main Event_Semifinals_1"
+      },
+      {
+        "year": 2022,
+        "team": "Gen.G",
+        "stage": "semifinal",
+        "match_id": "2022 Season World Championship/Main Event_Semifinals_2"
+      },
+      {
+        "year": 2022,
+        "team": "T1",
+        "stage": "final",
+        "match_id": "2022 Season World Championship/Main Event_Finals_1"
+      },
+      {
+        "year": 2023,
+        "team": "NRG",
+        "stage": "quarterfinal",
+        "match_id": "2023 Season World Championship/Main Event_Quarterfinals_1"
+      },
+      {
+        "year": 2023,
+        "team": "Gen.G",
+        "stage": "quarterfinal",
+        "match_id": "2023 Season World Championship/Main Event_Quarterfinals_2"
+      },
+      {
+        "year": 2023,
+        "team": "KT Rolster",
+        "stage": "quarterfinal",
+        "match_id": "2023 Season World Championship/Main Event_Quarterfinals_3"
+      },
+      {
+        "year": 2023,
+        "team": "LNG Esports",
+        "stage": "quarterfinal",
+        "match_id": "2023 Season World Championship/Main Event_Quarterfinals_4"
+      },
+      {
+        "year": 2023,
+        "team": "Bilibili Gaming",
+        "stage": "semifinal",
+        "match_id": "2023 Season World Championship/Main Event_Semifinals_1"
+      },
+      {
+        "year": 2023,
+        "team": "JD Gaming",
+        "stage": "semifinal",
+        "match_id": "2023 Season World Championship/Main Event_Semifinals_2"
+      },
+      {
+        "year": 2023,
+        "team": "Weibo Gaming",
+        "stage": "final",
+        "match_id": "2023 Season World Championship/Main Event_Finals_1"
+      },
+      {
+        "year": 2024,
+        "team": "LNG Esports",
+        "stage": "quarterfinal",
+        "match_id": "2024 Season World Championship/Main Event_Quarterfinals_1"
+      },
+      {
+        "year": 2024,
+        "team": "Hanwha Life Esports",
+        "stage": "quarterfinal",
+        "match_id": "2024 Season World Championship/Main Event_Quarterfinals_2"
+      },
+      {
+        "year": 2024,
+        "team": "Top Esports",
+        "stage": "quarterfinal",
+        "match_id": "2024 Season World Championship/Main Event_Quarterfinals_3"
+      },
+      {
+        "year": 2024,
+        "team": "FlyQuest",
+        "stage": "quarterfinal",
+        "match_id": "2024 Season World Championship/Main Event_Quarterfinals_4"
+      },
+      {
+        "year": 2024,
+        "team": "Weibo Gaming",
+        "stage": "semifinal",
+        "match_id": "2024 Season World Championship/Main Event_Semifinals_1"
+      },
+      {
+        "year": 2024,
+        "team": "Gen.G",
+        "stage": "semifinal",
+        "match_id": "2024 Season World Championship/Main Event_Semifinals_2"
+      },
+      {
+        "year": 2024,
+        "team": "Bilibili Gaming",
+        "stage": "final",
+        "match_id": "2024 Season World Championship/Main Event_Finals_1"
+      },
+      {
+        "year": 2025,
+        "team": "Hanwha Life Esports",
+        "stage": "quarterfinal",
+        "match_id": "2025 Season World Championship/Main Event_Quarterfinals_1"
+      },
+      {
+        "year": 2025,
+        "team": "CTBC Flying Oyster",
+        "stage": "quarterfinal",
+        "match_id": "2025 Season World Championship/Main Event_Quarterfinals_2"
+      },
+      {
+        "year": 2025,
+        "team": "G2 Esports",
+        "stage": "quarterfinal",
+        "match_id": "2025 Season World Championship/Main Event_Quarterfinals_3"
+      },
+      {
+        "year": 2025,
+        "team": "Anyone's Legend",
+        "stage": "quarterfinal",
+        "match_id": "2025 Season World Championship/Main Event_Quarterfinals_4"
+      },
+      {
+        "year": 2025,
+        "team": "Gen.G",
+        "stage": "semifinal",
+        "match_id": "2025 Season World Championship/Main Event_Semifinals_1"
+      },
+      {
+        "year": 2025,
+        "team": "Top Esports",
+        "stage": "semifinal",
+        "match_id": "2025 Season World Championship/Main Event_Semifinals_2"
+      },
+      {
+        "year": 2025,
+        "team": "KT Rolster",
+        "stage": "final",
+        "match_id": "2025 Season World Championship/Main Event_Finals_1"
+      },
+      {
+        "year": 2011,
+        "team": "against All authority",
+        "stage": "final",
+        "match_id": "Season 1 World Championship_Finals_1"
+      },
+      {
+        "year": 2012,
+        "team": "Invictus Gaming",
+        "stage": "quarterfinal",
+        "match_id": "Season 2 World Championship_Quarterfinals_1"
+      },
+      {
+        "year": 2012,
+        "team": "NaJin Sword",
+        "stage": "quarterfinal",
+        "match_id": "Season 2 World Championship_Quarterfinals_2"
+      },
+      {
+        "year": 2012,
+        "team": "TSM",
+        "stage": "quarterfinal",
+        "match_id": "Season 2 World Championship_Quarterfinals_3"
+      },
+      {
+        "year": 2012,
+        "team": "Team WE",
+        "stage": "quarterfinal",
+        "match_id": "Season 2 World Championship_Quarterfinals_4"
+      },
+      {
+        "year": 2012,
+        "team": "Moscow Five",
+        "stage": "semifinal",
+        "match_id": "Season 2 World Championship_Semifinals_1"
+      },
+      {
+        "year": 2012,
+        "team": "Counter Logic Gaming Europe",
+        "stage": "semifinal",
+        "match_id": "Season 2 World Championship_Semifinals_2"
+      },
+      {
+        "year": 2012,
+        "team": "Azubu Frost",
+        "stage": "final",
+        "match_id": "Season 2 World Championship_Finals_1"
+      },
+      {
+        "year": 2013,
+        "team": "Cloud9",
+        "stage": "quarterfinal",
+        "match_id": "Season 3 World Championship_Quarterfinals_1"
+      },
+      {
+        "year": 2013,
+        "team": "Gambit Gaming",
+        "stage": "quarterfinal",
+        "match_id": "Season 3 World Championship_Quarterfinals_2"
+      },
+      {
+        "year": 2013,
+        "team": "Gamania Bears",
+        "stage": "quarterfinal",
+        "match_id": "Season 3 World Championship_Quarterfinals_3"
+      },
+      {
+        "year": 2013,
+        "team": "Oh My God",
+        "stage": "quarterfinal",
+        "match_id": "Season 3 World Championship_Quarterfinals_4"
+      },
+      {
+        "year": 2013,
+        "team": "NaJin Black Sword",
+        "stage": "semifinal",
+        "match_id": "Season 3 World Championship_Semifinals_1"
+      },
+      {
+        "year": 2013,
+        "team": "Fnatic",
+        "stage": "semifinal",
+        "match_id": "Season 3 World Championship_Semifinals_2"
+      },
+      {
+        "year": 2013,
+        "team": "Royal Club",
+        "stage": "final",
+        "match_id": "Season 3 World Championship_Finals_1"
+      },
+      {
+        "year": 2016,
+        "team": "ahq eSports Club",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2016,
+        "team": "INTZ",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2016,
+        "team": "G2 Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2016,
+        "team": "Flash Wolves",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2016,
+        "team": "Splyce",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2016,
+        "team": "TSM",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2016,
+        "team": "Counter Logic Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2016,
+        "team": "I May",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2017,
+        "team": "Fenerbahçe Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2017,
+        "team": "ahq eSports Club",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2017,
+        "team": "G2 Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2017,
+        "team": "Flash Wolves",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2017,
+        "team": "Immortals",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2017,
+        "team": "GIGABYTE Marines",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2017,
+        "team": "TSM",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2017,
+        "team": "EDward Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2017,
+        "team": "Hong Kong Attitude",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2017,
+        "team": "Kaos Latin Gamers",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2017,
+        "team": "Dire Wolves",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2017,
+        "team": "Gambit Esports",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2017,
+        "team": "Young Generation",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2017,
+        "team": "Team oNe eSports",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2017,
+        "team": "Rampage",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2017,
+        "team": "Lyon Gaming (2013 Latin American Team)",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2018,
+        "team": "MAD Team",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2018,
+        "team": "Team Vitality",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2018,
+        "team": "100 Thieves",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2018,
+        "team": "Gen.G",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2018,
+        "team": "G-Rex",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2018,
+        "team": "Flash Wolves",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2018,
+        "team": "Team Liquid",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2018,
+        "team": "Phong Vũ Buffalo",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2018,
+        "team": "Kaos Latin Gamers",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2018,
+        "team": "Dire Wolves",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2018,
+        "team": "Gambit Esports",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2018,
+        "team": "KaBuM! Esports",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2018,
+        "team": "SuperMassive Esports",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2018,
+        "team": "DetonatioN FocusMe",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2018,
+        "team": "Ascension Gaming",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2018,
+        "team": "INFINITY",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2019,
+        "team": "Hong Kong Attitude",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2019,
+        "team": "J Team",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2019,
+        "team": "Clutch Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2019,
+        "team": "ahq eSports Club",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2019,
+        "team": "GAM Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2019,
+        "team": "Cloud9",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2019,
+        "team": "Team Liquid",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2019,
+        "team": "Royal Never Give Up",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2019,
+        "team": "MAMMOTH",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2019,
+        "team": "Lowkey Esports.Vietnam",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2019,
+        "team": "Isurus",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2019,
+        "team": "Unicorns of Love.CIS",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2019,
+        "team": "MEGA",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2019,
+        "team": "Flamengo Esports",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2019,
+        "team": "Royal Youth",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2019,
+        "team": "DetonatioN FocusMe",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2020,
+        "team": "PSG Talon",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2020,
+        "team": "Unicorns of Love.CIS",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2020,
+        "team": "Rogue (European Team)",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2020,
+        "team": "Team Liquid",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2020,
+        "team": "LGD Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2020,
+        "team": "FlyQuest",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2020,
+        "team": "TSM",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2020,
+        "team": "Machi Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2020,
+        "team": "Papara SuperMassive",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2020,
+        "team": "INTZ",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2020,
+        "team": "Rainbow7",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2020,
+        "team": "V3 Esports",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2020,
+        "team": "Legacy Esports",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2020,
+        "team": "MAD Lions",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2021,
+        "team": "LNG Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2021,
+        "team": "100 Thieves",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2021,
+        "team": "FunPlus Phoenix",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2021,
+        "team": "Rogue (European Team)",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2021,
+        "team": "Team Liquid",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2021,
+        "team": "Fnatic",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2021,
+        "team": "PSG Talon",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2021,
+        "team": "DetonatioN FocusMe",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2021,
+        "team": "RED Canids",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2021,
+        "team": "Unicorns of Love.CIS",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2021,
+        "team": "PEACE (Oceanic Team)",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2021,
+        "team": "INFINITY",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2021,
+        "team": "Galatasaray Esports",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2021,
+        "team": "Beyond Gaming",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2022,
+        "team": "100 Thieves",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2022,
+        "team": "GAM Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2022,
+        "team": "G2 Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2022,
+        "team": "Cloud9",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2022,
+        "team": "Top Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2022,
+        "team": "Evil Geniuses.NA",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2022,
+        "team": "Fnatic",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2022,
+        "team": "CTBC Flying Oyster",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2022,
+        "team": "Istanbul Wildcats",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2022,
+        "team": "Saigon Buffalo",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2022,
+        "team": "Chiefs Esports Club",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2022,
+        "team": "Isurus",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2022,
+        "team": "MAD Lions",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2022,
+        "team": "LOUD",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2022,
+        "team": "DetonatioN FocusMe",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2022,
+        "team": "Beyond Gaming",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2023,
+        "team": "Dplus Kia",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2023,
+        "team": "GAM Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2023,
+        "team": "G2 Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2023,
+        "team": "Team BDS",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2023,
+        "team": "Cloud9",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2023,
+        "team": "MAD Lions",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2023,
+        "team": "Team Liquid",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2023,
+        "team": "Fnatic",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2023,
+        "team": "Team Whales",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2023,
+        "team": "Movistar R7",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2023,
+        "team": "LOUD",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2023,
+        "team": "PSG Talon",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2023,
+        "team": "DetonatioN FocusMe",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2023,
+        "team": "CTBC Flying Oyster",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2024,
+        "team": "Dplus Kia",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2024,
+        "team": "MAD Lions KOI",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2024,
+        "team": "GAM Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2024,
+        "team": "paiN Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2024,
+        "team": "G2 Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2024,
+        "team": "Team Liquid",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2024,
+        "team": "Fnatic",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2024,
+        "team": "PSG Talon",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2024,
+        "team": "100 Thieves",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2024,
+        "team": "Fukuoka SoftBank HAWKS gaming",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2024,
+        "team": "Movistar R7",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2024,
+        "team": "Vikings Esports (2023 Vietnamese Team)",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2025,
+        "team": "100 Thieves",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2025,
+        "team": "Team Secret Whales",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2025,
+        "team": "Vivo Keyd Stars",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2025,
+        "team": "Movistar KOI",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2025,
+        "team": "FlyQuest",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2025,
+        "team": "Fnatic",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2025,
+        "team": "PSG Talon",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2025,
+        "team": "Bilibili Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2025,
+        "team": "Invictus Gaming",
+        "stage": "play_in",
+        "reason": "Completed Play-In and main; official final placement; absent from main"
+      },
+      {
+        "year": 2011,
+        "team": "Xan",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2011,
+        "team": "Team Pacific",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2012,
+        "team": "Saigon Jokers",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2012,
+        "team": "SK Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2012,
+        "team": "CLG Prime",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2012,
+        "team": "Dignitas",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2013,
+        "team": "Lemondogs",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2013,
+        "team": "Samsung Ozone",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2013,
+        "team": "Mineski",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2013,
+        "team": "GamingGear.eu",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2013,
+        "team": "TSM",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2013,
+        "team": "Team Vulcun",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2014,
+        "team": "Taipei Assassins",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2014,
+        "team": "ahq eSports Club",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2014,
+        "team": "SK Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2014,
+        "team": "KaBuM! Esports",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2014,
+        "team": "Fnatic",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2014,
+        "team": "Dark Passage",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2014,
+        "team": "Alliance",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2014,
+        "team": "LMQ",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2015,
+        "team": "Invictus Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2015,
+        "team": "Bangkok Titans",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2015,
+        "team": "H2k-Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2015,
+        "team": "paiN Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2015,
+        "team": "Cloud9",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2015,
+        "team": "LGD Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2015,
+        "team": "TSM",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      },
+      {
+        "year": 2015,
+        "team": "Counter Logic Gaming",
+        "stage": "group",
+        "reason": "Completed main event; no knockout appearance"
+      }
+    ],
+    "incomplete_events": []
+  },
+  "career": {
+    "players": 10,
+    "complete_players": 10,
+    "incomplete_players": [],
+    "source_conflicts": [],
+    "champion_groups": 375,
+    "games": 3895,
+    "duplicate_aggregate_rows": 0,
+    "undated_source_rows": 0,
+    "coverage_verified": true,
+    "coverage": "all_recorded_scoreboards"
+  },
+  "career_refreshed_slugs": [
+    "busio",
+    "caliste",
+    "canna",
+    "chika",
+    "gury",
+    "harky",
+    "kratos-ngo-duc-khanh",
+    "kyeahoo",
+    "siuloong",
+    "yike"
   ],
-  "supplements": [
-    {
-      "source": "Leaguepedia",
-      "source_url": "https://lol.fandom.com/wiki/2023_Season_World_Championship/Main_Event/Scoreboards/Quarterfinals?oldid=4538145",
-      "source_revid": 4538145,
-      "source_sha256": "ecd3ea6f1dc6e60360422ebdae5a100e3e93d514f7c3a4e9b77c3afd802b56c2",
-      "schedule_source_revid": 4538136,
-      "added_games": 15,
-      "matching_cargo_games": 0
-    }
-  ]
+  "changed_records": 738
 }

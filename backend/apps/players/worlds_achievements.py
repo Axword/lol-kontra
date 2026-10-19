@@ -14,6 +14,7 @@ import re
 import time
 import hashlib
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from .leaguepedia_source import CargoExport, SourceError, sql_string, worlds_year
 from .worlds_import import _key, _text
@@ -205,6 +206,72 @@ def _series_games(schedule, games, season1_games):
     return matched, calendar_games
 
 
+def _confirmed_playin_outcomes(snapshot, coverage, complete_series, event_team_players):
+    """Resolve a finished Play-In before Swiss begins, only with pinned rules.
+
+    A round win or absence from main is insufficient. The official format must
+    award one berth, every recorded bracket series must be fully accounted for,
+    and dated final placements must explicitly eliminate all other entrants.
+    """
+    cutoff = _date(snapshot['as_of'])
+    source = snapshot.get('achievements_source') or {}
+    placements_source = snapshot.get('eliminations_source') or {}
+    if (source.get('complete') is not True or placements_source.get('source') != 'Leaguepedia'
+            or placements_source.get('complete') is not True
+            or placements_source.get('as_of') != snapshot['as_of']):
+        return []
+    rules = snapshot.get('playin_rules') or {}
+    if not isinstance(rules, dict):
+        return []
+    outcomes = []
+    for season, rule in rules.items():
+        if not isinstance(rule, dict) or not str(season).isdigit():
+            continue
+        year = int(season)
+        if not isinstance(rule.get('source_url'), str) or not isinstance(rule.get('source_sha256'), str):
+            continue
+        parsed = urlsplit(rule['source_url'])
+        if (rule.get('source') != 'Riot Games' or rule.get('format') != 'double_elimination'
+                or rule.get('participants') != 4 or rule.get('qualifying_teams') != 1
+                or rule.get('best_of') != 5 or rule.get('as_of') != snapshot['as_of']
+                or parsed.scheme != 'https' or parsed.hostname != 'lolesports.com'
+                or parsed.username is not None or parsed.password is not None
+                or not re.fullmatch(r'[a-f0-9]{64}', rule.get('source_sha256', ''))):
+            continue
+        events = [event for event in coverage if worlds_year(event) == year and event.endswith('/Play-In')]
+        if len(events) != 1 or not coverage[events[0]]['complete']:
+            continue
+        event = events[0]
+        matches = [match for match in source.get('schedule', []) if match.get('tournament') == event]
+        if (len(matches) < 6 or any(not _completed(match, cutoff) or match.get('match_id') not in complete_series
+                                   or _integer(match.get('best_of')) != 5 for match in matches)):
+            continue
+        teams = {team for page, team in event_team_players if page == event}
+        if len(teams) != 4:
+            continue
+        dated = sorted(matches, key=lambda match: _date(match.get('date')))
+        if _date(dated[-1]['date']) == _date(dated[-2]['date']):
+            continue
+        final = dated[-1]
+        winner = final.get(f'team{_integer(final.get("winner"))}')
+        decisions = defaultdict(set)
+        for result in placements_source.get('results', []):
+            parent = result.get('tournament', '')
+            date = _date(result.get('date'))
+            if (parent not in (event, event.removesuffix('/Play-In')) or date is None or date > cutoff
+                    or result.get('team') not in teams or (_integer(result.get('place_number')) or 0) <= 0):
+                continue
+            qualified = result.get('qualified') is True or str(result.get('qualified')).casefold() in ('1', 'yes', 'true', 'q', 'qualified')
+            decisions[result['team']].add('qualified' if qualified else 'eliminated')
+        eliminated = {team for team, results in decisions.items() if results == {'eliminated'}}
+        if winner not in teams or eliminated != teams - {winner} or 'eliminated' in decisions.get(winner, set()):
+            continue
+        outcomes.append({'year': year, 'event': event, 'winner': winner, 'eliminated': sorted(eliminated),
+                         'deciding_match_id': final['match_id'], 'source_url': rule['source_url'],
+                         'rule_sha256': rule['source_sha256']})
+    return outcomes
+
+
 def enrich_worlds_achievements(snapshot, records):
     """Return copied records and an auditable coverage/achievement report."""
     if snapshot.get('scope') != 'worlds_including_play_in' or _date(snapshot.get('as_of')) is None:
@@ -317,6 +384,12 @@ def enrich_worlds_achievements(snapshot, records):
                             for player in game['players']:
                                 facts['worlds_group_escapes'][player].add(year)
 
+    playin_outcomes = _confirmed_playin_outcomes(snapshot, coverage, complete_series, event_team_players)
+    for outcome in playin_outcomes:
+        for player in event_team_players[(outcome['event'], outcome['winner'])]:
+            facts['worlds_playin'][player].add(outcome['year'])
+        known_years['worlds_playin'].add(outcome['year'])
+
     observed_years = set().union(*player_years.values()) if player_years else set()
     for year in observed_years:
         play_events = [page for page in pages if worlds_year(page) == year and page.endswith('/Play-In')]
@@ -365,7 +438,7 @@ def enrich_worlds_achievements(snapshot, records):
               'schedule_coverage': coverage,
               'incomplete_events': [event for event, check in coverage.items() if not check['complete']],
               'missing_series': [match.get('match_id') for match in completed if match.get('match_id') not in complete_series],
-              'invalid_games': invalid, 'forfeit_points': forfeits,
+              'invalid_games': invalid, 'forfeit_points': forfeits, 'confirmed_playin_outcomes': playin_outcomes,
               'known_years': {field: sorted(years) for field, years in known_years.items()}}
     return result, report
 

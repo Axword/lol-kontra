@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db.models import F, Q
+from .worlds_teams import WORLDS_2026_TEAM_IDS
 
 class UserStats(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='stats')
@@ -36,12 +37,16 @@ class GuestProfile(models.Model):
     # neither the token nor this private identity key is serialized publicly.
     guest_key = models.CharField(max_length=64, unique=True, editable=False)
     nickname = models.CharField(max_length=24, blank=True, default='')
+    has_custom_nickname = models.BooleanField(default=False, db_default=False)
+    supported_team = models.CharField(max_length=16, blank=True, default='', db_default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
             models.CheckConstraint(check=Q(guest_key__regex=r'^[a-f0-9]{64}$'), name='guestprofile_key_is_sha256'),
+            models.CheckConstraint(check=Q(supported_team='') | Q(supported_team__in=WORLDS_2026_TEAM_IDS),
+                                   name='guestprofile_supported_team_valid'),
         ]
 
     def __str__(self):

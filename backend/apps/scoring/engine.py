@@ -1,4 +1,4 @@
-"""500 starting points minus pick percentages; higher scores are better.
+"""Saved pick percentages plus 100 per unfilled position; lower is better.
 
 Live deductions use official choices recorded before the current answer. They
 stay fixed until final scoring. Final scoring uses the full official population.
@@ -62,7 +62,7 @@ def compute_rarity(answer_obj, cfg: ScoringConfig = None, *, final=False):
     if answer_obj.is_correct:
         count, total, percent, final_sample = answer_pick_stats(answer_obj, final=final)
         tier = tier_for_percent(percent, cfg)
-        points = -percent if percent else 0.0
+        points = percent - UNFILLED_SLOT_DEDUCTION
         provisional = total == 0 or (not final_sample and total < MIN_SAMPLE)
     else:
         count, total, percent, tier, points, provisional = 0, 0, None, None, 0.0, False
@@ -82,15 +82,15 @@ def compute_rarity(answer_obj, cfg: ScoringConfig = None, *, final=False):
 
 
 def unfilled_deduction(submission) -> float:
-    if not submission.is_over and not submission.is_scored:
-        return 0.0
+    """Unfilled positions retain their 100-point cost throughout the game."""
     missing = max(0, submission.daily.slots.count() - submission.answers.filter(is_correct=True).count())
     return float(missing * UNFILLED_SLOT_DEDUCTION)
 
 
 def recalc_submission_total(submission) -> float:
-    correction = submission.answers.filter(is_correct=True).aggregate(s=Sum('points_awarded'))['s'] or 0.0
-    total = STARTING_POINTS + correction - unfilled_deduction(submission)
+    percentages = list(submission.answers.filter(is_correct=True).values_list('rarity_percent', flat=True))
+    total = (sum(100.0 if percent is None else percent for percent in percentages) + unfilled_deduction(submission)
+             if submission.daily.slots.exists() else float(STARTING_POINTS))
     submission.total_points = round(max(0.0, min(float(STARTING_POINTS), total)), 6)
     submission.save(update_fields=['total_points'])
     return submission.total_points
@@ -128,7 +128,7 @@ def score_daily(daily_id: int, *, finalize=None):
                 pick_percent=percent, rarity_tier=tier, is_correct=True,
             ))
             correct.filter(player_id=row['player']).update(
-                rarity_tier=tier, rarity_percent=percent, points_awarded=-percent,
+                rarity_tier=tier, rarity_percent=percent, points_awarded=percent - UNFILLED_SLOT_DEDUCTION,
                 scoring_pick_count=row['pick_count'], scoring_sample_size=total,
             )
         AnswerStatsDaily.objects.bulk_create(stats)

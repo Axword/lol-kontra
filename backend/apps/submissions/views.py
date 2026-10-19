@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from apps.dailies.models import Daily
 
-from .models import MAX_ERRORS, STARTING_POINTS, Submission
+from .models import MAX_ERRORS, STARTING_POINTS, UNFILLED_SLOT_DEDUCTION, Submission
 from .services import is_practice_daily
 from .serializers import (
     AnswerCreateSerializer,
@@ -28,7 +28,7 @@ def _empty_state(daily) -> dict:
         'submitted_at': None,
         'total_points': float(STARTING_POINTS),
         'starting_points': STARTING_POINTS,
-        'unfilled_deduction': 0.0,
+        'unfilled_deduction': float(daily.slots.count() * UNFILLED_SLOT_DEDUCTION),
         'is_scored': False,
         'is_practice': is_practice_daily(daily),
         'errors_used': 0,

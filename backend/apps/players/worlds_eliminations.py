@@ -97,6 +97,13 @@ def enrich_worlds_eliminations(snapshot, records):
     decisions = defaultdict(set)
     champions, known_team_years = set(), set()
     evidence = []
+    for outcome in report.get('confirmed_playin_outcomes', []):
+        for team in outcome['eliminated']:
+            decisions[(outcome['year'], team)].add('play_in')
+            evidence.append({'year': outcome['year'], 'team': team, 'stage': 'play_in',
+                             'match_id': outcome['deciding_match_id'],
+                             'reason': 'Completed Play-In; official one-berth rules and all other final placements',
+                             'rules_source': outcome['source_url']})
     for match in schedule:
         event, stage = match.get('tournament'), _stage(match)
         year = worlds_year(event or '')

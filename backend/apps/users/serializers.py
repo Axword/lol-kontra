@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import UserStats
 from .guest_profiles import validate_guest_nickname
+from .worlds_teams import WORLDS_2026_TEAM_IDS
 
 User = get_user_model()
 
@@ -36,6 +37,7 @@ class GuestProfileInputSerializer(serializers.Serializer):
     guest_token = GuestTokenField(r'\A[A-Za-z0-9_-]{16,64}\Z', trim_whitespace=False, max_length=64,
         error_messages={'invalid': 'Nieprawidłowy identyfikator gościa.'})
     nickname = GuestNicknameField(required=False, allow_blank=True, trim_whitespace=False, max_length=256)
+    supported_team = serializers.ChoiceField(choices=WORLDS_2026_TEAM_IDS, required=False, allow_null=True)
 
     def validate_nickname(self, value):
         return validate_guest_nickname(value)

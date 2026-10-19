@@ -1,0 +1,2577 @@
+{
+  "source": "Leaguepedia",
+  "as_of": "2026-10-19T07:18:52+00:00",
+  "previous_as_of": "2026-10-18T09:46:04+00:00",
+  "preserved_players": 882,
+  "new_players": 0,
+  "historical_scoreboard_rows_preserved": 13890,
+  "new_maps": 3,
+  "new_player_rows": 30,
+  "career_refreshed_players": [
+    {
+      "slug": "busio",
+      "nickname": "Busio",
+      "games_added": 3,
+      "wins_added": 3,
+      "losses_added": 0,
+      "worlds_before": 30,
+      "worlds_after": 33,
+      "career_before": 605,
+      "career_after": 608
+    },
+    {
+      "slug": "caliste",
+      "nickname": "Caliste",
+      "games_added": 3,
+      "wins_added": 3,
+      "losses_added": 0,
+      "worlds_before": 8,
+      "worlds_after": 11,
+      "career_before": 428,
+      "career_after": 431
+    },
+    {
+      "slug": "canna",
+      "nickname": "Canna",
+      "games_added": 3,
+      "wins_added": 3,
+      "losses_added": 0,
+      "worlds_before": 30,
+      "worlds_after": 33,
+      "career_before": 674,
+      "career_after": 677
+    },
+    {
+      "slug": "chika",
+      "nickname": "Chika",
+      "games_added": 3,
+      "wins_added": 0,
+      "losses_added": 3,
+      "worlds_before": 10,
+      "worlds_after": 13,
+      "career_before": 138,
+      "career_after": 141
+    },
+    {
+      "slug": "gury",
+      "nickname": "Gury",
+      "games_added": 3,
+      "wins_added": 0,
+      "losses_added": 3,
+      "worlds_before": 12,
+      "worlds_after": 15,
+      "career_before": 323,
+      "career_after": 326
+    },
+    {
+      "slug": "harky",
+      "nickname": "Harky",
+      "games_added": 3,
+      "wins_added": 0,
+      "losses_added": 3,
+      "worlds_before": 10,
+      "worlds_after": 13,
+      "career_before": 164,
+      "career_after": 167
+    },
+    {
+      "slug": "kratos-ngo-duc-khanh",
+      "nickname": "Kratos",
+      "games_added": 3,
+      "wins_added": 0,
+      "losses_added": 3,
+      "worlds_before": 10,
+      "worlds_after": 13,
+      "career_before": 204,
+      "career_after": 207
+    },
+    {
+      "slug": "kyeahoo",
+      "nickname": "kyeahoo",
+      "games_added": 3,
+      "wins_added": 3,
+      "losses_added": 0,
+      "worlds_before": 8,
+      "worlds_after": 11,
+      "career_before": 458,
+      "career_after": 461
+    },
+    {
+      "slug": "siuloong",
+      "nickname": "SiuLoong",
+      "games_added": 3,
+      "wins_added": 0,
+      "losses_added": 3,
+      "worlds_before": 10,
+      "worlds_after": 13,
+      "career_before": 190,
+      "career_after": 193
+    },
+    {
+      "slug": "yike",
+      "nickname": "Yike",
+      "games_added": 3,
+      "wins_added": 3,
+      "losses_added": 0,
+      "worlds_before": 25,
+      "worlds_after": 28,
+      "career_before": 681,
+      "career_after": 684
+    }
+  ],
+  "career_report": {
+    "players": 10,
+    "complete_players": 10,
+    "incomplete_players": [],
+    "source_conflicts": [],
+    "champion_groups": 375,
+    "games": 3895,
+    "duplicate_aggregate_rows": 0,
+    "undated_source_rows": 0,
+    "coverage_verified": true,
+    "coverage": "all_recorded_scoreboards"
+  },
+  "worlds_report": {
+    "source": "Leaguepedia",
+    "scope": "worlds_including_play_in",
+    "as_of": "2026-10-19T07:18:52+00:00",
+    "coverage_verified": true,
+    "expected_games": 1392,
+    "input_rows": 13920,
+    "unique_rows": 13920,
+    "duplicate_rows": 0,
+    "games": 1392,
+    "confirmed_players": 738,
+    "complete_players": 738,
+    "existing_records": 882,
+    "new_players": 0,
+    "preserved_unverified_players": 144,
+    "metadata_missing_pages": [],
+    "unknown_metadata": {
+      "birthdate": [
+        "Astarte (Judge Cruz)",
+        "Axion",
+        "Benny (Benny Hung)",
+        "BloodWater",
+        "Chippys",
+        "Cyeol",
+        "Dabe",
+        "Dan Dinh",
+        "Dans",
+        "Dexter",
+        "Exosen",
+        "Fredy122",
+        "GarnetDevil",
+        "INtrigueD",
+        "Kaigu",
+        "Kujaa",
+        "Linak",
+        "Lodik",
+        "Lucky (Liu Jun-Jie)",
+        "Moss (Sorawat Boonphrom)",
+        "NONAME (Zhou Qi-Lin)",
+        "Puszu",
+        "Radeon6870",
+        "Reyk",
+        "Rich (Warich Kittiwattanawong)",
+        "Rockky",
+        "Snoy",
+        "Tgee",
+        "Time (Tang Jing-Tai)",
+        "Topoon",
+        "Touch",
+        "Vech",
+        "Voidle",
+        "WarL0cK",
+        "Wormy",
+        "Yume (Danyll Jann Balisi)",
+        "Zylor"
+      ],
+      "role": [
+        "957",
+        "Absolut",
+        "Achie",
+        "Acorn",
+        "Albis",
+        "Alive",
+        "Alphari",
+        "Ambition",
+        "An",
+        "ApaMEN",
+        "Apex (Hsieh Chia-Wei)",
+        "Araneae",
+        "Arce",
+        "Archie (Trần Minh Nhựt)",
+        "Arrow",
+        "Avenger (Adriano Perassoli)",
+        "Bang",
+        "BeBe (Chang Bo-Wei)",
+        "Ben",
+        "Bengi",
+        "Benny (Lien Hsiu-Chi)",
+        "Bigkoro",
+        "Broxah",
+        "Brucer",
+        "Cabochard",
+        "Cain",
+        "CaoMei",
+        "Ceros",
+        "Chaox",
+        "Chawy",
+        "Chieh",
+        "Clearlove",
+        "CloudTemplar",
+        "Condi",
+        "Cotopaco",
+        "Crazy (Kim Jae-hee)",
+        "Crown",
+        "Crumbz",
+        "CuVee",
+        "Cyanide",
+        "Da7",
+        "Damonte",
+        "Dan Dinh",
+        "DanDy",
+        "Danagorn",
+        "Dans",
+        "Dara",
+        "DeuL",
+        "Dioud",
+        "Doublelift",
+        "Duke (Lee Ho-seong)",
+        "DyNquedo",
+        "Easyhoon",
+        "Edward",
+        "Elementz",
+        "Empt2y",
+        "Expession",
+        "FEBIVEN",
+        "Finn",
+        "Flame",
+        "Fredy122",
+        "Froggen",
+        "Frozen (Kim Tae-il)",
+        "GBM",
+        "Ggoong",
+        "Gilius",
+        "Gogoing",
+        "GorillA",
+        "GreenTea",
+        "Hai",
+        "Hana",
+        "Heart",
+        "Hieu3",
+        "Hjarnan",
+        "HolyPhoenix",
+        "HotshotGG",
+        "Huni",
+        "IWDominate",
+        "Illusion (Chen Xin-Lin)",
+        "Jankos",
+        "Japone",
+        "Jesiz",
+        "Jirall",
+        "Jockster",
+        "Junie",
+        "KaKAO",
+        "Kaigu",
+        "Kami (Gabriel Bohm Santos)",
+        "Khan",
+        "Kikis",
+        "Kold",
+        "Krepo",
+        "Kuro",
+        "LemonNation",
+        "Letme",
+        "Levi",
+        "Liang",
+        "Likkrit",
+        "Lilballz",
+        "Lira",
+        "Lucky (Liu Jun-Jie)",
+        "Lustboy",
+        "LvMao",
+        "MMD",
+        "MaRin",
+        "MadLife",
+        "MakNooN",
+        "Marfz",
+        "Mata",
+        "Maxlore",
+        "Meteos",
+        "MiSTakE",
+        "MicaO",
+        "Minerva",
+        "Misaya",
+        "Mithy",
+        "Mojito",
+        "Morning",
+        "Mountain (Xue Zhao-Hong)",
+        "Mouse",
+        "Mowgli",
+        "Moyashi",
+        "Mylon",
+        "Mystic",
+        "NL (Hsiung Wen-An)",
+        "NONAME (Zhou Qi-Lin)",
+        "NRated",
+        "Nagne",
+        "Naru (Koray Bıçak)",
+        "Naul",
+        "Naz (Chen Tien-Chih)",
+        "Nevan",
+        "Nisqy",
+        "Nixwater",
+        "Nuclear",
+        "Nukeduck",
+        "Nyph",
+        "Ocelote",
+        "Odoamne",
+        "Orome",
+        "PDD",
+        "PawN",
+        "Paz",
+        "Perkz",
+        "Piglet",
+        "Plugo",
+        "Pobelter",
+        "Pomelo",
+        "PoohManDu",
+        "Prydz",
+        "PvPStejos",
+        "Pyl (Chen Bo)",
+        "QTV",
+        "Ranger",
+        "RapidStar",
+        "Rascal",
+        "Reginald",
+        "Reignover",
+        "Relic",
+        "Ren",
+        "Revolta",
+        "Rhuckz",
+        "Richard",
+        "Riyev",
+        "Road (Yun Han-gil)",
+        "Ryu",
+        "SOAZ",
+        "Saintvicious",
+        "San (Guo Jun-Liang)",
+        "Scarra",
+        "Score",
+        "Seiya",
+        "Shy",
+        "Sirt",
+        "Smeb",
+        "Sneaky",
+        "Spirit",
+        "Ssong",
+        "Ssumday",
+        "Stanley",
+        "Steak",
+        "Stitch",
+        "Svenskeren",
+        "Sw0rd",
+        "Sya",
+        "Tabe",
+        "Tay",
+        "Tgee",
+        "TheOddOne",
+        "Tierwulf",
+        "Tockers",
+        "Touch",
+        "Toyz",
+        "Trick",
+        "Tussle",
+        "U",
+        "UmTi",
+        "Violet (Ngô Mạnh Quyền)",
+        "ViviD",
+        "Voyboy",
+        "Wadid",
+        "WarL0cK",
+        "Westdoor",
+        "Westrice",
+        "Wewillfailer",
+        "Wh1t3zZ",
+        "WildTurtle",
+        "Winds",
+        "Wolf (Lee Jae-wan)",
+        "Woong (Jang Gun-woong)",
+        "Wraith",
+        "Wx",
+        "XPeke",
+        "Xmithie",
+        "Xpecial",
+        "XuHao",
+        "YT",
+        "YellOwStaR",
+        "Yutapon",
+        "Zefa",
+        "Zeitnot",
+        "Zero (Yoon Kyung-sup)",
+        "Ziv (Chen Yi)",
+        "Zoom"
+      ]
+    },
+    "tournaments": [
+      {
+        "page": "Season 1 World Championship",
+        "year": 2011,
+        "games": 28,
+        "player_rows": 280
+      },
+      {
+        "page": "Season 2 World Championship",
+        "year": 2012,
+        "games": 31,
+        "player_rows": 310
+      },
+      {
+        "page": "Season 3 World Championship",
+        "year": 2013,
+        "games": 63,
+        "player_rows": 630
+      },
+      {
+        "page": "2014 Season World Championship",
+        "year": 2014,
+        "games": 78,
+        "player_rows": 780
+      },
+      {
+        "page": "2015 Season World Championship",
+        "year": 2015,
+        "games": 73,
+        "player_rows": 730
+      },
+      {
+        "page": "2016 Season World Championship",
+        "year": 2016,
+        "games": 77,
+        "player_rows": 770
+      },
+      {
+        "page": "2017 Season World Championship/Main Event",
+        "year": 2017,
+        "games": 80,
+        "player_rows": 800
+      },
+      {
+        "page": "2017 Season World Championship/Play-In",
+        "year": 2017,
+        "games": 39,
+        "player_rows": 390
+      },
+      {
+        "page": "2018 Season World Championship/Main Event",
+        "year": 2018,
+        "games": 77,
+        "player_rows": 770
+      },
+      {
+        "page": "2018 Season World Championship/Play-In",
+        "year": 2018,
+        "games": 42,
+        "player_rows": 420
+      },
+      {
+        "page": "2019 Season World Championship/Main Event",
+        "year": 2019,
+        "games": 77,
+        "player_rows": 770
+      },
+      {
+        "page": "2019 Season World Championship/Play-In",
+        "year": 2019,
+        "games": 43,
+        "player_rows": 430
+      },
+      {
+        "page": "2020 Season World Championship/Main Event",
+        "year": 2020,
+        "games": 76,
+        "player_rows": 760
+      },
+      {
+        "page": "2020 Season World Championship/Play-In",
+        "year": 2020,
+        "games": 38,
+        "player_rows": 380
+      },
+      {
+        "page": "2021 Season World Championship/Main Event",
+        "year": 2021,
+        "games": 83,
+        "player_rows": 830
+      },
+      {
+        "page": "2021 Season World Championship/Play-In",
+        "year": 2021,
+        "games": 38,
+        "player_rows": 380
+      },
+      {
+        "page": "2022 Season World Championship/Main Event",
+        "year": 2022,
+        "games": 80,
+        "player_rows": 800
+      },
+      {
+        "page": "2022 Season World Championship/Play-In",
+        "year": 2022,
+        "games": 47,
+        "player_rows": 470
+      },
+      {
+        "page": "2023 Season World Championship/Main Event",
+        "year": 2023,
+        "games": 79,
+        "player_rows": 790
+      },
+      {
+        "page": "2023 Season World Championship/Play-In",
+        "year": 2023,
+        "games": 31,
+        "player_rows": 310
+      },
+      {
+        "page": "2024 Season World Championship/Main Event",
+        "year": 2024,
+        "games": 82,
+        "player_rows": 820
+      },
+      {
+        "page": "2024 Season World Championship/Play-In",
+        "year": 2024,
+        "games": 24,
+        "player_rows": 240
+      },
+      {
+        "page": "2025 Season World Championship/Main Event",
+        "year": 2025,
+        "games": 80,
+        "player_rows": 800
+      },
+      {
+        "page": "2025 Season World Championship/Play-In",
+        "year": 2025,
+        "games": 4,
+        "player_rows": 40
+      },
+      {
+        "page": "2026 Season World Championship/Main Event",
+        "year": 2026,
+        "games": 0,
+        "player_rows": 0
+      },
+      {
+        "page": "2026 Season World Championship/Play-In",
+        "year": 2026,
+        "games": 22,
+        "player_rows": 220
+      }
+    ],
+    "achievements": {
+      "enriched_players": 738,
+      "expected_game_counts": {
+        "2014 Season World Championship": 78,
+        "2015 Season World Championship": 73,
+        "2016 Season World Championship": 77,
+        "2017 Season World Championship/Main Event": 80,
+        "2017 Season World Championship/Play-In": 39,
+        "2018 Season World Championship/Main Event": 77,
+        "2018 Season World Championship/Play-In": 42,
+        "2019 Season World Championship/Main Event": 77,
+        "2019 Season World Championship/Play-In": 43,
+        "2020 Season World Championship/Main Event": 76,
+        "2020 Season World Championship/Play-In": 38,
+        "2021 Season World Championship/Main Event": 83,
+        "2021 Season World Championship/Play-In": 38,
+        "2022 Season World Championship/Main Event": 80,
+        "2022 Season World Championship/Play-In": 47,
+        "2023 Season World Championship/Main Event": 79,
+        "2023 Season World Championship/Play-In": 31,
+        "2024 Season World Championship/Main Event": 82,
+        "2024 Season World Championship/Play-In": 24,
+        "2025 Season World Championship/Main Event": 80,
+        "2025 Season World Championship/Play-In": 4,
+        "2026 Season World Championship/Play-In": 22,
+        "Season 1 World Championship": 28,
+        "Season 2 World Championship": 31,
+        "Season 3 World Championship": 63
+      },
+      "source": "Leaguepedia",
+      "source_as_of": "2026-10-19T07:18:52+00:00",
+      "source_url": "https://lol.fandom.com/wiki/Special:CargoExport",
+      "rules_source": {
+        "page": "Season 1 World Championship",
+        "revid": 4492166,
+        "source_url": "https://lol.fandom.com/wiki/Season_1_World_Championship?oldid=4492166"
+      },
+      "schedule_coverage": {
+        "2014 Season World Championship": {
+          "expected": 78,
+          "observed": 78,
+          "complete": true
+        },
+        "2015 Season World Championship": {
+          "expected": 73,
+          "observed": 73,
+          "complete": true
+        },
+        "2016 Season World Championship": {
+          "expected": 77,
+          "observed": 77,
+          "complete": true
+        },
+        "2017 Season World Championship/Main Event": {
+          "expected": 80,
+          "observed": 80,
+          "complete": true
+        },
+        "2017 Season World Championship/Play-In": {
+          "expected": 39,
+          "observed": 39,
+          "complete": true
+        },
+        "2018 Season World Championship/Main Event": {
+          "expected": 77,
+          "observed": 77,
+          "complete": true
+        },
+        "2018 Season World Championship/Play-In": {
+          "expected": 42,
+          "observed": 42,
+          "complete": true
+        },
+        "2019 Season World Championship/Main Event": {
+          "expected": 77,
+          "observed": 77,
+          "complete": true
+        },
+        "2019 Season World Championship/Play-In": {
+          "expected": 43,
+          "observed": 43,
+          "complete": true
+        },
+        "2020 Season World Championship/Main Event": {
+          "expected": 76,
+          "observed": 76,
+          "complete": true
+        },
+        "2020 Season World Championship/Play-In": {
+          "expected": 38,
+          "observed": 38,
+          "complete": true
+        },
+        "2021 Season World Championship/Main Event": {
+          "expected": 83,
+          "observed": 83,
+          "complete": true
+        },
+        "2021 Season World Championship/Play-In": {
+          "expected": 38,
+          "observed": 38,
+          "complete": true
+        },
+        "2022 Season World Championship/Main Event": {
+          "expected": 80,
+          "observed": 80,
+          "complete": true
+        },
+        "2022 Season World Championship/Play-In": {
+          "expected": 47,
+          "observed": 47,
+          "complete": true
+        },
+        "2023 Season World Championship/Main Event": {
+          "expected": 79,
+          "observed": 79,
+          "complete": true
+        },
+        "2023 Season World Championship/Play-In": {
+          "expected": 31,
+          "observed": 31,
+          "complete": true
+        },
+        "2024 Season World Championship/Main Event": {
+          "expected": 82,
+          "observed": 82,
+          "complete": true
+        },
+        "2024 Season World Championship/Play-In": {
+          "expected": 24,
+          "observed": 24,
+          "complete": true
+        },
+        "2025 Season World Championship/Main Event": {
+          "expected": 80,
+          "observed": 80,
+          "complete": true
+        },
+        "2025 Season World Championship/Play-In": {
+          "expected": 4,
+          "observed": 4,
+          "complete": true
+        },
+        "2026 Season World Championship/Main Event": {
+          "expected": 0,
+          "observed": 0,
+          "complete": true
+        },
+        "2026 Season World Championship/Play-In": {
+          "expected": 22,
+          "observed": 22,
+          "complete": true
+        },
+        "Season 1 World Championship": {
+          "expected": 28,
+          "observed": 28,
+          "complete": true
+        },
+        "Season 2 World Championship": {
+          "expected": 31,
+          "observed": 31,
+          "complete": true
+        },
+        "Season 3 World Championship": {
+          "expected": 63,
+          "observed": 63,
+          "complete": true
+        }
+      },
+      "incomplete_events": [],
+      "missing_series": [],
+      "invalid_games": [],
+      "forfeit_points": [
+        {
+          "game_id": "Season 1 World Championship_Round 1_1_1",
+          "match_id": "Season 1 World Championship_Round 1_1",
+          "winner": "against All authority",
+          "ff": 2
+        },
+        {
+          "game_id": "Season 1 World Championship_Round 1_2_1",
+          "match_id": "Season 1 World Championship_Round 1_2",
+          "winner": "Counter Logic Gaming",
+          "ff": 2
+        },
+        {
+          "game_id": "Season 1 World Championship_Round 3_2_1",
+          "match_id": "Season 1 World Championship_Round 3_2",
+          "winner": "against All authority",
+          "ff": 2
+        },
+        {
+          "game_id": "Season 1 World Championship_Finals_1_1",
+          "match_id": "Season 1 World Championship_Finals_1",
+          "winner": "Fnatic",
+          "ff": 2
+        }
+      ],
+      "confirmed_playin_outcomes": [
+        {
+          "year": 2026,
+          "event": "2026 Season World Championship/Play-In",
+          "winner": "Karmine Corp",
+          "eliminated": [
+            "Cloud9",
+            "FURIA",
+            "MVK Esports"
+          ],
+          "deciding_match_id": "2026 Season World Championship/Play-In_Round 3_1",
+          "source_url": "https://lolesports.com/en-US/tournament/115660540725177488/overview",
+          "rule_sha256": "fafcde8ecb797fa41c4276ad4bf4879cfbcc983d32c016f06d1b8208e8cf9daa"
+        }
+      ],
+      "known_years": {
+        "worlds_titles": [
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "worlds_finals": [
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "worlds_semifinals": [
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "worlds_group_escapes": [
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "worlds_playin": [
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "worlds_playin_appearances": [
+          2011,
+          2012,
+          2013,
+          2014,
+          2015,
+          2016,
+          2017,
+          2018,
+          2019,
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ]
+      }
+    },
+    "eliminations": {
+      "source": "Leaguepedia",
+      "as_of": "2026-10-19T07:18:52+00:00",
+      "coverage": {
+        "players": 738,
+        "complete_players": 713,
+        "play_in": 223,
+        "group": 387,
+        "quarterfinal": 197,
+        "semifinal": 116,
+        "final": 74
+      },
+      "unknown_teams": [
+        {
+          "year": 2011,
+          "team": "Epik Gamer",
+          "reason": "Completed event but non-standard knockout stage cannot be mapped safely"
+        },
+        {
+          "year": 2011,
+          "team": "TSM",
+          "reason": "Completed event but non-standard knockout stage cannot be mapped safely"
+        },
+        {
+          "year": 2011,
+          "team": "Counter Logic Gaming",
+          "reason": "Completed event but non-standard knockout stage cannot be mapped safely"
+        },
+        {
+          "year": 2011,
+          "team": "Team gamed!de",
+          "reason": "Completed event but non-standard knockout stage cannot be mapped safely"
+        }
+      ],
+      "evidence": [
+        {
+          "year": 2026,
+          "team": "Cloud9",
+          "stage": "play_in",
+          "match_id": "2026 Season World Championship/Play-In_Round 3_1",
+          "reason": "Completed Play-In; official one-berth rules and all other final placements",
+          "rules_source": "https://lolesports.com/en-US/tournament/115660540725177488/overview"
+        },
+        {
+          "year": 2026,
+          "team": "FURIA",
+          "stage": "play_in",
+          "match_id": "2026 Season World Championship/Play-In_Round 3_1",
+          "reason": "Completed Play-In; official one-berth rules and all other final placements",
+          "rules_source": "https://lolesports.com/en-US/tournament/115660540725177488/overview"
+        },
+        {
+          "year": 2026,
+          "team": "MVK Esports",
+          "stage": "play_in",
+          "match_id": "2026 Season World Championship/Play-In_Round 3_1",
+          "reason": "Completed Play-In; official one-berth rules and all other final placements",
+          "rules_source": "https://lolesports.com/en-US/tournament/115660540725177488/overview"
+        },
+        {
+          "year": 2014,
+          "team": "TSM",
+          "stage": "quarterfinal",
+          "match_id": "2014 Season World Championship_Quarterfinals_1"
+        },
+        {
+          "year": 2014,
+          "team": "Cloud9",
+          "stage": "quarterfinal",
+          "match_id": "2014 Season World Championship_Quarterfinals_2"
+        },
+        {
+          "year": 2014,
+          "team": "EDward Gaming",
+          "stage": "quarterfinal",
+          "match_id": "2014 Season World Championship_Quarterfinals_3"
+        },
+        {
+          "year": 2014,
+          "team": "NaJin White Shield",
+          "stage": "quarterfinal",
+          "match_id": "2014 Season World Championship_Quarterfinals_4"
+        },
+        {
+          "year": 2014,
+          "team": "Samsung Blue",
+          "stage": "semifinal",
+          "match_id": "2014 Season World Championship_Semifinals_1"
+        },
+        {
+          "year": 2014,
+          "team": "Oh My God",
+          "stage": "semifinal",
+          "match_id": "2014 Season World Championship_Semifinals_2"
+        },
+        {
+          "year": 2014,
+          "team": "Star Horn Royal Club",
+          "stage": "final",
+          "match_id": "2014 Season World Championship_Finals_1"
+        },
+        {
+          "year": 2015,
+          "team": "Flash Wolves",
+          "stage": "quarterfinal",
+          "match_id": "2015 Season World Championship_Quarterfinals_1"
+        },
+        {
+          "year": 2015,
+          "team": "ahq eSports Club",
+          "stage": "quarterfinal",
+          "match_id": "2015 Season World Championship_Quarterfinals_2"
+        },
+        {
+          "year": 2015,
+          "team": "EDward Gaming",
+          "stage": "quarterfinal",
+          "match_id": "2015 Season World Championship_Quarterfinals_3"
+        },
+        {
+          "year": 2015,
+          "team": "KT Rolster",
+          "stage": "quarterfinal",
+          "match_id": "2015 Season World Championship_Quarterfinals_4"
+        },
+        {
+          "year": 2015,
+          "team": "Origen",
+          "stage": "semifinal",
+          "match_id": "2015 Season World Championship_Semifinals_1"
+        },
+        {
+          "year": 2015,
+          "team": "Fnatic",
+          "stage": "semifinal",
+          "match_id": "2015 Season World Championship_Semifinals_2"
+        },
+        {
+          "year": 2015,
+          "team": "KOO Tigers",
+          "stage": "final",
+          "match_id": "2015 Season World Championship_Finals_1"
+        },
+        {
+          "year": 2016,
+          "team": "Cloud9",
+          "stage": "quarterfinal",
+          "match_id": "2016 Season World Championship_Quarterfinals_1"
+        },
+        {
+          "year": 2016,
+          "team": "Royal Never Give Up",
+          "stage": "quarterfinal",
+          "match_id": "2016 Season World Championship_Quarterfinals_2"
+        },
+        {
+          "year": 2016,
+          "team": "EDward Gaming",
+          "stage": "quarterfinal",
+          "match_id": "2016 Season World Championship_Quarterfinals_3"
+        },
+        {
+          "year": 2016,
+          "team": "Albus NoX Luna",
+          "stage": "quarterfinal",
+          "match_id": "2016 Season World Championship_Quarterfinals_4"
+        },
+        {
+          "year": 2016,
+          "team": "ROX Tigers",
+          "stage": "semifinal",
+          "match_id": "2016 Season World Championship_Semifinals_1"
+        },
+        {
+          "year": 2016,
+          "team": "H2k-Gaming",
+          "stage": "semifinal",
+          "match_id": "2016 Season World Championship_Semifinals_2"
+        },
+        {
+          "year": 2016,
+          "team": "Samsung Galaxy",
+          "stage": "final",
+          "match_id": "2016 Season World Championship_Finals_1"
+        },
+        {
+          "year": 2017,
+          "team": "Longzhu Gaming",
+          "stage": "quarterfinal",
+          "match_id": "2017 Season World Championship/Main Event_Quarterfinals_1"
+        },
+        {
+          "year": 2017,
+          "team": "Misfits Gaming",
+          "stage": "quarterfinal",
+          "match_id": "2017 Season World Championship/Main Event_Quarterfinals_2"
+        },
+        {
+          "year": 2017,
+          "team": "Fnatic",
+          "stage": "quarterfinal",
+          "match_id": "2017 Season World Championship/Main Event_Quarterfinals_3"
+        },
+        {
+          "year": 2017,
+          "team": "Cloud9",
+          "stage": "quarterfinal",
+          "match_id": "2017 Season World Championship/Main Event_Quarterfinals_4"
+        },
+        {
+          "year": 2017,
+          "team": "Royal Never Give Up",
+          "stage": "semifinal",
+          "match_id": "2017 Season World Championship/Main Event_Semifinals_1"
+        },
+        {
+          "year": 2017,
+          "team": "Team WE",
+          "stage": "semifinal",
+          "match_id": "2017 Season World Championship/Main Event_Semifinals_2"
+        },
+        {
+          "year": 2017,
+          "team": "SK Telecom T1",
+          "stage": "final",
+          "match_id": "2017 Season World Championship/Main Event_Finals_1"
+        },
+        {
+          "year": 2018,
+          "team": "KT Rolster",
+          "stage": "quarterfinal",
+          "match_id": "2018 Season World Championship/Main Event_Quarterfinals_1"
+        },
+        {
+          "year": 2018,
+          "team": "Royal Never Give Up",
+          "stage": "quarterfinal",
+          "match_id": "2018 Season World Championship/Main Event_Quarterfinals_2"
+        },
+        {
+          "year": 2018,
+          "team": "Afreeca Freecs",
+          "stage": "quarterfinal",
+          "match_id": "2018 Season World Championship/Main Event_Quarterfinals_3"
+        },
+        {
+          "year": 2018,
+          "team": "EDward Gaming",
+          "stage": "quarterfinal",
+          "match_id": "2018 Season World Championship/Main Event_Quarterfinals_4"
+        },
+        {
+          "year": 2018,
+          "team": "G2 Esports",
+          "stage": "semifinal",
+          "match_id": "2018 Season World Championship/Main Event_Semifinals_1"
+        },
+        {
+          "year": 2018,
+          "team": "Cloud9",
+          "stage": "semifinal",
+          "match_id": "2018 Season World Championship/Main Event_Semifinals_2"
+        },
+        {
+          "year": 2018,
+          "team": "Fnatic",
+          "stage": "final",
+          "match_id": "2018 Season World Championship/Main Event_Finals_1"
+        },
+        {
+          "year": 2019,
+          "team": "Griffin (Korean Team)",
+          "stage": "quarterfinal",
+          "match_id": "2019 Season World Championship/Main Event_Quarterfinals_1"
+        },
+        {
+          "year": 2019,
+          "team": "Fnatic",
+          "stage": "quarterfinal",
+          "match_id": "2019 Season World Championship/Main Event_Quarterfinals_2"
+        },
+        {
+          "year": 2019,
+          "team": "Splyce",
+          "stage": "quarterfinal",
+          "match_id": "2019 Season World Championship/Main Event_Quarterfinals_3"
+        },
+        {
+          "year": 2019,
+          "team": "DAMWON Gaming",
+          "stage": "quarterfinal",
+          "match_id": "2019 Season World Championship/Main Event_Quarterfinals_4"
+        },
+        {
+          "year": 2019,
+          "team": "Invictus Gaming",
+          "stage": "semifinal",
+          "match_id": "2019 Season World Championship/Main Event_Semifinals_1"
+        },
+        {
+          "year": 2019,
+          "team": "SK Telecom T1",
+          "stage": "semifinal",
+          "match_id": "2019 Season World Championship/Main Event_Semifinals_2"
+        },
+        {
+          "year": 2019,
+          "team": "G2 Esports",
+          "stage": "final",
+          "match_id": "2019 Season World Championship/Main Event_Finals_1"
+        },
+        {
+          "year": 2020,
+          "team": "DRX",
+          "stage": "quarterfinal",
+          "match_id": "2020 Season World Championship/Main Event_Quarterfinals_1"
+        },
+        {
+          "year": 2020,
+          "team": "JD Gaming",
+          "stage": "quarterfinal",
+          "match_id": "2020 Season World Championship/Main Event_Quarterfinals_2"
+        },
+        {
+          "year": 2020,
+          "team": "Fnatic",
+          "stage": "quarterfinal",
+          "match_id": "2020 Season World Championship/Main Event_Quarterfinals_3"
+        },
+        {
+          "year": 2020,
+          "team": "Gen.G",
+          "stage": "quarterfinal",
+          "match_id": "2020 Season World Championship/Main Event_Quarterfinals_4"
+        },
+        {
+          "year": 2020,
+          "team": "G2 Esports",
+          "stage": "semifinal",
+          "match_id": "2020 Season World Championship/Main Event_Semifinals_1"
+        },
+        {
+          "year": 2020,
+          "team": "Top Esports",
+          "stage": "semifinal",
+          "match_id": "2020 Season World Championship/Main Event_Semifinals_2"
+        },
+        {
+          "year": 2020,
+          "team": "Suning",
+          "stage": "final",
+          "match_id": "2020 Season World Championship/Main Event_Finals_1"
+        },
+        {
+          "year": 2021,
+          "team": "Hanwha Life Esports",
+          "stage": "quarterfinal",
+          "match_id": "2021 Season World Championship/Main Event_Quarterfinals_1"
+        },
+        {
+          "year": 2021,
+          "team": "Royal Never Give Up",
+          "stage": "quarterfinal",
+          "match_id": "2021 Season World Championship/Main Event_Quarterfinals_2"
+        },
+        {
+          "year": 2021,
+          "team": "MAD Lions",
+          "stage": "quarterfinal",
+          "match_id": "2021 Season World Championship/Main Event_Quarterfinals_3"
+        },
+        {
+          "year": 2021,
+          "team": "Cloud9",
+          "stage": "quarterfinal",
+          "match_id": "2021 Season World Championship/Main Event_Quarterfinals_4"
+        },
+        {
+          "year": 2021,
+          "team": "T1",
+          "stage": "semifinal",
+          "match_id": "2021 Season World Championship/Main Event_Semifinals_1"
+        },
+        {
+          "year": 2021,
+          "team": "Gen.G",
+          "stage": "semifinal",
+          "match_id": "2021 Season World Championship/Main Event_Semifinals_2"
+        },
+        {
+          "year": 2021,
+          "team": "DWG KIA",
+          "stage": "final",
+          "match_id": "2021 Season World Championship/Main Event_Finals_1"
+        },
+        {
+          "year": 2022,
+          "team": "Rogue (European Team)",
+          "stage": "quarterfinal",
+          "match_id": "2022 Season World Championship/Main Event_Quarterfinals_1"
+        },
+        {
+          "year": 2022,
+          "team": "Royal Never Give Up",
+          "stage": "quarterfinal",
+          "match_id": "2022 Season World Championship/Main Event_Quarterfinals_2"
+        },
+        {
+          "year": 2022,
+          "team": "DWG KIA",
+          "stage": "quarterfinal",
+          "match_id": "2022 Season World Championship/Main Event_Quarterfinals_3"
+        },
+        {
+          "year": 2022,
+          "team": "EDward Gaming",
+          "stage": "quarterfinal",
+          "match_id": "2022 Season World Championship/Main Event_Quarterfinals_4"
+        },
+        {
+          "year": 2022,
+          "team": "JD Gaming",
+          "stage": "semifinal",
+          "match_id": "2022 Season World Championship/Main Event_Semifinals_1"
+        },
+        {
+          "year": 2022,
+          "team": "Gen.G",
+          "stage": "semifinal",
+          "match_id": "2022 Season World Championship/Main Event_Semifinals_2"
+        },
+        {
+          "year": 2022,
+          "team": "T1",
+          "stage": "final",
+          "match_id": "2022 Season World Championship/Main Event_Finals_1"
+        },
+        {
+          "year": 2023,
+          "team": "NRG",
+          "stage": "quarterfinal",
+          "match_id": "2023 Season World Championship/Main Event_Quarterfinals_1"
+        },
+        {
+          "year": 2023,
+          "team": "Gen.G",
+          "stage": "quarterfinal",
+          "match_id": "2023 Season World Championship/Main Event_Quarterfinals_2"
+        },
+        {
+          "year": 2023,
+          "team": "KT Rolster",
+          "stage": "quarterfinal",
+          "match_id": "2023 Season World Championship/Main Event_Quarterfinals_3"
+        },
+        {
+          "year": 2023,
+          "team": "LNG Esports",
+          "stage": "quarterfinal",
+          "match_id": "2023 Season World Championship/Main Event_Quarterfinals_4"
+        },
+        {
+          "year": 2023,
+          "team": "Bilibili Gaming",
+          "stage": "semifinal",
+          "match_id": "2023 Season World Championship/Main Event_Semifinals_1"
+        },
+        {
+          "year": 2023,
+          "team": "JD Gaming",
+          "stage": "semifinal",
+          "match_id": "2023 Season World Championship/Main Event_Semifinals_2"
+        },
+        {
+          "year": 2023,
+          "team": "Weibo Gaming",
+          "stage": "final",
+          "match_id": "2023 Season World Championship/Main Event_Finals_1"
+        },
+        {
+          "year": 2024,
+          "team": "LNG Esports",
+          "stage": "quarterfinal",
+          "match_id": "2024 Season World Championship/Main Event_Quarterfinals_1"
+        },
+        {
+          "year": 2024,
+          "team": "Hanwha Life Esports",
+          "stage": "quarterfinal",
+          "match_id": "2024 Season World Championship/Main Event_Quarterfinals_2"
+        },
+        {
+          "year": 2024,
+          "team": "Top Esports",
+          "stage": "quarterfinal",
+          "match_id": "2024 Season World Championship/Main Event_Quarterfinals_3"
+        },
+        {
+          "year": 2024,
+          "team": "FlyQuest",
+          "stage": "quarterfinal",
+          "match_id": "2024 Season World Championship/Main Event_Quarterfinals_4"
+        },
+        {
+          "year": 2024,
+          "team": "Weibo Gaming",
+          "stage": "semifinal",
+          "match_id": "2024 Season World Championship/Main Event_Semifinals_1"
+        },
+        {
+          "year": 2024,
+          "team": "Gen.G",
+          "stage": "semifinal",
+          "match_id": "2024 Season World Championship/Main Event_Semifinals_2"
+        },
+        {
+          "year": 2024,
+          "team": "Bilibili Gaming",
+          "stage": "final",
+          "match_id": "2024 Season World Championship/Main Event_Finals_1"
+        },
+        {
+          "year": 2025,
+          "team": "Hanwha Life Esports",
+          "stage": "quarterfinal",
+          "match_id": "2025 Season World Championship/Main Event_Quarterfinals_1"
+        },
+        {
+          "year": 2025,
+          "team": "CTBC Flying Oyster",
+          "stage": "quarterfinal",
+          "match_id": "2025 Season World Championship/Main Event_Quarterfinals_2"
+        },
+        {
+          "year": 2025,
+          "team": "G2 Esports",
+          "stage": "quarterfinal",
+          "match_id": "2025 Season World Championship/Main Event_Quarterfinals_3"
+        },
+        {
+          "year": 2025,
+          "team": "Anyone's Legend",
+          "stage": "quarterfinal",
+          "match_id": "2025 Season World Championship/Main Event_Quarterfinals_4"
+        },
+        {
+          "year": 2025,
+          "team": "Gen.G",
+          "stage": "semifinal",
+          "match_id": "2025 Season World Championship/Main Event_Semifinals_1"
+        },
+        {
+          "year": 2025,
+          "team": "Top Esports",
+          "stage": "semifinal",
+          "match_id": "2025 Season World Championship/Main Event_Semifinals_2"
+        },
+        {
+          "year": 2025,
+          "team": "KT Rolster",
+          "stage": "final",
+          "match_id": "2025 Season World Championship/Main Event_Finals_1"
+        },
+        {
+          "year": 2011,
+          "team": "against All authority",
+          "stage": "final",
+          "match_id": "Season 1 World Championship_Finals_1"
+        },
+        {
+          "year": 2012,
+          "team": "Invictus Gaming",
+          "stage": "quarterfinal",
+          "match_id": "Season 2 World Championship_Quarterfinals_1"
+        },
+        {
+          "year": 2012,
+          "team": "NaJin Sword",
+          "stage": "quarterfinal",
+          "match_id": "Season 2 World Championship_Quarterfinals_2"
+        },
+        {
+          "year": 2012,
+          "team": "TSM",
+          "stage": "quarterfinal",
+          "match_id": "Season 2 World Championship_Quarterfinals_3"
+        },
+        {
+          "year": 2012,
+          "team": "Team WE",
+          "stage": "quarterfinal",
+          "match_id": "Season 2 World Championship_Quarterfinals_4"
+        },
+        {
+          "year": 2012,
+          "team": "Moscow Five",
+          "stage": "semifinal",
+          "match_id": "Season 2 World Championship_Semifinals_1"
+        },
+        {
+          "year": 2012,
+          "team": "Counter Logic Gaming Europe",
+          "stage": "semifinal",
+          "match_id": "Season 2 World Championship_Semifinals_2"
+        },
+        {
+          "year": 2012,
+          "team": "Azubu Frost",
+          "stage": "final",
+          "match_id": "Season 2 World Championship_Finals_1"
+        },
+        {
+          "year": 2013,
+          "team": "Cloud9",
+          "stage": "quarterfinal",
+          "match_id": "Season 3 World Championship_Quarterfinals_1"
+        },
+        {
+          "year": 2013,
+          "team": "Gambit Gaming",
+          "stage": "quarterfinal",
+          "match_id": "Season 3 World Championship_Quarterfinals_2"
+        },
+        {
+          "year": 2013,
+          "team": "Gamania Bears",
+          "stage": "quarterfinal",
+          "match_id": "Season 3 World Championship_Quarterfinals_3"
+        },
+        {
+          "year": 2013,
+          "team": "Oh My God",
+          "stage": "quarterfinal",
+          "match_id": "Season 3 World Championship_Quarterfinals_4"
+        },
+        {
+          "year": 2013,
+          "team": "NaJin Black Sword",
+          "stage": "semifinal",
+          "match_id": "Season 3 World Championship_Semifinals_1"
+        },
+        {
+          "year": 2013,
+          "team": "Fnatic",
+          "stage": "semifinal",
+          "match_id": "Season 3 World Championship_Semifinals_2"
+        },
+        {
+          "year": 2013,
+          "team": "Royal Club",
+          "stage": "final",
+          "match_id": "Season 3 World Championship_Finals_1"
+        },
+        {
+          "year": 2016,
+          "team": "ahq eSports Club",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2016,
+          "team": "INTZ",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2016,
+          "team": "G2 Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2016,
+          "team": "Flash Wolves",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2016,
+          "team": "Splyce",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2016,
+          "team": "TSM",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2016,
+          "team": "Counter Logic Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2016,
+          "team": "I May",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2017,
+          "team": "Fenerbahçe Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2017,
+          "team": "ahq eSports Club",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2017,
+          "team": "G2 Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2017,
+          "team": "Flash Wolves",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2017,
+          "team": "Immortals",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2017,
+          "team": "GIGABYTE Marines",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2017,
+          "team": "TSM",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2017,
+          "team": "EDward Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2017,
+          "team": "Hong Kong Attitude",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2017,
+          "team": "Kaos Latin Gamers",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2017,
+          "team": "Dire Wolves",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2017,
+          "team": "Gambit Esports",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2017,
+          "team": "Young Generation",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2017,
+          "team": "Team oNe eSports",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2017,
+          "team": "Rampage",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2017,
+          "team": "Lyon Gaming (2013 Latin American Team)",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2018,
+          "team": "MAD Team",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2018,
+          "team": "Team Vitality",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2018,
+          "team": "100 Thieves",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2018,
+          "team": "Gen.G",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2018,
+          "team": "G-Rex",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2018,
+          "team": "Flash Wolves",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2018,
+          "team": "Team Liquid",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2018,
+          "team": "Phong Vũ Buffalo",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2018,
+          "team": "Kaos Latin Gamers",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2018,
+          "team": "Dire Wolves",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2018,
+          "team": "Gambit Esports",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2018,
+          "team": "KaBuM! Esports",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2018,
+          "team": "SuperMassive Esports",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2018,
+          "team": "DetonatioN FocusMe",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2018,
+          "team": "Ascension Gaming",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2018,
+          "team": "INFINITY",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2019,
+          "team": "Hong Kong Attitude",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2019,
+          "team": "J Team",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2019,
+          "team": "Clutch Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2019,
+          "team": "ahq eSports Club",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2019,
+          "team": "GAM Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2019,
+          "team": "Cloud9",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2019,
+          "team": "Team Liquid",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2019,
+          "team": "Royal Never Give Up",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2019,
+          "team": "MAMMOTH",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2019,
+          "team": "Lowkey Esports.Vietnam",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2019,
+          "team": "Isurus",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2019,
+          "team": "Unicorns of Love.CIS",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2019,
+          "team": "MEGA",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2019,
+          "team": "Flamengo Esports",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2019,
+          "team": "Royal Youth",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2019,
+          "team": "DetonatioN FocusMe",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2020,
+          "team": "PSG Talon",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2020,
+          "team": "Unicorns of Love.CIS",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2020,
+          "team": "Rogue (European Team)",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2020,
+          "team": "Team Liquid",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2020,
+          "team": "LGD Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2020,
+          "team": "FlyQuest",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2020,
+          "team": "TSM",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2020,
+          "team": "Machi Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2020,
+          "team": "Papara SuperMassive",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2020,
+          "team": "INTZ",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2020,
+          "team": "Rainbow7",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2020,
+          "team": "V3 Esports",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2020,
+          "team": "Legacy Esports",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2020,
+          "team": "MAD Lions",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2021,
+          "team": "LNG Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2021,
+          "team": "100 Thieves",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2021,
+          "team": "FunPlus Phoenix",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2021,
+          "team": "Rogue (European Team)",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2021,
+          "team": "Team Liquid",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2021,
+          "team": "Fnatic",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2021,
+          "team": "PSG Talon",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2021,
+          "team": "DetonatioN FocusMe",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2021,
+          "team": "RED Canids",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2021,
+          "team": "Unicorns of Love.CIS",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2021,
+          "team": "PEACE (Oceanic Team)",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2021,
+          "team": "INFINITY",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2021,
+          "team": "Galatasaray Esports",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2021,
+          "team": "Beyond Gaming",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2022,
+          "team": "100 Thieves",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2022,
+          "team": "GAM Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2022,
+          "team": "G2 Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2022,
+          "team": "Cloud9",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2022,
+          "team": "Top Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2022,
+          "team": "Evil Geniuses.NA",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2022,
+          "team": "Fnatic",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2022,
+          "team": "CTBC Flying Oyster",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2022,
+          "team": "Istanbul Wildcats",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2022,
+          "team": "Saigon Buffalo",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2022,
+          "team": "Chiefs Esports Club",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2022,
+          "team": "Isurus",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2022,
+          "team": "MAD Lions",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2022,
+          "team": "LOUD",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2022,
+          "team": "DetonatioN FocusMe",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2022,
+          "team": "Beyond Gaming",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2023,
+          "team": "Dplus Kia",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2023,
+          "team": "GAM Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2023,
+          "team": "G2 Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2023,
+          "team": "Team BDS",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2023,
+          "team": "Cloud9",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2023,
+          "team": "MAD Lions",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2023,
+          "team": "Team Liquid",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2023,
+          "team": "Fnatic",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2023,
+          "team": "Team Whales",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2023,
+          "team": "Movistar R7",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2023,
+          "team": "LOUD",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2023,
+          "team": "PSG Talon",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2023,
+          "team": "DetonatioN FocusMe",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2023,
+          "team": "CTBC Flying Oyster",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2024,
+          "team": "Dplus Kia",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2024,
+          "team": "MAD Lions KOI",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2024,
+          "team": "GAM Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2024,
+          "team": "paiN Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2024,
+          "team": "G2 Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2024,
+          "team": "Team Liquid",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2024,
+          "team": "Fnatic",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2024,
+          "team": "PSG Talon",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2024,
+          "team": "100 Thieves",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2024,
+          "team": "Fukuoka SoftBank HAWKS gaming",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2024,
+          "team": "Movistar R7",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2024,
+          "team": "Vikings Esports (2023 Vietnamese Team)",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2025,
+          "team": "100 Thieves",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2025,
+          "team": "Team Secret Whales",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2025,
+          "team": "Vivo Keyd Stars",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2025,
+          "team": "Movistar KOI",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2025,
+          "team": "FlyQuest",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2025,
+          "team": "Fnatic",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2025,
+          "team": "PSG Talon",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2025,
+          "team": "Bilibili Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2025,
+          "team": "Invictus Gaming",
+          "stage": "play_in",
+          "reason": "Completed Play-In and main; official final placement; absent from main"
+        },
+        {
+          "year": 2011,
+          "team": "Xan",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2011,
+          "team": "Team Pacific",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2012,
+          "team": "Saigon Jokers",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2012,
+          "team": "SK Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2012,
+          "team": "CLG Prime",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2012,
+          "team": "Dignitas",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2013,
+          "team": "Lemondogs",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2013,
+          "team": "Samsung Ozone",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2013,
+          "team": "Mineski",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2013,
+          "team": "GamingGear.eu",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2013,
+          "team": "TSM",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2013,
+          "team": "Team Vulcun",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2014,
+          "team": "Taipei Assassins",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2014,
+          "team": "ahq eSports Club",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2014,
+          "team": "SK Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2014,
+          "team": "KaBuM! Esports",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2014,
+          "team": "Fnatic",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2014,
+          "team": "Dark Passage",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2014,
+          "team": "Alliance",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2014,
+          "team": "LMQ",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2015,
+          "team": "Invictus Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2015,
+          "team": "Bangkok Titans",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2015,
+          "team": "H2k-Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2015,
+          "team": "paiN Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2015,
+          "team": "Cloud9",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2015,
+          "team": "LGD Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2015,
+          "team": "TSM",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        },
+        {
+          "year": 2015,
+          "team": "Counter Logic Gaming",
+          "stage": "group",
+          "reason": "Completed main event; no knockout appearance"
+        }
+      ],
+      "incomplete_events": []
+    },
+    "career": {
+      "players": 10,
+      "complete_players": 10,
+      "incomplete_players": [],
+      "source_conflicts": [],
+      "champion_groups": 375,
+      "games": 3895,
+      "duplicate_aggregate_rows": 0,
+      "undated_source_rows": 0,
+      "coverage_verified": true,
+      "coverage": "all_recorded_scoreboards"
+    },
+    "career_refreshed_slugs": [
+      "busio",
+      "caliste",
+      "canna",
+      "chika",
+      "gury",
+      "harky",
+      "kratos-ngo-duc-khanh",
+      "kyeahoo",
+      "siuloong",
+      "yike"
+    ],
+    "changed_records": 738
+  },
+  "future_games_included": 0,
+  "database_changes": 0,
+  "historical_scoreboard_rows_identical": true,
+  "source_sha256": {
+    "previous_worlds_uncompressed": "4f352264ec7c7d80db5af23433b30f36d4908762f88da3696ad7db1228f5aedd",
+    "worlds_source_snapshot.json.gz": "820f8fd0b56fe03ec60fdbe8a007babafe276ba88a54ab8cd6118e00b36f6221",
+    "worlds_eliminations_source.json.gz": "a52eeced0e75c772e6f4463c1c437cdac039d842176c5dc1ce0f4bc52a894b7d",
+    "leaguepedia_career_refresh_2026_10_19.json.gz": "89f8d8259933f9b01ab82c5d42ff6583198852bbde7853288ce298f9380782f7",
+    "releases/worlds_players_2026_10_19_v1.json.gz": "2573457fce1cc2ff27e80bb8f900a7d912693a409e8bd52df4a9f133f51267a1"
+  },
+  "official_rules_source": {
+    "source": "Riot Games",
+    "source_url": "https://lolesports.com/en-US/tournament/115660540725177488/overview",
+    "source_sha256": "fafcde8ecb797fa41c4276ad4bf4879cfbcc983d32c016f06d1b8208e8cf9daa",
+    "as_of": "2026-10-19T07:18:52+00:00",
+    "participants": 4,
+    "qualifying_teams": 1,
+    "best_of": 5,
+    "format": "double_elimination"
+  },
+  "idempotence_verified": true,
+  "unrelated_identity_portrait_league_metadata_preserved": true
+}

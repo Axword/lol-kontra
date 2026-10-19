@@ -43,7 +43,7 @@ class GameplayTests(TestCase):
         result = self.answer()
         self.assertEqual(result.status_code, 200)
         self.assertTrue(result.data['is_correct'])
-        self.assertEqual(result.data['total_points'], 500)
+        self.assertEqual(result.data['total_points'], 100)
         state = self.client.get('/api/v1/submissions/me/', {
             'daily_id': self.daily.pk, 'guest_token': self.token,
         })
@@ -100,7 +100,7 @@ class GameplayTests(TestCase):
                                 **payload, 'slot_id': slot.pk, 'player_slug': player.slug,
                             }, format='json')
                             self.assertEqual(result.status_code, 200)
-                    self.assertEqual(result.data['total_points'], 300)
+                    self.assertEqual(result.data['total_points'], 200)
                     self.assertTrue(result.data['is_over'])
                     self.assertTrue(result.data['is_scored'])
                     self.assertEqual(preserved(), before)
@@ -237,7 +237,7 @@ class GameplayTests(TestCase):
         self.assertEqual(second.status_code, 200)
         self.assertTrue(first.data['is_diamond_pick'])
         self.assertFalse(second.data['is_diamond_pick'])
-        self.assertEqual(second.data['total_points'], 400)
+        self.assertEqual(second.data['total_points'], 200)
 
     def test_rolled_back_answer_does_not_pollute_the_pick_population(self):
         with patch('apps.submissions.serializers.compute_rarity', side_effect=RuntimeError('temporary failure')):
@@ -247,7 +247,8 @@ class GameplayTests(TestCase):
         result = self.answer()
         self.assertEqual(result.status_code, 200)
         self.assertTrue(result.data['is_diamond_pick'])
-        self.assertEqual(result.data['deduction'], 0)
+        self.assertEqual(result.data['pick_percent'], 0)
+        self.assertEqual(result.data['deduction'], 100)
 
     def test_bulk_submission_rejects_duplicate_slots_and_rolls_back_invalid_answers(self):
         data = {'daily_id': self.daily.pk, 'guest_token': self.token, 'answers': [

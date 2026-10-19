@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Daily, DailySlot, DailySlotCondition
+from .models import CommunityComment, Daily, DailySlot, DailySlotCondition
 
 class DailySlotConditionInline(admin.TabularInline):
     model = DailySlotCondition
@@ -27,3 +27,12 @@ class DailySlotAdmin(admin.ModelAdmin):
 class DailySlotConditionAdmin(admin.ModelAdmin):
     list_display = ('slot', 'condition_type', 'operator', 'label_pl')
     list_filter = ('condition_type',)
+
+
+@admin.register(CommunityComment)
+class CommunityCommentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'submission', 'created_at')
+    readonly_fields = ('submission', 'share_key', 'roster_png', 'created_at', 'updated_at')
+
+    def has_add_permission(self, request):
+        return False

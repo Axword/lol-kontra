@@ -187,7 +187,7 @@ class IntegrityMigrationTests(TransactionTestCase):
         official, legacy, correct, wrong, attempt = self.old_rows()
         MigrationExecutor(connection).migrate(self.latest)
         self.assertTrue(Submission.objects.get(pk=legacy.pk).is_practice)
-        self.assertEqual(Submission.objects.get(pk=official.pk).total_points, 400)
+        self.assertEqual(Submission.objects.get(pk=official.pk).total_points, 200)
         answer_ids = set(SubmissionAnswer.objects.filter(submission_id=official.pk).values_list('pk', flat=True))
         self.assertEqual(answer_ids, {correct.pk, wrong.pk})
         self.assertFalse(SubmissionAnswer.objects.get(pk=wrong.pk).is_correct)

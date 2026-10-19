@@ -41,10 +41,10 @@ class ScoringTests(TestCase):
             diamond.refresh_from_db()
             wrong.refresh_from_db()
             first.refresh_from_db()
-            self.assertEqual(diamond.points_awarded, -100)
+            self.assertEqual(diamond.points_awarded, 0)
             self.assertTrue(diamond.is_diamond_pick)
             self.assertEqual(wrong.points_awarded, 0)
-            self.assertEqual(first.total_points, 400)
+            self.assertEqual(first.total_points, 100)
             self.assertTrue(first.is_scored)
             self.assertEqual(AnswerStatsDaily.objects.get().pick_count, 1)
 
@@ -61,8 +61,26 @@ class ScoringTests(TestCase):
         response = self.client.get(f'/api/v1/dailies/{self.daily.pk}/score-distribution/', {'user_score': 60})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['rank'], 1)
+        self.assertEqual(response.data['percentile'], 0)
         self.assertEqual(response.data['stddev'], 0)
         self.assertEqual(response.data['distribution'], [{'score': 60, 'count': 2}])
+
+    def test_distribution_ranks_lower_scores_first_and_excludes_practice_seed_and_unfinished_games(self):
+        for index, score in enumerate([0, 15, 15, 100, 500]):
+            Submission.objects.create(daily=self.daily, guest_token=f'ranked-{index}', total_points=score, is_scored=True)
+        Submission.objects.create(daily=self.daily, guest_token='practice', total_points=0, is_scored=True, is_practice=True)
+        Submission.objects.create(daily=self.daily, guest_token='seed', total_points=0, is_scored=True, is_seed=True)
+        Submission.objects.create(daily=self.daily, guest_token='pending', total_points=0)
+        url = f'/api/v1/dailies/{self.daily.pk}/score-distribution/'
+        for score, rank, percentile in [(0, 1, 80), (15, 2, 40), (500, 5, 0)]:
+            result = self.client.get(url, {'user_score': score})
+            self.assertEqual(result.status_code, 200)
+            self.assertEqual(result.data['total_submissions'], 5)
+            self.assertEqual(result.data['rank'], rank)
+            self.assertEqual(result.data['percentile'], percentile)
+        self.assertEqual(result.data['distribution'], [
+            {'score': 0, 'count': 1}, {'score': 15, 'count': 2}, {'score': 100, 'count': 1}, {'score': 500, 'count': 1},
+        ])
 
     def test_unknown_or_unpublished_daily_stats_are_not_public(self):
         for suffix in ['answer-stats', 'score-distribution']:
@@ -97,8 +115,8 @@ class ScoringTests(TestCase):
         score_daily(self.daily.pk)
         user.stats.refresh_from_db()
         self.assertEqual(user.stats.games_played, 1)
-        self.assertEqual(user.stats.total_points, 400)
-        self.assertEqual(user.stats.best_score, 400)
+        self.assertEqual(user.stats.total_points, 100)
+        self.assertEqual(user.stats.best_score, 100)
 
     def test_scoring_failure_rolls_back_partial_results(self):
         sub = Submission.objects.create(daily=self.daily, guest_token='one')
@@ -127,13 +145,13 @@ class ScoringTests(TestCase):
         self.assertFalse(result.data['is_practice'])
         self.assertTrue(result.data['is_scored'])
         self.assertEqual(result.data['rarity_tier'], 'legendary')
-        self.assertEqual(result.data['total_points'], 500)
+        self.assertEqual(result.data['total_points'], 0)
         official.refresh_from_db()
-        self.assertEqual(official.total_points, 400)
+        self.assertEqual(official.total_points, 100)
         self.assertEqual(AnswerStatsDaily.objects.count(), 1)
         distribution = self.client.get(f'/api/v1/dailies/{self.daily.pk}/score-distribution/')
         self.assertEqual(distribution.data['total_submissions'], 2)
-        self.assertEqual(distribution.data['distribution'], [{'score': 400, 'count': 1}, {'score': 500, 'count': 1}])
+        self.assertEqual(distribution.data['distribution'], [{'score': 0, 'count': 1}, {'score': 100, 'count': 1}])
         user.stats.refresh_from_db()
         self.assertEqual(user.stats.games_played, 1)
 
@@ -157,8 +175,8 @@ class ScoringTests(TestCase):
                     self.assertEqual(result.data['pick_percent'], 0)
                     self.assertEqual(result.data['rarity_percent'], 0)
                     self.assertEqual(result.data['answers'][0]['rarity_percent'], 0)
-                    self.assertEqual(result.data['deduction'], 0)
-                    self.assertEqual(result.data['total_points'], 500)
+                    self.assertEqual(result.data['deduction'], 100)
+                    self.assertEqual(result.data['total_points'], 100)
                 answer = SubmissionAnswer.objects.get(submission_id=first.data['submission_id'])
                 self.assertEqual(answer.rarity_percent, 0)
                 self.assertTrue(answer.is_diamond_pick)

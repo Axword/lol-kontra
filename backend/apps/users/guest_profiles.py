@@ -8,14 +8,16 @@ import hashlib
 import hmac
 import re
 import unicodedata
+from collections import Counter
 from datetime import timedelta
 
 from django.conf import settings
-from django.db.models import Count, F, Q
+from django.db.models import Count, F, Prefetch, Q
 from django.utils import timezone
 from rest_framework import serializers
 
-from apps.submissions.models import MAX_ERRORS, Submission
+from apps.players.serializers import VerifiedPlayerSerializer
+from apps.submissions.models import MAX_ERRORS, Submission, SubmissionAnswer
 
 
 _BLOCKED_WORDS = frozenset('''
@@ -89,19 +91,51 @@ def validate_guest_nickname(value):
 
 
 def guest_stats(token):
-    """Derive stats from existing finished games; naming never creates votes."""
+    """Read finished official games without changing votes or saved results.
+
+    Attempt history is authoritative where available. Older games without any
+    attempt rows use saved correct answers and the server's errors_used counter
+    instead, so their progress is included once rather than double-counted.
+    """
     games = list(Submission.objects.filter(
         user__isnull=True, guest_token=token, is_practice=False, is_seed=False,
         daily__date__lte=timezone.localdate(), daily__status__in=['published', 'closed', 'scored'],
     ).annotate(
         slot_count=Count('daily__slots', distinct=True),
         correct_count=Count('answers', filter=Q(answers__is_correct=True), distinct=True),
+        correct_attempt_count=Count('attempts', filter=Q(attempts__is_correct=True), distinct=True),
+        incorrect_attempt_count=Count('attempts', filter=Q(attempts__is_correct=False), distinct=True),
     ).filter(
         Q(is_scored=True) | Q(errors_used__gte=MAX_ERRORS)
         | Q(slot_count__gt=0, correct_count__gte=F('slot_count'))
-    ).select_related('daily').prefetch_related('answers').order_by('daily__date'))
+    ).select_related('daily').prefetch_related(Prefetch(
+        'answers', queryset=SubmissionAnswer.objects.filter(is_correct=True).select_related('player'),
+        to_attr='profile_correct_answers',
+    )).order_by('daily__date'))
     total = sum(game.total_points for game in games)
-    answers = [answer for game in games for answer in game.answers.all() if answer.is_correct]
+    answers = [answer for game in games for answer in game.profile_correct_answers]
+    correct_attempts = incorrect_attempts = 0
+    for game in games:
+        if game.correct_attempt_count or game.incorrect_attempt_count:
+            correct_attempts += game.correct_attempt_count
+            incorrect_attempts += game.incorrect_attempt_count
+        else:
+            correct_attempts += game.correct_count
+            incorrect_attempts += game.errors_used
+    attempts_count = correct_attempts + incorrect_attempts
+    pick_percentages = [answer.rarity_percent for answer in answers if answer.rarity_percent is not None]
+    player_counts = Counter(answer.player_id for answer in answers)
+    players = {answer.player_id: answer.player for answer in answers}
+    portrait_serializer = VerifiedPlayerSerializer()
+    top_players = [{
+        'id': player.pk,
+        'slug': player.slug,
+        'nickname': player.nickname,
+        'portrait_url': portrait_serializer.get_portrait_url(player),
+        'pick_count': player_counts[player.pk],
+    } for player in sorted(players.values(), key=lambda player: (
+        -player_counts[player.pk], player.nickname.casefold(), player.nickname, player.pk,
+    ))[:5]]
     streak = longest = 0
     previous = None
     for game in games:
@@ -112,9 +146,17 @@ def guest_stats(token):
         'games_played': len(games),
         'total_points': total,
         'avg_points': total / len(games) if games else 0,
-        'best_score': max((game.total_points for game in games), default=0),
+        'best_score': min((game.total_points for game in games), default=0),
         'legendary_answers': sum(answer.rarity_tier == 'legendary' for answer in answers),
         'diamond_picks': sum(answer.is_diamond_pick for answer in answers),
         'current_streak': streak if previous and previous >= timezone.localdate() - timedelta(days=1) else 0,
         'max_streak': longest,
+        'correct_answers': len(answers),
+        'incorrect_attempts': incorrect_attempts,
+        'accuracy_percent': 100 * correct_attempts / attempts_count if attempts_count else 0,
+        'perfect_games': sum(game.slot_count > 0 and game.correct_count >= game.slot_count
+                             and game.errors_used == 0 for game in games),
+        'average_pick_percent': sum(pick_percentages) / len(pick_percentages) if pick_percentages else 0,
+        'most_used_player': top_players[0] if top_players else None,
+        'top_players': top_players,
     }

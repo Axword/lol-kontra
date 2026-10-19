@@ -12,7 +12,7 @@ def check_release_data(*, database='default', strict=False):
     executor = MigrationExecutor(connections[database])
     if executor.migration_plan(executor.loader.graph.leaf_nodes()):
         raise ValueError('Database has pending migrations; run migrate first')
-    source = import_module('apps.players.migrations.0003_release_worlds_players')
+    source = import_module('apps.players.migrations.0005_worlds_2026_october_19_release')
     calendar_source = import_module('apps.dailies.migrations._october_2026_release')
     records, calendar = source.load_release(), calendar_source.load_calendar()
     players = Player.objects.using(database).in_bulk([row['slug'] for row in records], field_name='slug')

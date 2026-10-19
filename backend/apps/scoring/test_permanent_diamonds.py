@@ -36,13 +36,13 @@ class PermanentDiamondTests(TestCase):
     def test_first_pick_stays_diamond_after_later_guests_retries_and_explicit_rescoring(self):
         first = self.answer('first')
         self.assertTrue(first.data['is_diamond_pick'])
-        self.assertEqual(first.data['total_points'], 500)
+        self.assertEqual(first.data['total_points'], 0)
         saved = SubmissionAnswer.objects.get(submission_id=first.data['submission_id'])
         awarded_at = saved.diamond_awarded_at
         self.assertEqual(awarded_at, SubmissionAttempt.objects.get(submission=saved.submission).created_at)
         second = self.answer('second')
         self.assertFalse(second.data['is_diamond_pick'])
-        self.assertEqual(second.data['total_points'], 400)
+        self.assertEqual(second.data['total_points'], 100)
         retry = self.answer('first')
         self.assertTrue(retry.data['is_diamond_pick'])
         self.assertTrue(retry.data['unchanged'])
@@ -67,7 +67,8 @@ class PermanentDiamondTests(TestCase):
             self.assertFalse(answer.is_diamond_pick)
         first = self.answer('real-first')
         self.assertTrue(first.data['is_diamond_pick'])
-        self.assertEqual(first.data['deduction'], 0)
+        self.assertEqual(first.data['pick_percent'], 0)
+        self.assertEqual(first.data['deduction'], 100)
         self.assertEqual(SubmissionAnswer.objects.filter(is_diamond_pick=True).count(), 1)
 
     def test_bulk_first_pick_has_the_same_permanent_metadata(self):

@@ -49,6 +49,11 @@ class DailyViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
         daily = self.get_object()
         return Response(DailySlotSerializer(daily.slots.all(), many=True).data)
 
+    @action(detail=True, methods=['get', 'post'], url_path='community')
+    def community(self, request, pk=None):
+        from .community import daily_community
+        return daily_community(request, self.get_object())
+
     @action(detail=True, methods=['get'], url_path='solutions')
     def solutions(self, request, pk=None):
         from apps.submissions.models import Submission

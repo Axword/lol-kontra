@@ -141,6 +141,9 @@ from apps.dailies.models import Daily
 from apps.dailies.generator import validate_daily
 from apps.submissions.models import Submission
 from apps.scoring.models import ScoringConfig
+from apps.players.models import Player
+from apps.dailies.validators import player_matches_slot
+from unittest.mock import patch
 with override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}):
     client=APIClient(HTTP_HOST='localhost')
     assert not Submission.objects.filter(is_seed=True).exists()
@@ -150,6 +153,11 @@ with override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backend
     assert profile.status_code==200 and profile.data['display_name']=='Gość-SmokeTester'
     profile=client.post('/api/v1/guest/profile/',{'guest_token':'4c6bc268-88c1-4d91-8567-f62b418fe1e9'},format='json')
     assert profile.status_code==200 and profile.data['nickname']=='SmokeTester'
+    assert profile.data['has_custom_nickname'] is True
+    teams=client.get('/api/v1/guest/teams/')
+    assert teams.status_code==200 and teams.data['season']==2026 and len(teams.data['teams'])==19
+    team=client.post('/api/v1/guest/profile/',{'guest_token':'4c6bc268-88c1-4d91-8567-f62b418fe1e9','supported_team':'t1'},format='json')
+    assert team.status_code==200 and team.data['supported_team']['id']=='t1' and team.data['nickname']=='SmokeTester'
     for board in Daily.objects.all():
         validate_daily(board)
         if board.date > timezone.localdate():
@@ -164,6 +172,21 @@ with override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backend
         assert chart['total_submissions']==0 and chart['seeded_count']==0
         response=client.get('/api/v1/players/autocomplete/',{'q':'Faker','role':'mid'})
         assert response.status_code==200 and response.data['results'][0]['nickname']=='Faker'
+        candidates=list(Player.objects.all())
+        selected=set()
+        answers=[]
+        for slot in available.slots.order_by('position'):
+            player=next(player for player in candidates if player.pk not in selected and player_matches_slot(player,slot))
+            selected.add(player.pk)
+            answers.append({'slot_id':slot.pk,'player_slug':player.slug})
+        result=client.post('/api/v1/submissions/',{'daily_id':available.pk,'guest_token':'4c6bc268-88c1-4d91-8567-f62b418fe1e9','answers':answers},format='json')
+        assert result.status_code==201 and result.data['total_points']==0 and result.data['is_over']
+        with patch('apps.dailies.roster_images.load_player_portrait',return_value=None):
+            shared=client.post(f'/api/v1/dailies/{available.pk}/community/',{'guest_token':'4c6bc268-88c1-4d91-8567-f62b418fe1e9','comment':'Sprawdzony sklad'},format='json')
+        assert shared.status_code==200 and shared.data['own_comment_id'] and not shared.data['can_comment']
+        image_url=shared.data['comments'][0]['roster_image_url']
+        image=client.get(image_url)
+        assert image.status_code==200 and image['Content-Type']=='image/png'
 print('Fresh API and all 31 board checks: OK')
 '''
 

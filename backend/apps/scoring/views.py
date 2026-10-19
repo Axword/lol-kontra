@@ -100,8 +100,8 @@ class ScoringViewSet(viewsets.ViewSet):
         total = agg.get('total') or 0
         percentile = rank = None
         if score is not None and total > 0:
-            worse = scored.filter(total_points__lt=score).count()
-            better = scored.filter(total_points__gt=score).count()
+            worse = scored.filter(total_points__gt=score).count()
+            better = scored.filter(total_points__lt=score).count()
             percentile = round(worse / total * 100, 1)
             rank = better + 1
 

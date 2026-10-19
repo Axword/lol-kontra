@@ -74,7 +74,6 @@ CONDITION_POOL = [
     ('worlds_count', HARD, 'worlds_count_min', 'gte', 6, 'Weteran – min. 6 występów na Worlds', '6+ Worlds appearances'),
     ('worlds_era', HARD, 'worlds_early_era', 'eq', True, 'Grał na Worlds w erze S1-S3', 'Played Worlds in S1-S3'),
     ('worlds_debut', MEDIUM, 'worlds_debut_year', 'lte', 2015, 'Debiut na Worlds do 2015 roku', 'Worlds debut by 2015'),
-    ('worlds_debut', MEDIUM, 'worlds_debut_year', 'gte', 2020, 'Debiut na Worlds od 2020 roku', 'Worlds debut since 2020'),
     ('worlds_last', MEDIUM, 'worlds_last_year', 'gte', 2023, 'Grał na Worlds w 2023 lub później', 'Worlds 2023 or later'),
 
     # --- osiągnięcia ---

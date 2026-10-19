@@ -14,7 +14,7 @@ Zdjęcia są adresami źródłowymi Leaguepedii; migracja nie pobiera plików zd
 
 Historyczna migracja październikowego wydania tworzyła oznaczone składy testowe. Pozostaje niezmieniona, a osobna migracja usuwa te rozgrywki wraz z ich odpowiedziami. Na istniejącej bazie zachowuje rozgrywki i odpowiedzi prawdziwych graczy. Nowa instalacja kończy migracje z 31 planszami i bez syntetycznych głosów.
 
-Punktacja pozostaje równa 500 minus procenty wyborów. Kolor rzadkości wynika z dokładnego procentu: poniżej 2% złoty, od 2% do poniżej 5% epicki (fioletowy), od 5% do poniżej 15% rzadki (niebieski), od 15% do poniżej 25% niepospolity (zielony), od 25% pospolity (biały). Pierwsza prawdziwa poprawna odpowiedź dla danej pary pozycja–zawodnik na planszy otrzymuje trwałą flagę diamentu: błękitną kartę, obramowanie i mały diament, niezależnie od późniejszej popularności. Sam procent 0% nie nadaje tej flagi. Przy zawodniku wyświetlany jest sam procent; suma punktów pozostaje wynikiem całej gry.
+Punktacja jest sumą zapisanych procentów poprawnych wyborów oraz 100 za każdą pustą pozycję; niższy wynik jest lepszy. Migracja scoring.0007 przelicza liczby punktów i ich statystyki, zachowując wybory, procenty, próby oraz diamenty. Kolor rzadkości wynika z dokładnego procentu: poniżej 2% złoty, od 2% do poniżej 5% epicki (fioletowy), od 5% do poniżej 15% rzadki (niebieski), od 15% do poniżej 25% niepospolity (zielony), od 25% pospolity (biały). Pierwsza prawdziwa poprawna odpowiedź dla danej pary pozycja–zawodnik na planszy otrzymuje trwałą flagę diamentu: błękitną kartę, obramowanie i mały diament, niezależnie od późniejszej popularności. Sam procent 0% nie nadaje tej flagi. Przy zawodniku wyświetlany jest sam procent; suma punktów pozostaje wynikiem całej gry.
 
 Usunięcie syntetycznych głosów nie zmienia historycznie zdobytych punktów ani zapisanych składów prawdziwych graczy. Własny skład zachowuje procenty użyte do obliczenia jego wyniku. Aktualna popularność i liczba głosów są widoczne w liście wszystkich odpowiedzi oraz alternatywnych składach. Migracja diamentów odtwarza pierwsze prawdziwe trafienie z chronologii poprawnych prób, a przy jej braku z czasu zapisanej gry; nie zmienia punktów ani postępu.
 
@@ -23,11 +23,22 @@ Ukończenie kolejnej gry archiwalnej zapisuje wyłącznie wynik jej gracza. Nowa
 Pliki wymagane w commicie:
 
 - `backend/apps/players/fixtures/releases/worlds_players_2026_10_18_v1.json.gz`;
+- `backend/apps/players/fixtures/releases/worlds_players_2026_10_19_v1.json.gz` (aktualizacja zakończonych meczów z 18 października);
 - `backend/apps/dailies/fixtures/releases/october_2026_v1.json.gz`;
 - wszystkie nowe migracje, w tym pomocniczy `_october_2026_release.py`;
 - komendy administracyjne, konfiguracja produkcyjna i `backend/requirements.lock`.
 
 Pakiety są sprawdzane przez SHA-256 przed zapisem. Migracje korzystają z modeli historycznych i nie wymagają połączenia z Leaguepedią. Nie zmieniaj istniejących pakietów ani zastosowanych migracji; kolejne aktualizacje danych powinny mieć nową migrację i nowy plik wydania.
+
+## Wydanie profilu, społeczności i nowej punktacji
+
+Zmiany z 19.10.2026 dodają migracje `players.0005`, `users.0005` i `users.0006`, `dailies.0010` oraz `scoring.0007`. `players.0005` instaluje przypiętą aktualizację Worlds bez zmiany identyfikatorów. Migracje profilu zachowują nicki, zapisują wspieraną drużynę oraz trwałą informację, czy gracz ustawił wcześniej własny nick. `dailies.0010` dodaje autora planszy i tabelę moderowanych komentarzy ze skompresowanym PNG składu. Konto aplikacji potrzebuje uprawnień do nowej tabeli i jej sekwencji; ustaw domyślne granty dla obiektów tworzonych przez właściciela migracji.
+
+Wdrożenie wymaga kolejności: kopia danych, backend z migracjami, kontrola działającego nowego API i dopiero frontend. Starszy backend nie udostępnia komentarzy ani nowych pól profilu i używa poprzedniego kierunku punktacji. Na Renderze wcześniejszy proces może jeszcze obsługiwać żądania podczas migracji nowego procesu. Po przełączeniu wdrożenia na Live i zakończeniu starych żądań sprawdź wszystkie prawdziwe rozgrywki: poprawna odpowiedź ma `points_awarded = rarity_percent - 100`, a wynik to suma zapisanych procentów i 100 za każdą brakującą pozycję. Brak historycznego procentu kosztuje 100; historyczna plansza bez pozycji zachowuje 500.
+
+Jeśli stary proces zapisał dawną punktację już po migracji, funkcja `recalculate_saved_scores` z `scoring.0007_sum_pick_percentages` może zostać bezpiecznie powtórzona kontem właściciela w transakcji po przełączeniu backendu. Przelicza tylko liczby punktów i statystyki; nie pobiera aktualnych udziałów, nie zmienia składów, zapisanych procentów, diamentów, prób ani postępu. Ponowne uruchomienie nie zmienia wyniku obliczeń. Nie zastępuj tej operacji `score_daily`, ponieważ jawne przeliczanie całej planszy używa innej populacji głosów.
+
+Po wdrożeniu sprawdź `/healthz/`, katalog 19 drużyn, profil wcześniej istniejącego gościa i wznowienie jego archiwalnego składu. Kontrola komentarzy powinna potwierdzić, że osoba przed ukończeniem planszy nie otrzymuje tekstu ani adresu PNG. Nowy generator nie używa warunku debiutu od 2020 roku, ale istniejące plansze nadal go rozpoznają. Obrazy drużyn trafiają z frontendem; mapa potrzebna do generowania PNG znajduje się także w `backend/assets/rift-map.png`.
 
 Na istniejącej bazie import zachowuje identyfikatory zawodników, plansze i postęp gry. Istniejące daty plansz nie są nadpisywane. Powtórne wdrożenie nie regeneruje kalendarza ani głosów. Nieprawidłowe stare rekordy zatrzymają migrację z informacją o problemie, bez automatycznego usuwania danych.
 

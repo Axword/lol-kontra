@@ -1,4 +1,4 @@
-from django.db.models import Count, F, Max, Q, Subquery, Sum
+from django.db.models import Count, F, Min, Q, Subquery, Sum
 from django.utils import timezone
 from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
@@ -13,6 +13,7 @@ from .serializers import GuestProfileInputSerializer, UserSerializer, UserStatsS
 from .services import refresh_user_stats
 from .models import GuestProfile
 from .guest_profiles import guest_display_name, guest_identity_key, guest_stats
+from .worlds_teams import WORLDS_2026_SOURCE_URL, WORLDS_2026_TEAMS, supported_team_details
 
 User = get_user_model()
 
@@ -47,19 +48,39 @@ class GuestProfileView(APIView):
         payload = serializer.validated_data
         token = payload['guest_token']
         key = guest_identity_key(token)
+        updates = {}
         if 'nickname' in payload:
+            updates['nickname'] = payload['nickname']
+            if payload['nickname']:
+                updates['has_custom_nickname'] = True
+        if 'supported_team' in payload:
+            updates['supported_team'] = payload['supported_team'] or ''
+        if updates:
             profile, _ = GuestProfile.objects.update_or_create(
-                guest_key=key, defaults={'nickname': payload['nickname']},
+                guest_key=key, defaults=updates,
             )
         else:
             profile, _ = GuestProfile.objects.get_or_create(guest_key=key)
         response = Response({
             'nickname': profile.nickname or None,
             'display_name': guest_display_name(token, profile.nickname),
+            'has_custom_nickname': profile.has_custom_nickname or bool(profile.nickname),
+            'supported_team': supported_team_details(profile.supported_team),
             'stats': guest_stats(token),
         })
         response['Cache-Control'] = 'private, no-store'
         return response
+
+
+class GuestTeamsView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({
+            'season': 2026,
+            'source_url': WORLDS_2026_SOURCE_URL,
+            'teams': WORLDS_2026_TEAMS,
+        })
 
 
 class LeaderboardView(APIView):
@@ -97,7 +118,7 @@ class LeaderboardView(APIView):
             if guest:
                 population = population.exclude(guest_token__isnull=True).exclude(guest_token='')
             totals = population.order_by().values(*group_fields).annotate(
-                best_score=Max('total_points'), games_played=Count('pk'), points_sum=Sum('total_points'),
+                best_score=Min('total_points'), games_played=Count('pk'), points_sum=Sum('total_points'),
             )
             answer_identity = f'submission__{identity}'
             counts = {
@@ -123,8 +144,9 @@ class LeaderboardView(APIView):
                 data.append({
                     'username': username, 'is_guest': guest,
                     'total_points': row['points_sum'], 'games_played': row['games_played'],
+                    'avg_points': row['points_sum'] / row['games_played'],
                     'best_score': row['best_score'], 'diamond_picks': picks.get('diamond_picks', 0),
                     'legendary_answers': picks.get('legendary_answers', 0),
                 })
-        data.sort(key=lambda entry: (-entry['total_points'], -entry['best_score'], entry['username'], entry['is_guest']))
+        data.sort(key=lambda entry: (entry['avg_points'], entry['best_score'], -entry['games_played'], entry['username'], entry['is_guest']))
         return Response({'results': data[:100]})

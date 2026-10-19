@@ -19,7 +19,7 @@ class Submission(models.Model):
     is_practice = models.BooleanField(default=False)
     is_seed = models.BooleanField(default=False)
 
-    # 500 minus the pick percentages and final unfilled-slot deductions.
+    # Saved pick percentages plus 100 per unfilled slot; lower is better.
     total_points = models.FloatField(default=500.0)
 
     # Licznik pomyłek prowadzony po stronie serwera – klient go tylko wyświetla.
@@ -75,7 +75,7 @@ class SubmissionAnswer(models.Model):
     rarity_tier = models.CharField(max_length=16, choices=RARITY_CHOICES, null=True, blank=True)
     rarity_percent = models.FloatField(null=True, blank=True)
 
-    # Signed correction: -1 means one point deducted, never a tier bonus.
+    # Signed reduction from the position's initial cost of 100: percent - 100.
     points_awarded = models.FloatField(default=0.0)
     scoring_pick_count = models.PositiveIntegerField(default=0)
     scoring_sample_size = models.PositiveIntegerField(default=0)

@@ -1,5 +1,8 @@
 from django.db import models
 from django.conf import settings
+import uuid
+from django.core.validators import MaxLengthValidator
+from django.db.models.lookups import LessThanOrEqual
 
 ROLE_CHOICES = [
     ('top', 'Top'),
@@ -29,6 +32,9 @@ class Daily(models.Model):
     published_at = models.DateTimeField(null=True, blank=True)
     closed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    author_name = models.CharField(max_length=64, blank=True, default='', db_default='')
+    author_url = models.URLField(blank=True, default='', db_default='')
+    author_description = models.CharField(max_length=180, blank=True, default='', db_default='')
 
     class Meta:
         ordering = ['-date']
@@ -41,6 +47,24 @@ class Daily(models.Model):
 
     def __str__(self):
         return f"Daily #{self.id} – {self.date}"
+
+
+class CommunityComment(models.Model):
+    submission = models.OneToOneField('submissions.Submission', on_delete=models.CASCADE,
+                                     related_name='community_comment')
+    text = models.CharField(max_length=500, blank=True, default='')
+    share_key = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    roster_png = models.BinaryField(validators=[MaxLengthValidator(256000)])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at', '-pk']
+        constraints = [models.CheckConstraint(
+            check=LessThanOrEqual(models.Func('roster_png', function='octet_length',
+                                              output_field=models.IntegerField()), models.Value(256000)),
+            name='community_png_bounded',
+        )]
 
 class DailySlot(models.Model):
     daily = models.ForeignKey(Daily, related_name='slots', on_delete=models.CASCADE)

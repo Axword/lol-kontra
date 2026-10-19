@@ -64,16 +64,16 @@ class InitialOfficialPickApiTests(TestCase):
 
                 saved_states = []
                 for token, player, percent, total, diamond, picked, sample in [
-                    ('first', self.players[0], 0, 500, True, 0, 0),
-                    ('second', self.players[0], 100, 400, False, 1, 1),
-                    ('third-new-player', self.players[1], 0, 500, True, 0, 2),
+                    ('first', self.players[0], 0, 0, True, 0, 0),
+                    ('second', self.players[0], 100, 100, False, 1, 1),
+                    ('third-new-player', self.players[1], 0, 0, True, 0, 2),
                 ]:
                     result = self.post_answer(daily, slot, token, player, bulk=bulk)
                     answer = result['answers'][0]
                     self.assertTrue(answer['is_correct'])
                     self.assertEqual(answer['rarity_percent'], percent)
-                    self.assertEqual(answer['points_awarded'], -percent)
-                    self.assertEqual(answer['deduction'], percent)
+                    self.assertEqual(answer['points_awarded'], percent - 100)
+                    self.assertEqual(answer['deduction'], 100 - percent)
                     self.assertEqual(answer['is_diamond_pick'], diamond)
                     self.assertEqual(result['total_points'], total)
                     if not bulk:
