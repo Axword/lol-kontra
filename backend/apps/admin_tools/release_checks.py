@@ -5,6 +5,7 @@ from django.db.migrations.executor import MigrationExecutor
 from apps.dailies.models import Daily
 from apps.dailies.validators import PlayerFacts
 from apps.players.models import Player
+from apps.players.career_roles import with_verified_career_roles
 from apps.submissions.models import Submission
 
 
@@ -20,6 +21,7 @@ def check_release_data(*, database='default', strict=False):
         raise ValueError('Player release is incomplete: expected 882 identities')
     verified = photos = careers = 0
     for row in records:
+        row = with_verified_career_roles(row)
         player = players[row['slug']]
         if row['attributes'].get('worlds_verified') is True:
             facts = PlayerFacts(player)

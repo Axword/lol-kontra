@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from apps.players.models import Player, Team
+from apps.players.career_roles import with_verified_career_roles
 from django.utils.text import slugify
 
 SAMPLE_PLAYERS = [
@@ -120,6 +121,7 @@ class Command(BaseCommand):
             if clear:
                 Player.objects.all().delete()
             for slug, item in records.items():
+                item = with_verified_career_roles(item)
                 old = Player.objects.filter(slug=slug).first()
                 attributes = dict(old.attributes if old else {})
                 attributes.update(item.get('attributes') or {})

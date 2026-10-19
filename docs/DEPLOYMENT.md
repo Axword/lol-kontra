@@ -24,10 +24,13 @@ Ranking ogólny obsługuje limity 10, 25, 50 i 100, domyślnie 50. Publiczny `GE
 
 Migracja `dailies.0011` dodaje typ warunku `birth_continent` oparty wyłącznie na rozpoznanym `attributes.leaguepedia_country_of_birth`. Generator używa go dla nowych wymagań „Urodzony w Europie” i „Urodzony w Ameryce Północnej”. Dotychczasowy `continent` zachowuje walidację narodowości. Migracja zmienia tylko jego znane automatyczne etykiety na jednoznaczne podpisy o narodowości; nie zmienia wartości warunków, pozycji, wyborów, punktów ani procentów i nie nadpisuje własnych opisów autorów. Zmiany etykiet pozostają również po cofnięciu migracji, aby nie nadpisywać późniejszych opisów. Zamrożony kalendarz i pakiety zawodników pozostają niezmienione; powtórne wdrożenie nie nadpisuje doprecyzowanych etykiet.
 
+Migracja `players.0006_verified_career_roles` stosuje przypięty dodatek ról z pełnej kariery, bez zmiany istniejących pakietów wydania. Przed pierwszym zapisem sprawdza tożsamości wszystkich uzupełnianych zawodników; zmienia wyłącznie dodatkowe role. Nie przelicza wyników, procentów, prób ani głosów. Backend pozwala ponownie sprawdzić wcześniejszą błędną odpowiedź w aktywnej grze, jeśli korekta danych uczyniła ją poprawną. Zwykłe powtórzenie błędu nadal jest idempotentne, a zakończone gry pozostają zamknięte. Po wdrożeniu sprawdź rolę Top u Kikisa oraz zachowanie wcześniejszych składów. Szczegółowy zakres i źródła opisuje [WORLDS_DATA.md](WORLDS_DATA.md).
+
 Pliki wymagane w commicie:
 
 - `backend/apps/players/fixtures/releases/worlds_players_2026_10_18_v1.json.gz`;
 - `backend/apps/players/fixtures/releases/worlds_players_2026_10_19_v1.json.gz` (aktualizacja zakończonych meczów z 18 października);
+- `backend/apps/players/fixtures/releases/career_roles_2026_10_19_v1.json` (potwierdzone dodatkowe role z całej kariery);
 - `backend/apps/dailies/fixtures/releases/october_2026_v1.json.gz`;
 - wszystkie nowe migracje, w tym pomocniczy `_october_2026_release.py`;
 - komendy administracyjne, konfiguracja produkcyjna i `backend/requirements.lock`.

@@ -5,6 +5,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from apps.dailies.models import Daily, DailySlot
+from apps.dailies.validators import player_matches_slot
 from apps.players.models import Player
 from apps.players.serializers import VerifiedPlayerSerializer
 from apps.scoring.engine import MIN_SAMPLE, compute_rarity, recalc_submission_total, unfilled_deduction
@@ -179,7 +180,9 @@ class AnswerCreateSerializer(serializers.Serializer):
             duplicate_miss = SubmissionAttempt.objects.filter(
                 submission=submission, daily_slot=slot, player=player, is_correct=False
             ).exists() or bool(existing and not existing.is_correct and existing.player_id == player.pk)
-            if duplicate_miss and existing:
+            # A source-data correction can make a formerly wrong choice valid.
+            # Recheck that case while keeping ordinary repeat misses idempotent.
+            if duplicate_miss and existing and (submission.is_scored or not player_matches_slot(player, slot)):
                 return _unchanged_answer(existing, submission, guest_token)
 
             if submission.is_over:

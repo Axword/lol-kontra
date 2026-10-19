@@ -16,6 +16,8 @@ import unicodedata
 from django.utils.text import slugify
 from unidecode import unidecode
 
+from .career_roles import with_verified_career_roles
+
 
 ROLES = ('top', 'jungle', 'mid', 'adc', 'support')
 ROLE_ALIASES = {'jng': 'jungle', 'jgl': 'jungle', 'jg': 'jungle', 'middle': 'mid',
@@ -435,7 +437,8 @@ def build_worlds_players(snapshot, existing_records):
             career = record.get('career_stats') or {}
             if isinstance(career.get('worlds'), dict):
                 career['worlds']['complete'] = False
-    fixtures = sorted(existing + new_records, key=lambda row: (_text(row.get('nickname')).casefold(), row['slug']))
+    fixtures = sorted((with_verified_career_roles(row) for row in existing + new_records),
+                      key=lambda row: (_text(row.get('nickname')).casefold(), row['slug']))
     report = {'source': 'Leaguepedia', 'scope': 'worlds_including_play_in', 'as_of': as_of,
               'coverage_verified': True, 'expected_games': sum(expected.values()),
               'input_rows': len(snapshot['rows']), 'unique_rows': len(unique), 'duplicate_rows': duplicates,
