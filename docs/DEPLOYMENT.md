@@ -20,6 +20,10 @@ Usunięcie syntetycznych głosów nie zmienia historycznie zdobytych punktów an
 
 Ukończenie kolejnej gry archiwalnej zapisuje wyłącznie wynik jej gracza. Nowa odpowiedź używa udziałów z prawdziwych wyborów sprzed tej próby; nie przelicza wcześniejszych ukończonych gier. Polecenia administracyjnego przeliczania punktów są oddzielną, jawną operacją.
 
+Ranking ogólny obsługuje limity 10, 25, 50 i 100, domyślnie 50. Publiczny `GET /api/v1/leaderboard/` pozostaje zgodny ze starszym frontendem. `POST` pod tym samym adresem przyjmuje limit oraz własny `guest_token` w treści, a nie w URL, i zwraca osobny `current_player` z miejscem obliczonym przed ograniczeniem listy. Odpowiedź personalizowana ma `Cache-Control: private, no-store`; nie zawiera tokenów ani wewnętrznych kluczy tożsamości. Gracz może zobaczyć własny wiersz dodatkowo na końcu nawet wtedy, gdy jest już w pierwszych N miejscach. Sam ranking nie zmienia schematu bazy, ale nowy backend musi działać przed publikacją frontendu używającego `POST`. Panel rankingu przy planszy pozostaje bez zmian.
+
+Migracja `dailies.0011` dodaje typ warunku `birth_continent` oparty wyłącznie na rozpoznanym `attributes.leaguepedia_country_of_birth`. Generator używa go dla nowych wymagań „Urodzony w Europie” i „Urodzony w Ameryce Północnej”. Dotychczasowy `continent` zachowuje walidację narodowości. Migracja zmienia tylko jego znane automatyczne etykiety na jednoznaczne podpisy o narodowości; nie zmienia wartości warunków, pozycji, wyborów, punktów ani procentów i nie nadpisuje własnych opisów autorów. Zmiany etykiet pozostają również po cofnięciu migracji, aby nie nadpisywać późniejszych opisów. Zamrożony kalendarz i pakiety zawodników pozostają niezmienione; powtórne wdrożenie nie nadpisuje doprecyzowanych etykiet.
+
 Pliki wymagane w commicie:
 
 - `backend/apps/players/fixtures/releases/worlds_players_2026_10_18_v1.json.gz`;

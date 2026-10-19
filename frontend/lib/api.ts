@@ -279,12 +279,34 @@ export function useScoreDistribution(dailyId?: number, userScore?: number, enabl
   })
 }
 
-export function useLeaderboard(dailyId?: number, enabled = true) {
-  return useQuery({
-    queryKey: ['leaderboard', dailyId ?? 'all'],
-    queryFn: async () =>
-      (await api.get('/leaderboard/', { params: dailyId ? { daily_id: dailyId } : {} })).data,
-    enabled: enabled && (dailyId == null || isValidDailyId(dailyId)),
+export type LeaderboardLimit = 10 | 25 | 50 | 100
+export type LeaderboardEntry = {
+  username: string
+  is_guest: boolean
+  total_points: number
+  games_played: number
+  avg_points: number | null
+  best_score: number | null
+  diamond_picks: number
+  legendary_answers: number
+  rank: number | null
+}
+export type LeaderboardResult = { results: LeaderboardEntry[]; limit: LeaderboardLimit; total_players: number; current_player: LeaderboardEntry | null }
+type LeaderboardOptions = { limit?: LeaderboardLimit; guestToken?: string }
+export const leaderboardKey = (dailyId: number | undefined, limit: LeaderboardLimit, guestToken: string | undefined, date: string) => ['leaderboard', dailyId ?? 'all', limit, guestToken ?? null, date] as const
+
+export function useLeaderboard(dailyId?: number, enabled = true, { limit = 50, guestToken }: LeaderboardOptions = {}) {
+  const date = useGameDate()
+  const token = guestToken?.trim()
+  return useQuery<LeaderboardResult>({
+    queryKey: leaderboardKey(dailyId, limit, token, date),
+    queryFn: async ({ signal }) => {
+      const payload = { limit, ...(dailyId != null ? { daily_id: dailyId } : {}) }
+      return token
+        ? (await api.post('/leaderboard/', { ...payload, guest_token: token }, { signal })).data
+        : (await api.get('/leaderboard/', { params: payload, signal })).data
+    },
+    enabled: enabled && (dailyId == null || isValidDailyId(dailyId)) && (guestToken === undefined || !!token),
     staleTime: 60_000,
   })
 }

@@ -13,6 +13,7 @@ const fixture = vi.hoisted(() => ({
 }))
 vi.mock('next/navigation', () => ({ useParams: () => ({ id: fixture.id }) }))
 vi.mock('@/lib/store', () => ({ usePrefs: (select: (state: any) => unknown) => select({ locale: 'pl', guestToken: 'alice', ensureGuestToken: () => 'alice' }) }))
+vi.mock('@/lib/guest-profile', () => ({ useGuestToken: () => 'alice' }))
 vi.mock('@/lib/daily', async (original) => ({ ...await original<typeof import('@/lib/daily')>(), useGameDate: () => '2026-10-17' }))
 vi.mock('@/lib/api', () => ({
   api: { get: vi.fn() }, useDailyToday: () => fixture.daily, useDaily: () => fixture.daily,
