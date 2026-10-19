@@ -1,5 +1,14 @@
 import type { RarityTier } from './api'
 
+export const rarityPalette = {
+  common: { background: '#ffffff', text: '#536056' },
+  uncommon: { background: '#baf0cf', text: '#187240' },
+  rare: { background: '#d4e6fb', text: '#245b9e' },
+  epic: { background: '#e4c9f5', text: '#7850a5' },
+  legendary: { background: '#ffe58c', text: '#865900' },
+  diamond: { background: '#dcf7ff', text: '#126d8c' },
+} as const satisfies Record<RarityTier | 'diamond', { background: string; text: string }>
+
 export function rarityForPercent(percent: number | null | undefined): RarityTier | null {
   if (typeof percent !== 'number' || !Number.isFinite(percent) || percent < 0 || percent > 100) return null
   if (percent < 2) return 'legendary'

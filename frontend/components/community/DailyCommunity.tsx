@@ -84,9 +84,13 @@ export default function DailyCommunity({ dailyId, state }: { dailyId: number; st
       </ol>}
     </div>
     <aside className="min-w-0 space-y-5">
-      <div className="space-y-2 border bg-white p-5" style={{ borderColor: 'var(--line)' }}>
-        <a href={author.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold underline-offset-4 hover:underline" style={{ color: 'var(--gold)' }}>{author.name}</a>
-        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-faint)' }}>{author.description}</p>
+      <div className="flex items-start gap-3 border bg-white p-5" style={{ borderColor: 'var(--line)' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/authors/axword.png" alt="" width={40} height={40} className="h-10 w-10 shrink-0 object-cover" />
+        <div className="min-w-0 space-y-1">
+          <a href={author.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold underline-offset-4 hover:underline" style={{ color: 'var(--gold)' }}>{author.name}</a>
+          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-faint)' }}>{author.description}</p>
+        </div>
       </div>
       <div className="border bg-white" style={{ borderColor: 'var(--line)' }}>
         <div className="space-y-3 border-b p-5" style={{ borderColor: 'var(--line)' }}>

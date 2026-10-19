@@ -3,7 +3,7 @@ import { Check, ChevronRight } from 'lucide-react'
 import { DailySlot, GameAnswer } from '@/lib/api'
 import { roleLabel } from '@/lib/flags'
 import { usePrefs } from '@/lib/store'
-import { rarityForPercent } from '@/lib/rarity'
+import { rarityForPercent, rarityPalette } from '@/lib/rarity'
 import RarityIndicator from './RarityIndicator'
 import PlayerPortrait from './PlayerPortrait'
 
@@ -23,7 +23,7 @@ export default function SlotList({ slots, answers, onPick, disabled, inspect = f
           <img src={`/roles/${slot.role}.svg`} alt="" aria-hidden className="w-6 h-6" style={{ filter: 'brightness(.3)' }} />
         </span>
         return (
-          <button key={slot.id} data-rarity={rarity ?? undefined} onClick={() => !disabled && (!solved || inspect) && onPick(slot)} disabled={disabled || (solved && !inspect)} className="rarity-surface flex items-center gap-3 p-4 text-left bg-white" style={{ borderColor: 'var(--line)', opacity: disabled && !solved ? .6 : 1 }}>
+          <button key={slot.id} data-rarity={rarity ?? undefined} onClick={() => !disabled && (!solved || inspect) && onPick(slot)} disabled={disabled || (solved && !inspect)} className="rarity-surface flex items-center gap-3 p-4 text-left bg-white" style={{ borderColor: 'var(--line)', backgroundColor: rarity ? rarityPalette[rarity].background : undefined, opacity: disabled && !solved ? .6 : 1 }}>
             {solved ? <PlayerPortrait url={answer.player_portrait_url} fallback={roleIcon} /> : roleIcon}
             <span className="flex-1 min-w-0">
               <span className="block text-[13px] font-bold mb-1">{roleLabel(slot.role, locale)}{count != null ? ` · ${count} ${locale === 'pl' ? 'zawodników' : 'players'}` : ''}{solved ? ` · ${answer.player_nickname}` : ''}</span>

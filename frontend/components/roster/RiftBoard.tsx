@@ -3,7 +3,7 @@ import { useId, type CSSProperties } from 'react'
 import { Check, Plus } from 'lucide-react'
 import { DailySlot, GameAnswer, Role } from '@/lib/api'
 import { roleLabel } from '@/lib/flags'
-import { rarityForPercent } from '@/lib/rarity'
+import { rarityForPercent, rarityPalette } from '@/lib/rarity'
 import RarityIndicator from './RarityIndicator'
 import PlayerPortrait from './PlayerPortrait'
 import { usePrefs } from '@/lib/store'
@@ -54,7 +54,7 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
         const pick = () => { if (!disabled && (!solved || inspect)) onPick(slot) }
         return (
           <div key={slot.id} className="rift-position" style={{ '--left': pos.left, '--top': pos.top, zIndex: activeSlotId === slot.id ? 2 : 1 } as CSSProperties}>
-            <button className="rift-card rarity-surface" data-state={nodeState} data-rarity={rarity ?? undefined} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
+            <button className="rift-card rarity-surface" data-state={nodeState} data-rarity={rarity ?? undefined} style={{ backgroundColor: rarity ? rarityPalette[rarity].background : undefined }} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
               <span className="rift-card-head">
                 {solved ? <PlayerPortrait url={portrait} fallback={roleIcon} /> : roleIcon}
                 <span className="flex-1 min-w-0">
@@ -73,7 +73,7 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
                 </div>
               )}
             </button>
-            <button className="rift-marker rarity-surface" data-state={nodeState} data-rarity={rarity ?? undefined} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
+            <button className="rift-marker rarity-surface" data-state={nodeState} data-rarity={rarity ?? undefined} style={{ backgroundColor: rarity ? rarityPalette[rarity].background : undefined }} disabled={disabled || (solved && !inspect)} onClick={pick} aria-label={ariaLabel} aria-describedby={`${boardId}-${slot.id}`}>
               {count != null ? <strong aria-hidden className="tabular">{count}</strong> : solved ? <PlayerPortrait url={portrait} className="rift-player-portrait" fallback={<>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={`/roles/${slot.role}.svg`} alt="" aria-hidden draggable={false} />

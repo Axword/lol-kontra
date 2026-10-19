@@ -11,6 +11,7 @@ describe('rarity percentage', () => {
     expect(container.textContent).toBe('41,7%')
     expect(container.firstElementChild?.getAttribute('title')).toBe('Diamentowy')
     expect(container.firstElementChild?.getAttribute('data-rarity')).toBe('diamond')
+    expect(getComputedStyle(container.firstElementChild!).color).toBe('rgb(18, 109, 140)')
   })
 
   it('keeps a zero percentage gold when no first-pick award exists', () => {
@@ -18,6 +19,7 @@ describe('rarity percentage', () => {
     expect(screen.queryByRole('img')).toBeNull()
     expect(container.textContent).toBe('0%')
     expect(container.firstElementChild?.getAttribute('data-rarity')).toBe('legendary')
+    expect(getComputedStyle(container.firstElementChild!).color).toBe('rgb(134, 89, 0)')
   })
 
   it.each([null, undefined, NaN, Infinity, -1, 101])('does not invent rarity for an unknown or invalid percentage %s', (percent) => {
@@ -36,6 +38,8 @@ describe('rarity percentage', () => {
     const { container } = render(<RarityIndicator percent={Number(percent)} locale="pl" />)
     expect(container.textContent).toBe(display)
     expect(container.firstElementChild?.getAttribute('title')).toBe(label)
+    const colors: Record<string, string> = { Złoty: 'rgb(134, 89, 0)', Epicki: 'rgb(120, 80, 165)', Rzadki: 'rgb(36, 91, 158)', Niepospolity: 'rgb(24, 114, 64)', Pospolity: 'rgb(83, 96, 86)' }
+    expect(getComputedStyle(container.firstElementChild!).color).toBe(colors[label])
     expect(screen.queryByRole('img')).toBeNull()
   })
 

@@ -130,12 +130,17 @@ describe('the map and mobile roster show server answers', () => {
     expect(card.textContent).not.toMatch(/pkt|pts/)
     expect(card.textContent).not.toContain('%')
     expect(card.hasAttribute('data-rarity')).toBe(false)
+    expect(card.style.backgroundColor).toBe('')
   })
 
   it.each([
-    [0, 'legendary'], [1.99, 'legendary'], [2, 'epic'], [4.99, 'epic'],
-    [5, 'rare'], [9.09, 'rare'], [14.99, 'rare'], [15, 'uncommon'], [24.99, 'uncommon'], [25, 'common'], [100, 'common'],
-  ])('uses the same rarity for %s%% while playing, reviewing and on mobile', (percent, tier) => {
+    [0, 'legendary', 'rgb(255, 229, 140)', 'rgb(134, 89, 0)'], [1.99, 'legendary', 'rgb(255, 229, 140)', 'rgb(134, 89, 0)'],
+    [2, 'epic', 'rgb(228, 201, 245)', 'rgb(120, 80, 165)'], [4.99, 'epic', 'rgb(228, 201, 245)', 'rgb(120, 80, 165)'],
+    [5, 'rare', 'rgb(212, 230, 251)', 'rgb(36, 91, 158)'], [9.09, 'rare', 'rgb(212, 230, 251)', 'rgb(36, 91, 158)'],
+    [14.99, 'rare', 'rgb(212, 230, 251)', 'rgb(36, 91, 158)'], [15, 'uncommon', 'rgb(186, 240, 207)', 'rgb(24, 114, 64)'],
+    [24.99, 'uncommon', 'rgb(186, 240, 207)', 'rgb(24, 114, 64)'], [25, 'common', 'rgb(255, 255, 255)', 'rgb(83, 96, 86)'],
+    [100, 'common', 'rgb(255, 255, 255)', 'rgb(83, 96, 86)'],
+  ])('uses the same rarity for %s%% while playing, reviewing and on mobile', (percent, tier, background, text) => {
     const { container } = render(<>
       <RiftBoard slots={slots} answers={{ 11: { ...solved, rarity_percent: Number(percent) } }} onPick={vi.fn()} />
       <RiftBoard slots={slots} answers={{ 11: { ...solved, rarity_percent: Number(percent) } }} onPick={vi.fn()} inspect />
@@ -145,6 +150,8 @@ describe('the map and mobile roster show server answers', () => {
     expect(surfaces.length).toBe(5)
     surfaces.forEach((surface) => {
       expect(surface.getAttribute('data-rarity')).toBe(tier)
+      expect(getComputedStyle(surface).backgroundColor).toBe(background)
+      expect(getComputedStyle(surface.querySelector('.rarity-indicator')!).color).toBe(text)
       expect(surface.textContent).not.toMatch(/pkt|pts/)
     })
     expect(container.querySelectorAll('svg[aria-label="Diamentowy wybór"]').length).toBe(0)
@@ -158,7 +165,11 @@ describe('the map and mobile roster show server answers', () => {
     </>)
     const surfaces = container.querySelectorAll('.rarity-surface[data-rarity]')
     expect(surfaces.length).toBe(3)
-    surfaces.forEach((surface) => expect(surface.getAttribute('data-rarity')).toBe('diamond'))
+    surfaces.forEach((surface) => {
+      expect(surface.getAttribute('data-rarity')).toBe('diamond')
+      expect(getComputedStyle(surface).backgroundColor).toBe('rgb(220, 247, 255)')
+      if (percent !== null) expect(getComputedStyle(surface.querySelector('.rarity-indicator')!).color).toBe('rgb(18, 109, 140)')
+    })
     expect(container.querySelectorAll('svg[aria-label="Diamentowy wybór"]').length).toBe(percent === null ? 0 : 3)
     expect(container.querySelector('[data-rarity="legendary"]')).toBeNull()
   })

@@ -31,6 +31,18 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('daily community', () => {
+  it('shows the shared square author avatar while preserving the configured author link', () => {
+    mocks.query.data = { ...data, author: { name: 'Guest author', url: 'https://x.com/guest_author', description: 'Autor specjalny' } }
+    const { container } = render(<DailyCommunity dailyId={19} state={finished} />)
+    const author = screen.getByRole('link', { name: 'Guest author' })
+    expect(author.getAttribute('href')).toBe('https://x.com/guest_author')
+    const avatar = container.querySelector('img[src="/authors/axword.png"]')
+    expect(avatar?.getAttribute('alt')).toBe('')
+    expect(avatar?.getAttribute('width')).toBe('40')
+    expect(avatar?.getAttribute('height')).toBe('40')
+    expect(container.querySelector('svg.lucide-twitter')).toBeNull()
+  })
+
   it('keeps comments and roster spoilers hidden before finishing even if the response accidentally contains them', () => {
     render(<DailyCommunity dailyId={19} state={{ ...finished, is_over: false }} />)
     expect(screen.getByRole('link', { name: 'Axword' }).getAttribute('href')).toBe('https://x.com/AxwordLol')
