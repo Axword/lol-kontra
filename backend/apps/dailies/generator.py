@@ -51,8 +51,8 @@ CONDITION_POOL = [
     ('origin', MEDIUM, 'country', 'eq', 'PL', 'Polak', 'Polish'),
     ('origin', MEDIUM, 'country', 'eq', 'FR', 'Francuz', 'French'),
     ('origin', MEDIUM, 'country', 'eq', 'VN', 'Wietnamczyk', 'Vietnamese'),
-    ('origin', EASY, 'continent', 'eq', 'Europe', 'Europejczyk', 'European'),
-    ('origin', MEDIUM, 'continent', 'eq', 'North America', 'Z Ameryki Północnej', 'North American'),
+    ('origin', EASY, 'birth_continent', 'eq', 'Europe', 'Urodzony w Europie', 'Born in Europe'),
+    ('origin', MEDIUM, 'birth_continent', 'eq', 'North America', 'Urodzony w Ameryce Północnej', 'Born in North America'),
 
     # --- drużyny ---
     ('team', EASY, 'team', 'eq', 't1', 'Grał w T1', 'Played for T1'),
@@ -113,6 +113,9 @@ STAT_THEMES = {
     'worlds_top5_champion': 'worlds_top5_champion',
     'career_top5_champion': 'career_top5_champion',
 }
+
+# Existing boards keep their nationality-based validator and origin theme.
+LEGACY_ORIGIN_THEMES = {('continent', 'Europe'): 'origin', ('continent', 'North America'): 'origin'}
 
 
 def build_condition_pool(players=None):
@@ -234,6 +237,7 @@ def validate_daily(daily):
     if [slot.role for slot in slots] != ROLE_ORDER:
         raise ValueError('Daily must contain five slots in the expected role order')
     themes = {condition[2]: condition[0] for condition in CONDITION_POOL}
+    themes['continent'] = 'origin'
     themes.update(STAT_THEMES)
     for slot in slots:
         conditions = list(slot.conditions.all())
@@ -256,7 +260,7 @@ def recent_themes(before_date, days=THEME_MEMORY_DAYS):
     conditions = DailySlotCondition.objects.filter(
         slot__daily__date__gte=since, slot__daily__date__lt=before_date
     ).values_list('condition_type', 'value')
-    by_type = {}
+    by_type = dict(LEGACY_ORIGIN_THEMES)
     for theme, _diff, ctype, _op, value, _pl, _en in CONDITION_POOL:
         by_type.setdefault((ctype, str(value)), theme)
     for ctype, value in conditions:

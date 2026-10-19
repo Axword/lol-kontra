@@ -38,6 +38,8 @@ import unicodedata
 from decimal import Decimal, InvalidOperation
 from typing import Any
 
+from apps.players.worlds_import import COUNTRIES
+
 logger = logging.getLogger(__name__)
 
 MAJOR_LEAGUES = {'lck', 'lpl', 'lec', 'lcs', 'eulcs', 'nalcs', 'lta', 'ltan', 'ltas'}
@@ -265,6 +267,13 @@ class PlayerFacts:
     @property
     def continent(self) -> str:
         return (self.player.continent or '').lower()
+
+    @property
+    def birth_continent(self) -> str:
+        country = self.attr.get('leaguepedia_country_of_birth')
+        if not isinstance(country, str):
+            return ''
+        return COUNTRIES.get(country.strip().casefold(), ('', ''))[1].lower()
 
     @property
     def residency(self) -> str:
@@ -509,6 +518,11 @@ def _c_country(f, operator, value):
 @condition('continent')
 def _c_continent(f, operator, value):
     return _match_scalar(f.continent, operator, value)
+
+
+@condition('birth_continent')
+def _c_birth_continent(f, operator, value):
+    return _match_scalar(f.birth_continent, operator, value)
 
 
 @condition('active')
@@ -791,7 +805,7 @@ def evaluate_condition(player, condition_type: str, operator: str, value: Any) -
         logger.warning('Nieznany typ warunku: %s', condition_type)
         return False
     operator = operator or 'eq'
-    scalar_types = {'role', 'country', 'continent', 'residency', 'region', 'league', 'team', 'coach', 'champion_played'}
+    scalar_types = {'role', 'country', 'continent', 'birth_continent', 'residency', 'region', 'league', 'team', 'coach', 'champion_played'}
     boolean_types = {'active', 'worlds_champion', 'worlds_early_era', 'wildcard_region', 'import_player'}
     if condition_type in {'worlds_win_rate', 'worlds_games'}:
         allowed = {'eq', 'gt', 'lt', 'gte', 'lte'}

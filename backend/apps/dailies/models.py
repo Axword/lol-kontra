@@ -92,6 +92,7 @@ class DailySlotCondition(models.Model):
         ('residency', 'Residency'),
         ('country', 'Kraj'),
         ('continent', 'Kontynent'),
+        ('birth_continent', 'Kontynent urodzenia'),
         ('team', 'Drużyna'),
         ('team_year', 'Drużyna w konkretnym roku'),
         ('league', 'Liga'),
