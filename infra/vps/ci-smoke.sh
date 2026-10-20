@@ -11,6 +11,8 @@ printf '%s' 'synthetic-ci-$NO_EXPANSION-#=+!*0123456789abcdefghijklm' > "$tempor
 python3 "$root/infra/vps/configure.py" create --django-secret-file "$temporary/django-secret" --file "$temporary/app.env" \
     --domain game.example.com --email ci@example.com
 mkdir -p "$temporary/backups"
+sudo chown root:root "$temporary/backups"
+sudo chmod 0700 "$temporary/backups"
 # Test TLS and proxy routing without asking a public ACME service for a certificate.
 sed -e '/email /a\	skip_install_trust' -e '/encode zstd gzip/a\	tls internal' "$root/infra/vps/Caddyfile" > "$temporary/Caddyfile"
 cat > "$temporary/override.yaml" <<EOF
@@ -21,9 +23,17 @@ services:
   backup:
     volumes:
       - $temporary/backups:/backups
+  backup-media:
+    volumes:
+      - $temporary/backups:/backups
 EOF
 compose() { docker compose -p words-v-ci --env-file "$temporary/app.env" -f "$root/compose.vps.yaml" -f "$temporary/override.yaml" --profile maintenance "$@"; }
-cleanup() { compose down --volumes --remove-orphans >/dev/null; rm -rf -- "$temporary"; }
+cleanup() {
+    compose down --volumes --remove-orphans >/dev/null
+    # This is our own ephemeral runner directory, never a deployed backup.
+    sudo chown -R "$(id -u):$(id -g)" "$temporary/backups"
+    rm -rf -- "$temporary"
+}
 trap cleanup EXIT
 compose build db api frontend
 compose run --rm --no-deps caddy caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
@@ -46,6 +56,9 @@ for path in / /healthz/ /api/v1/dailies/today/ /admin/login/ /static/admin/css/b
 done
 compose exec -T -e PROFILE_MIGRATION_SMOKE=create api python manage.py shell < "$root/infra/vps/profile-smoke.py"
 compose run --rm --no-deps backup
+compose run --rm --no-deps -e BACKUP_STAMP=ci backup-media
+sudo test -s "$temporary/backups/media-ci.tar"
+sudo chown -R "$(id -u):$(id -g)" "$temporary/backups"
 dump=$(find "$temporary/backups" -maxdepth 1 -type f -name '*.dump' -print -quit)
 [[ -n "$dump" && -s "$dump" ]]
 compose exec -T db sh -ec 'createdb -U "$POSTGRES_USER" restore_ci'

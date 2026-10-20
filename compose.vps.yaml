@@ -167,6 +167,7 @@ services:
   backup:
     profiles: [maintenance]
     image: words-v-postgres:${POSTGRES_MAJOR:-17}
+    user: "0:0"
     entrypoint: [/bin/sh, /opt/backup.sh]
     read_only: true
     tmpfs: [/tmp]
@@ -183,6 +184,7 @@ services:
   backup-media:
     profiles: [maintenance]
     image: words-v-postgres:${POSTGRES_MAJOR:-17}
+    user: "0:0"
     entrypoint: [/bin/sh, -ec]
     command: ['umask 077; tar -cf "/backups/media-$${BACKUP_STAMP:?}.tar" -C /media .']
     read_only: true
