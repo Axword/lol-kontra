@@ -6,6 +6,7 @@ import Providers from './providers'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://lol-kontra.axword.pl'),
+  verification: { google: 'uQcprjX4WAMuuT3G4sWeBkMMaOZps6AK7zZR0vm1KxQ' },
   title: 'WORDS V — quiz League of Legends i Worlds',
   description: 'Codzienny quiz o zawodnikach League of Legends. Ułóż pięcioosobowy skład na podstawie wskazówek o Worlds, bohaterach i karierze graczy.',
   openGraph: {
