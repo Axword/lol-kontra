@@ -13,7 +13,8 @@ reCAPTCHA ustąpił po odświeżeniu panelu. Nie ponawiaj zgłoszenia dla podnie
 priorytetu — Google wskazuje, że kolejne prośby go nie zmieniają.
 Frontend udostępnia `/robots.txt` i `/sitemap.xml`. Mapa obejmuje stronę główną
 i archiwum. Strona główna ma wskazany adres kanoniczny, polski opis gry oraz
-tytuł zawierający WORDS V, League of Legends i Worlds. Opis jest dostępny także
+tytuł „Kontra Quiz League of Legends — WORLDS KONTRA”, zgodnie z docelową frazą
+właściciela. Opis jest dostępny także
 w początkowym HTML, zanim pobierze się plansza. API i panel administracyjny są
 wyłączone z crawlowania w robots.txt; ich ochrona nie zależy od robots.txt.
 

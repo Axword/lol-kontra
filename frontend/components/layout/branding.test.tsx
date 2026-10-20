@@ -22,11 +22,11 @@ beforeEach(() => {
 })
 afterEach(cleanup)
 
-describe('WORDS V branding', () => {
+describe('WORLDS KONTRA branding', () => {
   it('uses the requested five-player name in metadata and both translations', () => {
-    expect(metadata.title).toBe('WORDS V — quiz League of Legends i Worlds')
-    expect(pl.game.title).toBe('WORDS V')
-    expect(en.game.title).toBe('WORDS V')
+    expect(metadata.title).toBe('Kontra Quiz League of Legends — WORLDS KONTRA')
+    expect(pl.game.title).toBe('WORLDS KONTRA')
+    expect(en.game.title).toBe('WORLDS KONTRA')
   })
 
   it.each(['pl', 'en'] as const)('shows the same requested brand in the navigation and mobile header in %s', (locale) => {
@@ -35,8 +35,8 @@ describe('WORDS V branding', () => {
       <Sidebar open={false} onClose={vi.fn()} />
       <TopBar onMenu={vi.fn()} onHelp={vi.fn()} />
     </>)
-    expect(screen.getAllByText('WORDS V').length).toBe(2)
-    expect(screen.getAllByText('WORDS V').every((element) => element.closest('a')?.getAttribute('href') === '/')).toBe(true)
+    expect(screen.getAllByText('WORLDS KONTRA').length).toBe(2)
+    expect(screen.getAllByText('WORLDS KONTRA').every((element) => element.closest('a')?.getAttribute('href') === '/')).toBe(true)
     expect(container.textContent).not.toContain('Worlds XI')
   })
 })

@@ -113,6 +113,8 @@ class GuestProfilePreviewView(APIView):
 
 class LeaderboardInputSerializer(serializers.Serializer):
     limit = serializers.ChoiceField(choices=[10, 25, 50, 100], default=50)
+    page = serializers.IntegerField(min_value=1, max_value=1000000, default=1)
+    mode = serializers.ChoiceField(choices=['average', 'weighted'], default='average')
     daily_id = serializers.IntegerField(required=False, min_value=1)
     guest_token = GuestTokenField(r'\A[A-Za-z0-9_-]{16,64}\Z', required=False,
                                   trim_whitespace=False, max_length=64)
@@ -123,7 +125,7 @@ class LeaderboardView(APIView):
 
     def get(self, request):
         # Guest credentials are deliberately never read from query strings.
-        payload = {key: request.query_params[key] for key in ['limit', 'daily_id']
+        payload = {key: request.query_params[key] for key in ['limit', 'daily_id', 'page', 'mode']
                    if key in request.query_params}
         return self._response(request, payload)
 
@@ -135,6 +137,7 @@ class LeaderboardView(APIView):
         serializer.is_valid(raise_exception=True)
         options = serializer.validated_data
         limit = options['limit']
+        page, mode = options['page'], options['mode']
         token = options.get('guest_token')
         current_identity = ('user', request.user.pk) if request.user.is_authenticated else (
             ('guest', token) if token else None)
@@ -205,15 +208,22 @@ class LeaderboardView(APIView):
                 private_identity = ('guest' if guest else 'user', row[identity])
                 tie_breaker = guest_identity_key(row[identity]) if guest else str(row[identity]).zfill(20)
                 ranked.append((entry, private_identity, tie_breaker))
-        ranked.sort(key=lambda row: (row[0]['avg_points'], row[0]['best_score'], -row[0]['games_played'],
+        total_games = sum(row[0]['games_played'] for row in ranked)
+        population_average = sum(row[0]['total_points'] for row in ranked) / total_games if total_games else None
+        for entry, _, _ in ranked:
+            entry['weighted_points'] = (entry['total_points'] + 5 * population_average) / (entry['games_played'] + 5)
+        sort_field = 'weighted_points' if mode == 'weighted' else 'avg_points'
+        ranked.sort(key=lambda row: (row[0][sort_field], row[0]['best_score'], -row[0]['games_played'],
                                     row[0]['username'], row[0]['is_guest'], row[2]))
         current_player = None
         data = []
+        total_pages = max(1, (len(ranked) + limit - 1) // limit)
+        page = min(page, total_pages)
         for rank, (entry, private_identity, _) in enumerate(ranked, 1):
             entry['rank'] = rank
             if private_identity == current_identity:
                 current_player = entry
-            if rank <= limit:
+            if (page - 1) * limit < rank <= page * limit:
                 data.append(entry)
         if current_identity and current_player is None:
             current_player = {
@@ -221,10 +231,12 @@ class LeaderboardView(APIView):
                 'username': request.user.username if request.user.is_authenticated else guest_display_name(token, current_profile_name),
                 'is_guest': not request.user.is_authenticated,
                 'total_points': 0, 'games_played': 0, 'avg_points': None, 'best_score': None,
+                'weighted_points': None,
                 'diamond_picks': 0, 'legendary_answers': 0,
             }
         response = Response({'results': data, 'limit': limit, 'total_players': len(ranked),
-                             'current_player': current_player})
+                             'current_player': current_player, 'page': page, 'total_pages': total_pages,
+                             'mode': mode, 'prior_games': 5, 'population_average': population_average})
         if current_identity:
             response['Cache-Control'] = 'private, no-store'
         return response

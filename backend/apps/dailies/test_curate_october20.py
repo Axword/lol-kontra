@@ -23,7 +23,7 @@ class CuratedOctober20Tests(TestCase):
         install(apps, SimpleNamespace(connection=connection))
 
     def setUp(self):
-        self.daily = Daily.objects.create(date=date(2026, 10, 20), status='published')
+        self.daily = Daily.objects.create(date=date(2026, 10, 20), status='published', minimum_candidates=None)
         for pos, (role, clues) in enumerate(zip(['top', 'jungle', 'mid', 'adc', 'support'], ORIGINAL), 1):
             slot = DailySlot.objects.create(daily=self.daily, position=pos, role=role)
             for order, (kind, op, value) in enumerate(clues):

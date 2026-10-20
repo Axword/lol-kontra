@@ -216,6 +216,7 @@ export function useAnswerSlot(dailyId?: number) {
       void qc.invalidateQueries({ queryKey: ['leaderboard'] })
       if (data.is_over) void qc.invalidateQueries({ queryKey: ['guest-profile', _payload.guest_token] })
       if (data.is_over) void qc.invalidateQueries({ queryKey: ['daily-community', context.dailyId] })
+      if (data.is_over) void qc.invalidateQueries({ queryKey: ['challenge-progress', _payload.guest_token] })
     },
     onError: (_error, _payload, context) => {
       // A response can be lost after the server committed a move. Refresh before
@@ -286,22 +287,24 @@ export type LeaderboardEntry = {
   total_points: number
   games_played: number
   avg_points: number | null
+  weighted_points?: number | null
   best_score: number | null
   diamond_picks: number
   legendary_answers: number
   rank: number | null
 }
-export type LeaderboardResult = { results: LeaderboardEntry[]; limit: LeaderboardLimit; total_players: number; current_player: LeaderboardEntry | null }
-type LeaderboardOptions = { limit?: LeaderboardLimit; guestToken?: string }
-export const leaderboardKey = (dailyId: number | undefined, limit: LeaderboardLimit, guestToken: string | undefined, date: string) => ['leaderboard', dailyId ?? 'all', limit, guestToken ?? null, date] as const
+export type LeaderboardMode = 'average' | 'weighted'
+export type LeaderboardResult = { results: LeaderboardEntry[]; limit: LeaderboardLimit; total_players: number; current_player: LeaderboardEntry | null; page?: number; total_pages?: number; mode?: LeaderboardMode }
+type LeaderboardOptions = { limit?: LeaderboardLimit; guestToken?: string; page?: number; mode?: LeaderboardMode }
+export const leaderboardKey = (dailyId: number | undefined, limit: LeaderboardLimit, guestToken: string | undefined, date: string, page?: number, mode?: LeaderboardMode) => ['leaderboard', dailyId ?? 'all', limit, guestToken ?? null, date, ...(page == null && mode == null ? [] : [page ?? 1, mode ?? 'average'])] as const
 
-export function useLeaderboard(dailyId?: number, enabled = true, { limit = 50, guestToken }: LeaderboardOptions = {}) {
+export function useLeaderboard(dailyId?: number, enabled = true, { limit = 50, guestToken, page, mode }: LeaderboardOptions = {}) {
   const date = useGameDate()
   const token = guestToken?.trim()
   return useQuery<LeaderboardResult>({
-    queryKey: leaderboardKey(dailyId, limit, token, date),
+    queryKey: leaderboardKey(dailyId, limit, token, date, page, mode),
     queryFn: async ({ signal }) => {
-      const payload = { limit, ...(dailyId != null ? { daily_id: dailyId } : {}) }
+      const payload = { limit, ...(dailyId != null ? { daily_id: dailyId } : {}), ...(page != null ? { page } : {}), ...(mode ? { mode } : {}) }
       return token
         ? (await api.post('/leaderboard/', { ...payload, guest_token: token }, { signal })).data
         : (await api.get('/leaderboard/', { params: payload, signal })).data

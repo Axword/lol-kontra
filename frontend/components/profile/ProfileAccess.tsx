@@ -2,9 +2,11 @@
 import { ChangeEvent, useEffect, useId, useRef, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { api } from '@/lib/api'
-import { GuestProfile, guestProfileKey } from '@/lib/guest-profile'
+import { GuestProfile } from '@/lib/guest-profile'
 import { usePrefs } from '@/lib/store'
 import { downloadProfileAccess, MAX_PROFILE_FILE_BYTES, readProfileAccessFile } from '@/lib/profile-access'
+import { activateProfile } from '@/lib/activate-profile'
+import { LEGACY_ORIGIN } from '@/lib/domain-migration'
 
 export default function ProfileAccess({ guestToken, onRestored }: { guestToken: string; onRestored: () => void }) {
   const pl = usePrefs(s => s.locale) === 'pl'
@@ -48,17 +50,7 @@ export default function ProfileAccess({ guestToken, onRestored }: { guestToken: 
     if (!preview || busy) return
     setBusy(true)
     try {
-      await client.cancelQueries()
-      if (usePrefs.getState().guestToken !== preview.current) throw new Error('profile_changed')
-      try { usePrefs.setState({ guestToken: preview.token }) }
-      catch {
-        // Zustand updates memory before persisting. Restore the previous
-        // identity even if browser storage rejects the new value.
-        try { usePrefs.setState({ guestToken: preview.current }) } catch { /* memory is restored */ }
-        throw new Error('profile_storage_failed')
-      }
-      client.clear()
-      client.setQueryData(guestProfileKey(preview.token), preview.profile)
+      await activateProfile(client, preview.current, preview.token, preview.profile)
       onRestored()
       setPreview(null); setRestored(true); setError(false)
     } catch { if (mounted.current) setError(true) }
@@ -75,6 +67,9 @@ export default function ProfileAccess({ guestToken, onRestored }: { guestToken: 
       <label htmlFor={inputId} className="flex min-h-11 cursor-pointer items-center border px-4 text-sm font-semibold" style={{ borderColor: 'var(--line)', opacity: busy ? .5 : 1 }}>{pl ? 'Wczytaj dostęp do profilu' : 'Load profile access'}</label>
       <input id={inputId} type="file" accept=".json,application/json" disabled={busy} onChange={event => { void load(event) }} className="sr-only" />
     </div>
+    <a href={`${LEGACY_ORIGIN}/legacy-migration?next=%2Fprofile`} className="inline-block text-xs underline underline-offset-4">
+      {pl ? 'Przenieś profil ze starej domeny' : 'Recover profile from the old domain'}
+    </a>
     {busy && <p role="status" className="text-xs">{pl ? 'Sprawdzanie profilu…' : 'Checking profile…'}</p>}
     {saved && !preview && !restored && <p role="status" className="text-xs">{pl ? 'Plik dostępu został pobrany.' : 'Profile access file downloaded.'}</p>}
     {error && <p role="alert" className="text-xs" style={{ color: 'var(--bad)' }}>{pl ? 'Nie udało się wczytać profilu. Sprawdź plik i czy dane zostały już przeniesione na tę domenę. Bieżący profil nie został zmieniony.' : 'Could not load the profile. Check the file and that its data has been migrated to this domain. Your current profile has not changed.'}</p>}

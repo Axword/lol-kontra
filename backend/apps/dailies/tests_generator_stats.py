@@ -151,10 +151,10 @@ class StatisticalConditionPoolTests(TestCase):
         self.assertFalse(daily.slots.exists())
 
     def test_generation_parses_each_champion_ranking_once_for_all_champion_clues(self):
-        players = self.make_players(count=24)
+        players = self.make_players(count=30)
         for index, player in enumerate(players):
-            player.country_code = 'KR' if index < 16 else 'CN'
-            player.career_stats = worlds_stats(champion='Lux' if 8 <= index < 16 else 'Azir')
+            player.country_code = 'KR' if index < 20 else 'CN'
+            player.career_stats = worlds_stats(champion='Lux' if 10 <= index < 20 else 'Azir')
             player.save()
         daily = Daily.objects.create(date=date(2026, 1, 1))
         clues = [
@@ -174,7 +174,7 @@ class StatisticalConditionPoolTests(TestCase):
                                                        random.Random(1), set(), players, clues)
         self.assertCountEqual(parsed, [p.pk for p in players])
         self.assertEqual({p.pk for p in candidates}, {p.pk for p in generator.count_candidates(slot)})
-        self.assertEqual(len(candidates), 8)
+        self.assertEqual(len(candidates), 10)
 
     def test_less_than_win_rate_and_games_thresholds(self):
         conditions = self.stat_conditions(self.make_players(career_stats=worlds_stats(games=8, wins=3)))

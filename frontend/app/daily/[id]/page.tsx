@@ -11,6 +11,7 @@ import RosterBoard from '@/components/roster/RosterBoard'
 import GameSummary from '@/components/results/GameSummary'
 import LoadError from '@/app/load-error'
 import DailyCommunity from '@/components/community/DailyCommunity'
+import PreviousChallenges from '@/components/archive/PreviousChallenges'
 
 export default function ArchivedDailyPage() {
   const params = useParams()
@@ -94,6 +95,7 @@ export default function ArchivedDailyPage() {
         )}
 
         <DailyCommunity key={`community-${daily.data.id}`} dailyId={daily.data.id} state={state} />
+        <PreviousChallenges currentId={daily.data.id} />
       </div>
     </GameLayout>
   )

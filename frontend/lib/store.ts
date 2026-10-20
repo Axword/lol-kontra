@@ -44,10 +44,8 @@ export const usePrefs = create<Prefs>()(
     }),
     {
       name: 'worldsxi-prefs',
-      // Token gościa musi istnieć od pierwszego wejścia, także przed hydracją.
-      onRehydrateStorage: () => (state) => {
-        if (state && !state.guestToken) state.ensureGuestToken()
-      },
+      // Game/profile hooks create identities explicitly. Migration pages must
+      // inspect the existing identity before creating or replacing one.
     }
   )
 )

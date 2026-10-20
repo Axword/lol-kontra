@@ -1,15 +1,19 @@
 'use client'
-import { Daily, useArchive } from '@/lib/api'
+import { Daily } from '@/lib/api'
+import { useChallengeCalendar } from '@/lib/challenge-calendar'
 import { usePrefs } from '@/lib/store'
 import CalendarCard from './CalendarCard'
 import { isAvailableDaily, useGameDate } from '@/lib/daily'
 import LoadError from '@/app/load-error'
+import { completedDaily, useChallengeProgress } from '@/lib/challenge-progress'
 
 export default function ArchiveList() {
   const locale = usePrefs((s) => s.locale)
-  const { data, isLoading, isError, refetch } = useArchive()
+  const token = usePrefs((s) => s.guestToken)
+  const progress = useChallengeProgress(token)
   const today = useGameDate()
-  const items: Daily[] = (data?.results || []).filter((daily: Daily) => isAvailableDaily(daily, today))
+  const { data, isLoading, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage, isFetchNextPageError } = useChallengeCalendar(today)
+  const items: Daily[] = (data?.pages.flatMap(page => page.results) || []).filter((daily: Daily) => isAvailableDaily(daily, today))
 
   if (isLoading) {
     return (
@@ -32,10 +36,13 @@ export default function ArchiveList() {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-7">
+    <><div className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-7">
       {items.map((d) => (
-        <CalendarCard key={d.id} id={d.id} date={d.date} isToday={d.date === today} />
+        <CalendarCard key={d.id} id={d.id} date={d.date} isToday={d.date === today} completed={progress.isError ? undefined : completedDaily(progress.data, d.id)} />
       ))}
     </div>
+    {hasNextPage && <div className="mt-6 text-center"><button disabled={isFetchingNextPage} onClick={() => {void fetchNextPage()}}
+      className="btn disabled:opacity-50">{isFetchingNextPage ? (locale === 'pl' ? 'Wczytywanie…' : 'Loading…')
+        : isFetchNextPageError ? (locale === 'pl' ? 'Spróbuj ponownie' : 'Try again') : (locale === 'pl' ? 'Pokaż starsze wyzwania' : 'Show older challenges')}</button></div>}</>
   )
 }

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 from apps.dailies.models import Daily, DailySlot, valid_requirement_count
 from apps.dailies.serializers import DailySerializer
-from apps.dailies.generator import generate_daily, count_candidates, generate_slot
+from apps.dailies.generator import generate_daily, count_candidates, generate_slot, validate_daily
 from apps.scoring.tasks import score_daily_task
 from apps.scoring.models import ScoringConfig
 from apps.scoring.models import ScoringConfig as ScoringConfigModel
@@ -18,11 +18,10 @@ class AdminDailyViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def publish(self, request, pk=None):
         daily = self.get_object()
-        slots = list(daily.slots.prefetch_related('conditions'))
-        if (len(slots) != 5 or {slot.role for slot in slots} != {'top', 'jungle', 'mid', 'adc', 'support'}
-                or any(not valid_requirement_count(list(slot.conditions.all())) for slot in slots)):
-            return Response({'detail': 'Każda pozycja wymaga jednego trudnego lub dwóch warunków.'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            validate_daily(daily)
+        except ValueError as exc:
+            return Response({'detail': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
         from django.utils import timezone
         daily.status = 'published'
         daily.published_at = timezone.now()

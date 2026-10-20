@@ -19,11 +19,11 @@ describe('guest persistence', () => {
     expect(usePrefs.getState().ensureGuestToken()).toBe('existing-guest-identity')
     expect(usePrefs.getState().locale).toBe('en')
   })
-  it('creates a persisted identity if storage has no guest token', async () => {
+  it('does not create an identity merely by opening a migration page', async () => {
     localStorage.removeItem('worldsxi-prefs')
     await usePrefs.persist.rehydrate()
-    const token = usePrefs.getState().guestToken
+    expect(usePrefs.getState().guestToken).toBe('')
+    const token = usePrefs.getState().ensureGuestToken()
     expect(token.length).toBeGreaterThan(15)
-    expect(JSON.parse(localStorage.getItem('worldsxi-prefs')!).state.guestToken).toBe(token)
   })
 })

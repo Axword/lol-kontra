@@ -47,6 +47,8 @@ class Daily(models.Model):
     author_name = models.CharField(max_length=64, blank=True, default='', db_default='')
     author_url = models.URLField(blank=True, default='', db_default='')
     author_description = models.CharField(max_length=180, blank=True, default='', db_default='')
+    # NULL preserves the candidate policy of boards published before this rule.
+    minimum_candidates = models.PositiveSmallIntegerField(default=10, null=True, editable=False)
 
     class Meta:
         ordering = ['-date']

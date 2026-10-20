@@ -25,6 +25,7 @@ vi.mock('@/components/layout/GameLayout', () => ({ default: ({ children }: any) 
 vi.mock('@/components/roster/RosterBoard', () => ({ default: () => <div data-testid="roster">board</div> }))
 vi.mock('@/components/results/GameSummary', () => ({ default: () => <div>summary</div> }))
 vi.mock('@/components/community/DailyCommunity', () => ({ default: () => <div data-testid="community">community</div> }))
+vi.mock('@/lib/challenge-calendar', () => ({ useChallengeCalendar: () => ({...fixture.archive, data: fixture.archive.data ? {pages: [fixture.archive.data]} : undefined}) }))
 vi.mock('@/components/leaderboard/DailyTop10', () => ({ default: () => <div data-testid="daily-ranking">ranking</div> }))
 
 const query = (data: unknown = undefined) => ({ data, isLoading: false, isError: false, error: null, refetch: vi.fn() })

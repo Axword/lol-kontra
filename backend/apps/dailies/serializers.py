@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Daily, DailySlot, DailySlotCondition, valid_requirement_count
+from .models import Daily, DailySlot, DailySlotCondition
+from .generator import validate_daily
 
 class DailySlotConditionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,8 +21,10 @@ class DailySerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs.get('status') == 'published':
-            slots = list(self.instance.slots.prefetch_related('conditions')) if self.instance else []
-            if (len(slots) != 5 or {slot.role for slot in slots} != {'top', 'jungle', 'mid', 'adc', 'support'}
-                    or any(not valid_requirement_count(list(slot.conditions.all())) for slot in slots)):
-                raise serializers.ValidationError({'status': 'Każda pozycja wymaga jednego trudnego lub dwóch warunków.'})
+            if not self.instance:
+                raise serializers.ValidationError({'status': 'Najpierw przygotuj pięć pozycji w edytorze reguł.'})
+            try:
+                validate_daily(self.instance)
+            except ValueError as exc:
+                raise serializers.ValidationError({'status': str(exc)}) from exc
         return attrs

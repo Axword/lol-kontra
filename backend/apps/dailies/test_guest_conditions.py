@@ -131,6 +131,8 @@ class GuestReleaseTests(TestCase):
         guest_ids = list(guest.slots.values_list('conditions__pk', flat=True))
         upcoming.install(apps, SimpleNamespace(connection=connection), today=date(2026, 10, 20))
         boards = Daily.objects.exclude(pk=guest.pk).order_by('date')
+        # This frozen release predates the ten-answer policy.
+        boards.update(minimum_candidates=None)
         self.assertEqual(boards.count(), 10)
         for board in boards:
             validate_daily(board)
@@ -159,11 +161,11 @@ class GuestReleaseTests(TestCase):
     def test_single_rare_clue_is_allowed_but_a_broad_clue_is_rejected(self):
         daily = Daily.objects.create(date=date(2026, 12, 1))
         pool = [Player.objects.create(slug=f'rare-{n}', nickname=f'Rare {n}', primary_role='mid',
-                                     attributes={'worlds_finals': [2018] if n < 3 else []}) for n in range(20)]
+                                     attributes={'worlds_finals': [2018] if n < 10 else []}) for n in range(60)]
         clue = [('final', HARD, 'worlds_final', 'eq', True, 'Finalista Worlds', 'Worlds finalist')]
         slot, candidates = generate_slot(daily, 'mid', 1, HARD, random.Random(2), set(), pool, clue)
         self.assertEqual(slot.conditions.count(), 1)
-        self.assertEqual(len(candidates), 3)
+        self.assertEqual(len(candidates), 10)
         broad = [('origin', HARD, 'country', 'eq', 'KR', 'Koreańczyk', 'Korean')]
         with self.assertRaises(ValueError):
             generate_slot(daily, 'mid', 2, HARD, random.Random(2), set(), pool, broad)

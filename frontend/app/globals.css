@@ -130,3 +130,7 @@ button:disabled { cursor: default; }
 .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
 .scroll-thin::-webkit-scrollbar-track { background: transparent; }
 .scroll-thin::-webkit-scrollbar-thumb { background: #c4cec3; }
+/* The challenge calendar supports mouse dragging and native touch/keyboard scrolling. */
+.challenge-rail { scrollbar-width: none; -ms-overflow-style: none; overscroll-behavior-x: contain; }
+.challenge-rail::-webkit-scrollbar { display: none; }
+.challenge-rail:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }

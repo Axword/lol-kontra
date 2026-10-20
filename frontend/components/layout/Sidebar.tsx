@@ -45,8 +45,8 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
           (open ? 'translate-x-0 visible' : '-translate-x-full invisible lg:visible lg:translate-x-0')}
         style={{ background: '#fff', borderColor: 'var(--line)' }}
       >
-        <div className="h-14 shrink-0 px-6 flex items-center border-b" style={{ borderColor: 'var(--line)' }}>
-          <Link href="/" onClick={onClose} className="font-bold text-[20px] tracking-[-.055em]" style={{ color: 'var(--text)' }}>WORDS V</Link>
+        <div className="h-14 shrink-0 px-4 flex items-center border-b gap-1" style={{ borderColor: 'var(--line)' }}>
+          <Link href="/" onClick={onClose} className="font-bold text-[18px] whitespace-nowrap tracking-[-.055em]" style={{ color: 'var(--text)' }}>WORLDS KONTRA</Link>
           <button
             type="button"
             aria-label={locale === 'pl' ? 'Zamknij menu' : 'Close menu'}
@@ -84,6 +84,15 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
             )
           })}
         </nav>
+        <section className="mx-6 mt-5 border-t pt-5" style={{ borderColor: 'var(--line)' }} aria-label={locale === 'pl' ? 'Ligi' : 'Leagues'}>
+          <div className="flex items-center justify-between text-[12px]">
+            <h2 className="font-semibold">{locale === 'pl' ? 'Ligi' : 'Leagues'}</h2>
+            <span className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-faint)' }}>Soon</span>
+          </div>
+          <ul className="mt-3 space-y-3 text-[13px]" style={{ color: 'var(--text-faint)' }}>
+            {['LCK', 'LPL', 'LEC', 'LCS'].map(league => <li key={league}>{league}</li>)}
+          </ul>
+        </section>
       </aside>
     </>
   )

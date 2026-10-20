@@ -90,14 +90,14 @@ class GeneratorRegressionTests(TestCase):
             self.assertFalse(Daily.objects.exists())
 
     def test_failure_to_find_two_independent_requirements_rolls_back_daily(self):
-        self.make_pool(count=8)
+        self.make_pool(count=MIN_CANDIDATES)
         one_condition = [('status', 'easy', 'active', 'eq', False, 'Retired', 'Retired')]
         with patch('apps.dailies.generator.CONDITION_POOL', one_condition), self.assertRaises(ValueError):
             generate_daily(date=date(2026, 1, 1))
         self.assertFalse(Daily.objects.exists())
 
     def test_existing_single_requirement_board_is_not_treated_as_complete(self):
-        self.make_pool(count=8)
+        self.make_pool(count=MIN_CANDIDATES)
         daily = Daily.objects.create(date=date(2026, 1, 1))
         for index, role in enumerate(ROLE_ORDER, 1):
             slot = DailySlot.objects.create(daily=daily, position=index, role=role)
@@ -107,7 +107,7 @@ class GeneratorRegressionTests(TestCase):
         self.assertEqual(daily.slots.count(), 5)
 
     def test_validate_daily_accepts_two_requirements_without_mutating_board(self):
-        self.make_pool(count=8)
+        self.make_pool(count=MIN_CANDIDATES)
         daily = generate_daily(date=date(2026, 1, 1))
         before = list(daily.slots.values_list('id', flat=True))
         self.assertEqual(validate_daily(daily), daily)
@@ -115,7 +115,7 @@ class GeneratorRegressionTests(TestCase):
         self.assertEqual(list(daily.slots.values_list('id', flat=True)), before)
 
     def test_validate_daily_rejects_three_requirements_and_same_theme(self):
-        self.make_pool(count=8)
+        self.make_pool(count=MIN_CANDIDATES)
         daily = generate_daily(date=date(2026, 1, 1))
         slot = daily.slots.first()
         extra = DailySlotCondition.objects.create(slot=slot, condition_type='active', operator='eq', value=False)
@@ -127,7 +127,7 @@ class GeneratorRegressionTests(TestCase):
             validate_daily(daily)
 
     def test_validate_daily_rejects_trivial_role_requirements_and_too_few_candidates(self):
-        self.make_pool(count=8)
+        self.make_pool(count=MIN_CANDIDATES)
         daily = generate_daily(date=date(2026, 1, 1))
         slot = daily.slots.first()
         Player.objects.filter(primary_role=slot.role).first().delete()
@@ -152,7 +152,7 @@ class GeneratorRegressionTests(TestCase):
 
     def test_force_regeneration_cannot_remove_existing_game(self):
         from apps.submissions.models import Submission
-        self.make_pool(count=8)
+        self.make_pool(count=MIN_CANDIDATES)
         daily = generate_daily(date=date(2026, 1, 1))
         slots_before = list(daily.slots.values_list('id', flat=True))
         Submission.objects.create(daily=daily, guest_token='keep-me')
@@ -167,18 +167,18 @@ class GeneratorRegressionTests(TestCase):
         self.assertFalse(Daily.objects.exists())
 
     def test_candidate_scan_reuses_prefetched_conditions(self):
-        self.make_pool(count=8)
+        self.make_pool(count=MIN_CANDIDATES)
         daily = Daily.objects.create(date=date(2026, 1, 1))
         slot = DailySlot.objects.create(daily=daily, position=1, role='top')
         DailySlotCondition.objects.create(slot=slot, condition_type='active', operator='eq', value=False)
         DailySlotCondition.objects.create(slot=slot, condition_type='country', operator='eq', value='KR')
         with self.assertNumQueries(2):
-            self.assertEqual(len(count_candidates(slot)), 8)
+            self.assertEqual(len(count_candidates(slot)), MIN_CANDIDATES)
 
     def test_history_simulation_is_disabled_without_creating_answers(self):
         from django.core.management.base import CommandError
         from .management.commands.seed_history import Command
-        self.make_pool(count=8)
+        self.make_pool(count=MIN_CANDIDATES)
         daily = generate_daily(date=date(2026, 1, 1))
         with self.assertRaisesRegex(CommandError, 'Synthetic history is disabled'):
             Command().simulate_submissions(daily, 4)
@@ -187,7 +187,7 @@ class GeneratorRegressionTests(TestCase):
     def test_retired_history_command_cannot_clear_existing_boards_or_progress(self):
         from django.core.management.base import CommandError
         from apps.submissions.models import Submission
-        self.make_pool(count=8)
+        self.make_pool(count=MIN_CANDIDATES)
         daily = generate_daily(date=date(2026, 1, 1))
         human = Submission.objects.create(daily=daily, guest_token='real-human')
         with self.assertRaisesRegex(CommandError, 'Synthetic history is disabled'):

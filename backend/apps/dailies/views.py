@@ -49,6 +49,32 @@ class DailyViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
         daily = self.get_object()
         return Response(DailySlotSerializer(daily.slots.all(), many=True).data)
 
+    @action(detail=False, methods=['post'], url_path='progress')
+    def progress(self, request):
+        """One private request for all calendar completion markers."""
+        from django.db.models import Count, Q
+        from rest_framework import serializers
+        from apps.submissions.models import MAX_ERRORS, Submission
+        from apps.users.serializers import GuestTokenField
+
+        class Input(serializers.Serializer):
+            guest_token = GuestTokenField(r'\A[A-Za-z0-9_-]{16,64}\Z', required=False, max_length=64, trim_whitespace=False)
+
+        serializer = Input(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        games = Submission.objects.filter(is_practice=False, is_seed=False, daily__in=self.get_queryset())
+        if request.user.is_authenticated:
+            games = games.filter(user=request.user)
+        else:
+            token = serializer.validated_data.get('guest_token')
+            games = games.filter(user__isnull=True, guest_token=token) if token else games.none()
+        rows = games.annotate(slots_total=Count('daily__slots', distinct=True),
+                              correct=Count('answers', filter=Q(answers__is_correct=True), distinct=True))
+        response = Response({'results': [{'daily_id': row.daily_id,
+            'completed': row.errors_used >= MAX_ERRORS or (row.slots_total > 0 and row.correct >= row.slots_total)} for row in rows]})
+        response['Cache-Control'] = 'private, no-store'
+        return response
+
     @action(detail=True, methods=['get', 'post'], url_path='community')
     def community(self, request, pk=None):
         from .community import daily_community

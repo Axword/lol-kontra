@@ -8,6 +8,7 @@ Zasady:
   * plansza ma zaplanowany rozkład trudności: 2 łatwe, 2 średnie, 1 trudny slot.
 """
 import random
+import json
 from collections import Counter, defaultdict
 from datetime import timedelta
 from itertools import combinations
@@ -24,7 +25,7 @@ from .validators import PlayerFacts, _champion_name, evaluate_condition, player_
 
 ROLE_ORDER = ['top', 'jungle', 'mid', 'adc', 'support']
 
-MIN_CANDIDATES = 8
+MIN_CANDIDATES = 10
 MAX_CANDIDATES = 150
 THEME_MEMORY_DAYS = 14
 
@@ -96,7 +97,7 @@ CONDITION_POOL = [
     ('playin', HARD, 'worlds_playin', 'eq', True, 'Przeszedł przez play-in', 'Came through play-in'),
     ('penta', HARD, 'pentakill_worlds', 'gte', 1, 'Pentakill na Worlds', 'Pentakill at Worlds'),
     ('title', HARD, 'worlds_titles_exact', 'eq', 1, 'Wygrał Worlds dokładnie raz', 'Won Worlds exactly once'),
-    ('title', HARD, 'worlds_title_on_debut', 'eq', True, 'Wygrał Worlds w debiutanckiej edycji', 'Won Worlds on his debut'),
+    ('title', HARD, 'worlds_title_on_debut', 'eq', True, 'Wygrał Worlds będąc debiutantem turnieju', 'Won Worlds on his first appearance at the tournament'),
     ('final', HARD, 'worlds_final_lost_to_faker', 'eq', True, 'Przegrał finał Worlds z Fakerem', 'Lost a Worlds final to Faker'),
     ('masters', HARD, 'european_masters_played', 'eq', True, 'Zagrał w EU Masters / EMEA Masters', 'Played at EU / EMEA Masters'),
     ('masters', HARD, 'european_masters_won', 'eq', True, 'Wygrał EU Masters / EMEA Masters', 'Won EU / EMEA Masters'),
@@ -124,7 +125,7 @@ STAT_THEMES = {
 LEGACY_ORIGIN_THEMES = {('continent', 'Europe'): 'origin', ('continent', 'North America'): 'origin'}
 
 
-def build_condition_pool(players=None):
+def build_condition_pool(players=None, minimum=MIN_CANDIDATES):
     """Extend the static pool with statistics currently backed by enough players.
 
     Build this for each role at generation time; importing the module must not
@@ -178,7 +179,7 @@ def build_condition_pool(players=None):
             matching = sum(evaluate_condition(player, *condition[2:5]) for player, _facts in verified)
         # A broad statistic can still form a valid intersection with another
         # theme; MAX_CANDIDATES applies to the completed slot, below.
-        if matching >= MIN_CANDIDATES:
+        if matching >= minimum:
             pool.append(condition)
     return pool
 
@@ -243,6 +244,12 @@ def _independent_conditions(first, second):
 def validate_daily(daily):
     """Return a playable daily or raise without changing any stored answers."""
     slots = list(daily.slots.order_by('position').prefetch_related('conditions'))
+    validate_slots(slots, daily.minimum_candidates, bool(daily.author_name.strip()))
+    return daily
+
+
+def validate_slots(slots, minimum_candidates=MIN_CANDIDATES, curated=False):
+    """Shared publication and editor validation, including combined answers."""
     if [slot.role for slot in slots] != ROLE_ORDER:
         raise ValueError('Daily must contain five slots in the expected role order')
     themes = {condition[2]: condition[0] for condition in CONDITION_POOL}
@@ -255,17 +262,23 @@ def validate_daily(daily):
                                                  c.condition_type, c.operator, c.value) for c in conditions]))):
             raise ValueError('Every slot must contain one demanding or two independent requirements')
     pools = [count_candidates(slot) for slot in slots]
-    curated = daily.date.isoformat() == '2026-10-22' and daily.author_url == 'https://x.com/kaczy102'
     for slot, pool in zip(slots, pools):
         single = len(slot.conditions.all()) == 1
-        minimum, maximum = (3, MAX_CANDIDATES) if curated else (
-            (3, single_candidate_limit(slot.conditions.all()[0].condition_type)) if single
-            else (MIN_CANDIDATES, MAX_CANDIDATES))
+        minimum = 1 if curated else (max(MIN_CANDIDATES, minimum_candidates)
+                    if minimum_candidates is not None else (3 if single else 8))
+        maximum = MAX_CANDIDATES if curated or not single else single_candidate_limit(slot.conditions.all()[0].condition_type)
         if not minimum <= len(pool) <= maximum:
             raise ValueError(f'Slot {slot.role} needs {minimum}–{maximum} valid candidates')
+        if not curated and minimum_candidates is not None and not single:
+            conditions = list(slot.conditions.all())
+            role_pool = _role_pool(slot.role)
+            individual = [len(_candidates_for_conditions(slot.role,
+                [(None, None, c.condition_type, c.operator, c.value)], role_pool)) for c in conditions]
+            if len(pool) > 0.8 * min(individual):
+                raise ValueError(f'Slot {slot.role}: each requirement must narrow the answers')
     if not _has_distinct_roster(pools):
         raise ValueError('Daily has no solution using five different players')
-    return daily
+    return pools
 
 
 def recent_themes(before_date, days=THEME_MEMORY_DAYS):
@@ -285,6 +298,16 @@ def recent_themes(before_date, days=THEME_MEMORY_DAYS):
     return used
 
 
+def requirement_key(condition_type, operator, value):
+    return condition_type, operator, json.dumps(value, sort_keys=True)
+
+
+def recent_requirements(before_date, days=4):
+    return Counter(requirement_key(*row) for row in DailySlotCondition.objects.filter(
+        slot__daily__date__gte=before_date - timedelta(days=days), slot__daily__date__lt=before_date
+    ).values_list('condition_type', 'operator', 'value'))
+
+
 def _write_conditions(slot, chosen):
     slot.conditions.all().delete()
     for order, (_theme, _diff, ctype, operator, value, label_pl, label_en) in enumerate(chosen):
@@ -299,7 +322,7 @@ def _write_conditions(slot, chosen):
         )
 
 
-def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None, condition_pool=None, board_themes=None):
+def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None, condition_pool=None, board_themes=None, used_requirements=None):
     """Select a narrow standalone achievement or two materially useful clues."""
     pool = pool if pool is not None else _role_pool(role)
     if not pool:
@@ -336,6 +359,7 @@ def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None
         score += 2 * sum(used_themes.get(c[0], 0) if isinstance(used_themes, dict)
                          else int(c[0] in used_themes) for c in chosen) / len(chosen)
         score += sum(100 for c in chosen if c[0] in (board_themes or set()))
+        score += 45 * sum((used_requirements or {}).get(requirement_key(*c[2:5]), 0) for c in chosen) / len(chosen)
         score += 3 if not any(c[1] == difficulty for c in chosen) else 0
         if len(chosen) == 1:
             score += 1
@@ -343,7 +367,7 @@ def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None
 
     for i, c in enumerate(conditions):
         n = len(matches[i])
-        if c[2] in SINGLE_REQUIREMENT_TYPES and 3 <= n <= min(single_candidate_limit(c[2]), len(pool) * 0.25):
+        if c[2] in SINGLE_REQUIREMENT_TYPES and MIN_CANDIDATES <= n <= min(single_candidate_limit(c[2]), len(pool) * 0.25):
             remember([c], matches[i])
     for first, second in combinations(range(len(conditions)), 2):
         chosen = [conditions[first], conditions[second]]
@@ -390,8 +414,12 @@ def generate_daily(date=None, seed=None, force=False):
             raise ValueError('Cannot regenerate a daily with existing submissions')
         daily.slots.all().delete()
 
+    daily.minimum_candidates = MIN_CANDIDATES
+    daily.save(update_fields=['minimum_candidates'])
+
     rnd = random.Random(f'{date}-{seed}')
     used_themes = recent_themes(date)
+    used_requirements = recent_requirements(date)
     plan = list(DIFFICULTY_PLAN)
     rnd.shuffle(plan)
 
@@ -405,7 +433,7 @@ def generate_daily(date=None, seed=None, force=False):
     for position, (role, difficulty) in enumerate(zip(ROLE_ORDER, plan), start=1):
         pool = _role_pool(role)
         slot, candidates = generate_slot(daily, role, position, difficulty, rnd, used_themes, pool,
-                                         board_themes=board_themes)
+                                         board_themes=board_themes, used_requirements=used_requirements)
         candidate_pools.append(candidates)
         for cond in slot.conditions.all():
             theme = STAT_THEMES.get(cond.condition_type) or theme_by_condition.get((cond.condition_type, str(cond.value)))

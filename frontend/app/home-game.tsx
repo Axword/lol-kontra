@@ -1,6 +1,5 @@
 'use client'
 import { useEffect } from 'react'
-import Link from 'next/link'
 import { useDailyToday, useGameState } from '@/lib/api'
 import { usePrefs } from '@/lib/store'
 import GameLayout from '@/components/layout/GameLayout'
@@ -8,6 +7,7 @@ import RosterBoard from '@/components/roster/RosterBoard'
 import GameSummary from '@/components/results/GameSummary'
 import LoadError from './load-error'
 import DailyCommunity from '@/components/community/DailyCommunity'
+import PreviousChallenges from '@/components/archive/PreviousChallenges'
 
 export default function HomePage() {
   const locale = usePrefs((s) => s.locale)
@@ -25,10 +25,10 @@ export default function HomePage() {
     return (
       <GameLayout>
         <div className="py-20 text-center">
-          <h1 className="text-[28px] font-semibold">WORDS V</h1>
+          <h1 className="text-[28px] font-semibold">WORLDS KONTRA</h1>
           <p className="mt-3 text-[13px]" style={{ color: 'var(--text-dim)' }}>
             {locale === 'pl'
-              ? 'Codzienny quiz League of Legends — dopasuj pięciu zawodników do wskazówek o Worlds i ich karierze.'
+              ? 'Kontra Quiz League of Legends — dopasuj pięciu zawodników do wskazówek o Worlds i ich karierze.'
               : 'A daily League of Legends quiz — match five players to clues about Worlds and their careers.'}
           </p>
           <p className="mt-4 text-[13px]" style={{ color: 'var(--text-faint)' }}>
@@ -93,16 +93,8 @@ export default function HomePage() {
           )}
 
 
-          <div className="flex justify-center pt-2">
-            <Link
-              href="/archiwum"
-              className="text-[13px] font-semibold underline underline-offset-4 transition"
-              style={{ color: 'var(--text-faint)' }}
-            >
-              {locale === 'pl' ? 'Wcześniejsze plansze' : 'Earlier boards'}
-            </Link>
-          </div>
           <DailyCommunity key={`community-${daily.data.id}`} dailyId={daily.data.id} state={state} />
+          <PreviousChallenges currentId={daily.data.id} />
         </div>
       )}
     </GameLayout>

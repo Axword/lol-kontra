@@ -1,7 +1,7 @@
 const FORMAT = 'words-v-guest-access'
 export const MAX_PROFILE_FILE_BYTES = 4096
 
-function validToken(value: unknown): value is string {
+export function validToken(value: unknown): value is string {
   return typeof value === 'string' && value.length >= 16 && value.length <= 64
     && value.trim() === value && /^[A-Za-z0-9_-]+$/u.test(value)
 }
@@ -29,7 +29,7 @@ export function downloadProfileAccess(guestToken: string) {
   const url = URL.createObjectURL(new Blob([content], { type: 'application/json' }))
   const link = document.createElement('a')
   link.href = url
-  link.download = 'words-v-profil.json'
+  link.download = 'worlds-kontra-profil.json'
   document.body.appendChild(link)
   link.click()
   link.remove()

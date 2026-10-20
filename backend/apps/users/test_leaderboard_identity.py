@@ -134,6 +134,7 @@ class PersonalizedLeaderboardTests(TestCase):
         self.assertEqual(response.data['current_player'], {
             'rank': None, 'username': 'Gość-Waiting', 'is_guest': True,
             'games_played': 0, 'total_points': 0, 'avg_points': None, 'best_score': None,
+            'weighted_points': None,
             'diamond_picks': 0, 'legendary_answers': 0,
         })
         self.assertEqual(response.data['total_players'], 0)
