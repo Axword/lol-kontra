@@ -1,0 +1,10 @@
+[Unit]
+Description=WORDS V logical recovery files before OVH managed backup
+After=words-v.service
+ConditionPathExists=/opt/words-v/current/compose.vps.yaml
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/usr/local/sbin/words-v-local-backup
+TimeoutStartSec=3600

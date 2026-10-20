@@ -4,8 +4,8 @@ set -euo pipefail
 umask 077
 APP_ROOT=/opt/words-v
 ENV_FILE=/etc/words-v/app.env
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-RELEASE_DIR=$(cd -- "$SCRIPT_DIR/../.." && pwd)
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)
+RELEASE_DIR=$(cd -- "$SCRIPT_DIR/../.." && pwd -P)
 export RELEASE_SHA=${RELEASE_SHA:-$(basename "$RELEASE_DIR")}
 require_root() { [[ $(id -u) == 0 ]] || { echo 'Run this command with sudo.' >&2; exit 1; }; }
 compose() { docker compose --project-name words-v --env-file "$ENV_FILE" -f "$RELEASE_DIR/compose.vps.yaml" "$@"; }

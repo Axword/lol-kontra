@@ -85,6 +85,22 @@ class ConfigurationTests(unittest.TestCase):
         self.assertIn('--django-secret-file', result.stderr)
         self.assertNotIn(self.secret, result.stdout + result.stderr)
 
+    @unittest.skipIf(os.name == 'nt', 'Requires native POSIX symlinks and Bash')
+    def test_starting_through_current_symlink_keeps_the_immutable_release_identity(self):
+        sha = 'b' * 40
+        release = Path(self.directory.name) / 'releases' / sha
+        scripts = release / 'infra' / 'vps'
+        scripts.mkdir(parents=True)
+        shutil.copyfile(ROOT / 'infra/vps/common.sh', scripts / 'common.sh')
+        current = Path(self.directory.name) / 'current'
+        current.symlink_to(release, target_is_directory=True)
+        environment = {key: value for key, value in os.environ.items() if key != 'RELEASE_SHA'}
+        result = subprocess.run(['bash', '-c', 'source "$1"; printf "%s\\n" "$RELEASE_DIR" "$RELEASE_SHA"',
+                                 'release-test', str(current / 'infra/vps/common.sh')],
+                                env=environment, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.splitlines(), [str(release.resolve()), sha])
+
     @unittest.skipUnless(shutil.which('docker'), 'Docker CLI is required for Compose validation')
     def test_resolved_compose_preserves_literal_secret_and_exposes_only_https_proxy(self):
         # Own generated credentials only. Never render production configuration.

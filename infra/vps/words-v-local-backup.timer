@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily WORDS V logical backup before the OVH 09:47 UTC snapshot
+
+[Timer]
+OnCalendar=*-*-* 09:30:00 UTC
+RandomizedDelaySec=60
+Persistent=true
+
+[Install]
+WantedBy=timers.target
