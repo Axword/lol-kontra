@@ -43,9 +43,9 @@ CONDITION_POOL = [
     # --- liga / region ---
     ('league', EASY, 'residency', 'eq', 'LCK', 'Grał w LCK', 'Played in LCK'),
     ('league', EASY, 'residency', 'eq', 'LPL', 'Grał w LPL', 'Played in LPL'),
-    ('league', EASY, 'residency', 'eq', 'LEC', 'Grał w LEC', 'Played in LEC'),
-    ('league', EASY, 'residency', 'eq', 'LCS', 'Grał w LCS', 'Played in LCS'),
-    ('league', HARD, 'leagues_min', 'gte', 2, 'Grał w dwóch różnych ligach głównych', 'Played in two major leagues'),
+    ('league', EASY, 'residency', 'eq', 'LEC', 'Grał w LEC / EU LCS', 'Played in LEC / EU LCS'),
+    ('league', EASY, 'residency', 'eq', 'LCS', 'Grał w LCS / NA LCS', 'Played in LCS / NA LCS'),
+    ('league', HARD, 'leagues_min', 'gte', 2, 'Grał w min. 2 z lig: LCK, LPL, LEC, LCS, LTA', 'Played in at least 2 of LCK, LPL, LEC, LCS, LTA'),
 
     # --- pochodzenie ---
     ('origin', EASY, 'country', 'eq', 'KR', 'Koreańczyk', 'Korean'),
@@ -59,7 +59,7 @@ CONDITION_POOL = [
     ('origin', MEDIUM, 'birth_continent', 'eq', 'North America', 'Urodzony w Ameryce Północnej', 'Born in North America'),
 
     # --- drużyny ---
-    ('team', EASY, 'team', 'eq', 't1', 'Grał w T1', 'Played for T1'),
+    ('team', EASY, 'team', 'eq', 't1', 'Grał w T1 / SKT T1', 'Played for T1 / SKT T1'),
     ('team', EASY, 'team', 'eq', 'fnatic', 'Grał we Fnatic', 'Played for Fnatic'),
     ('team', EASY, 'team', 'eq', 'g2', 'Grał w G2', 'Played for G2'),
     ('team', MEDIUM, 'team', 'eq', 'geng', 'Grał w Gen.G', 'Played for Gen.G'),
@@ -67,17 +67,17 @@ CONDITION_POOL = [
     ('team', MEDIUM, 'team', 'eq', 'edg', 'Grał w EDG', 'Played for EDG'),
     ('team', MEDIUM, 'team', 'eq', 'c9', 'Grał w Cloud9', 'Played for Cloud9'),
     ('team', MEDIUM, 'team', 'eq', 'tsm', 'Grał w TSM', 'Played for TSM'),
-    ('team', MEDIUM, 'team', 'eq', 'dwg', 'Grał w DWG KIA', 'Played for DWG KIA'),
+    ('team', MEDIUM, 'team', 'eq', 'dwg', 'Grał w DAMWON / DWG KIA / Dplus KIA', 'Played for DAMWON / DWG KIA / Dplus KIA'),
     ('team', MEDIUM, 'team', 'eq', 'jdg', 'Grał w JDG', 'Played for JDG'),
-    ('team', HARD, 'worlds_teams_min', 'gte', 3, 'Na Worlds w barwach 3 różnych organizacji', '3+ orgs at Worlds'),
-    ('team', HARD, 'worlds_teams_min', 'gte', 2, 'Na Worlds w barwach 2 różnych organizacji', '2+ orgs at Worlds'),
+    ('team', HARD, 'worlds_teams_min', 'gte', 3, 'Grał na Worlds w barwach min. 3 organizacji', 'Played for at least 3 organizations at Worlds'),
+    ('team', HARD, 'worlds_teams_min', 'gte', 2, 'Grał na Worlds w barwach min. 2 organizacji', 'Played for at least 2 organizations at Worlds'),
 
     # --- występy na Worlds ---
-    ('worlds_count', EASY, 'worlds_count_min', 'gte', 2, 'Min. 2 występy na Worlds', '2+ Worlds appearances'),
-    ('worlds_count', MEDIUM, 'worlds_count_min', 'gte', 4, 'Min. 4 występy na Worlds', '4+ Worlds appearances'),
-    ('worlds_count', HARD, 'worlds_count_min', 'gte', 6, 'Weteran – min. 6 występów na Worlds', '6+ Worlds appearances'),
-    ('worlds_era', HARD, 'worlds_early_era', 'eq', True, 'Grał na Worlds w erze S1-S3', 'Played Worlds in S1-S3'),
-    ('worlds_debut', MEDIUM, 'worlds_debut_year', 'lte', 2015, 'Debiut na Worlds do 2015 roku', 'Worlds debut by 2015'),
+    ('worlds_count', EASY, 'worlds_count_min', 'gte', 2, 'Zagrał w min. 2 edycjach Worlds', 'Played in at least 2 editions of Worlds'),
+    ('worlds_count', MEDIUM, 'worlds_count_min', 'gte', 4, 'Zagrał w min. 4 edycjach Worlds', 'Played in at least 4 editions of Worlds'),
+    ('worlds_count', HARD, 'worlds_count_min', 'gte', 6, 'Zagrał w min. 6 edycjach Worlds', 'Played in at least 6 editions of Worlds'),
+    ('worlds_era', HARD, 'worlds_early_era', 'eq', True, 'Grał na Worlds 2011, 2012 lub 2013', 'Played at Worlds in 2011, 2012 or 2013'),
+    ('worlds_debut', MEDIUM, 'worlds_debut_year', 'lte', 2015, 'Debiutował na Worlds w 2015 lub wcześniej', 'First Worlds appearance in 2015 or earlier'),
     ('worlds_last', MEDIUM, 'worlds_last_year', 'gte', 2023, 'Grał na Worlds w 2023 lub później', 'Worlds 2023 or later'),
 
     # --- osiągnięcia ---
@@ -85,17 +85,17 @@ CONDITION_POOL = [
     ('title', HARD, 'worlds_titles_min', 'gte', 2, 'Min. 2 tytuły Worlds', '2+ Worlds titles'),
     ('final', MEDIUM, 'worlds_final', 'eq', True, 'Grał w finale Worlds', 'Played a Worlds final'),
     ('final', HARD, 'worlds_final_lost', 'eq', True, 'Przegrał finał Worlds', 'Lost a Worlds final'),
-    ('deep_run', MEDIUM, 'worlds_semifinal', 'eq', True, 'Dotarł do półfinału Worlds', 'Reached a Worlds semifinal'),
-    ('deep_run', EASY, 'worlds_group_escape', 'eq', True, 'Zagrał w fazie pucharowej Worlds', 'Played in the Worlds knockout stage'),
-    ('deep_run', HARD, 'worlds_never_escaped', 'gte', 2, 'Mimo 2+ startów nie zagrał w fazie pucharowej Worlds', '2+ Worlds appearances without reaching knockouts'),
-    ('elimination_stage', HARD, 'worlds_eliminated_stage', 'eq', 'play_in', 'Odpadł w play-in Worlds', 'Eliminated in Worlds play-in'),
-    ('elimination_stage', MEDIUM, 'worlds_eliminated_stage', 'eq', 'group', 'Odpadł w grupie lub Swiss Worlds', 'Eliminated in Worlds groups or Swiss'),
-    ('elimination_stage', MEDIUM, 'worlds_eliminated_stage', 'eq', 'quarterfinal', 'Odpadł w 1/4 finału Worlds', 'Eliminated in Worlds quarterfinals'),
-    ('elimination_stage', HARD, 'worlds_eliminated_stage', 'eq', 'semifinal', 'Odpadł w 1/2 finału Worlds', 'Eliminated in Worlds semifinals'),
+    ('deep_run', MEDIUM, 'worlds_semifinal', 'eq', True, 'Dotarł co najmniej do półfinału Worlds', 'Reached at least the Worlds semifinals'),
+    ('deep_run', EASY, 'worlds_group_escape', 'eq', True, 'Zagrał w fazie pucharowej głównego turnieju Worlds', 'Played in the Worlds main-event knockout stage'),
+    ('deep_run', HARD, 'worlds_never_escaped', 'gte', 2, 'Min. 2 edycje Worlds, nigdy w fazie pucharowej głównego turnieju', 'At least 2 Worlds editions, never reached main-event knockouts'),
+    ('elimination_stage', HARD, 'worlds_eliminated_stage', 'eq', 'play_in', 'Co najmniej raz odpadł w play-in Worlds', 'Eliminated in Worlds play-in at least once'),
+    ('elimination_stage', MEDIUM, 'worlds_eliminated_stage', 'eq', 'group', 'Co najmniej raz odpadł w głównej fazie grupowej / Swiss Worlds', 'Eliminated in Worlds main-event groups or Swiss at least once'),
+    ('elimination_stage', MEDIUM, 'worlds_eliminated_stage', 'eq', 'quarterfinal', 'Co najmniej raz odpadł w ćwierćfinale Worlds', 'Eliminated in Worlds quarterfinals at least once'),
+    ('elimination_stage', HARD, 'worlds_eliminated_stage', 'eq', 'semifinal', 'Co najmniej raz odpadł w półfinale Worlds', 'Eliminated in Worlds semifinals at least once'),
     ('elimination_stage', HARD, 'worlds_eliminated_stage', 'eq', 'final', 'Przegrał finał Worlds', 'Lost a Worlds final'),
-    ('no_title', MEDIUM, 'worlds_never_won', 'gte', 3, 'Mimo 3+ startów nigdy nie wygrał Worlds', 'Never won Worlds'),
-    ('playin', HARD, 'worlds_playin', 'eq', True, 'Przeszedł przez play-in', 'Came through play-in'),
-    ('penta', HARD, 'pentakill_worlds', 'gte', 1, 'Pentakill na Worlds', 'Pentakill at Worlds'),
+    ('no_title', MEDIUM, 'worlds_never_won', 'gte', 3, 'Min. 3 edycje Worlds, bez ani jednego tytułu', 'Played in at least 3 Worlds editions without winning a title'),
+    ('playin', HARD, 'worlds_playin', 'eq', True, 'Awansował z play-in do głównego turnieju Worlds', 'Advanced from play-in to the Worlds main event'),
+    ('penta', HARD, 'pentakill_worlds', 'gte', 1, 'Zdobył pentakill na Worlds', 'Pentakill at Worlds'),
     ('title', HARD, 'worlds_titles_exact', 'eq', 1, 'Wygrał Worlds dokładnie raz', 'Won Worlds exactly once'),
     ('title', HARD, 'worlds_title_on_debut', 'eq', True, 'Wygrał Worlds będąc debiutantem turnieju', 'Won Worlds on his first appearance at the tournament'),
     ('final', HARD, 'worlds_final_lost_to_faker', 'eq', True, 'Przegrał finał Worlds przeciwko Fakerowi', 'Lost a Worlds final to Faker'),
@@ -106,7 +106,7 @@ CONDITION_POOL = [
     # --- kariera ---
     ('status', EASY, 'active', 'eq', True, 'Wciąż aktywny', 'Still active'),
     ('status', EASY, 'active', 'eq', False, 'Zakończył karierę', 'Retired'),
-    ('versatility', HARD, 'worlds_multi_role', 'gte', 2, 'Grał na Worlds na dwóch rolach', 'Two roles at Worlds'),
+    ('versatility', HARD, 'worlds_multi_role', 'gte', 2, 'Grał na Worlds na co najmniej 2 różnych pozycjach', 'Played at least 2 different roles at Worlds'),
 ]
 
 # Planowany rozkład trudności slotów na jednej planszy.
@@ -140,24 +140,24 @@ def build_condition_pool(players=None, minimum=MIN_CANDIDATES):
 
     statistical = [
         ('worlds_win_rate', MEDIUM, 'worlds_win_rate', 'gt', 50,
-         'Ponad 50% wygranych na Worlds', 'Over 50% wins at Worlds'),
+         'Wygrał ponad 50% gier na Worlds (z play-in)', 'Won over 50% of his Worlds games (including play-in)'),
         ('worlds_win_rate', MEDIUM, 'worlds_win_rate', 'lt', 50,
-         'Poniżej 50% wygranych na Worlds', 'Under 50% wins at Worlds'),
+         'Wygrał poniżej 50% gier na Worlds (z play-in)', 'Won under 50% of his Worlds games (including play-in)'),
     ]
     for threshold, greater_difficulty, less_difficulty in [
         (10, EASY, HARD), (25, EASY, MEDIUM), (50, MEDIUM, EASY), (100, HARD, EASY),
     ]:
         statistical.extend([
             ('worlds_games', greater_difficulty, 'worlds_games', 'gt', threshold,
-             f'Ponad {threshold} gier na Worlds', f'Over {threshold} games at Worlds'),
+             f'Ponad {threshold} gier na Worlds (z play-in)', f'Over {threshold} games at Worlds (including play-in)'),
             ('worlds_games', less_difficulty, 'worlds_games', 'lt', threshold,
-             f'Poniżej {threshold} gier na Worlds', f'Under {threshold} games at Worlds'),
+             f'Poniżej {threshold} gier na Worlds (z play-in)', f'Under {threshold} games at Worlds (including play-in)'),
         ])
 
     champion_counts = {}
     for condition_type, property_name, facts_list, label_pl, label_en in [
-        ('worlds_top5_champion', 'worlds_top5_champions', verified, 'na Worlds', 'Worlds'),
-        ('career_top5_champion', 'career_top5_champions', eligible, 'kariery', 'career'),
+        ('worlds_top5_champion', 'worlds_top5_champions', verified, 'na Worlds', 'at Worlds'),
+        ('career_top5_champion', 'career_top5_champions', eligible, 'w karierze', 'in his career'),
     ]:
         champions = {}
         counts = Counter()
@@ -170,7 +170,7 @@ def build_condition_pool(players=None, minimum=MIN_CANDIDATES):
         for key in sorted(champions):
             champion = champions[key]
             statistical.append((condition_type, MEDIUM, condition_type, 'eq', champion,
-                                f'{champion} w TOP 5 {label_pl}', f'{champion} in {label_en} top 5 played'))
+                                f'{champion} w jego TOP 5 według liczby gier {label_pl}', f'{champion} in his top 5 champions by games played {label_en}'))
 
     for condition in statistical:
         if condition[2] in champion_counts:

@@ -9,11 +9,11 @@ from apps.dailies.models import Daily, DailySlotCondition
 
 
 BOARD = [
-    [('worlds_top5_champion', 'eq', 'Olaf', 'Olaf w TOP 5 na Worlds', 'Olaf in Worlds top 5 played')],
+    [('worlds_top5_champion', 'eq', 'Olaf', 'Olaf w jego TOP 5 według liczby gier na Worlds', 'Olaf in his top 5 champions by games played at Worlds')],
     [('worlds_title_on_debut', 'eq', True, 'Wygrał Worlds będąc debiutantem turnieju', 'Won Worlds on his first appearance at the tournament')],
     [('european_masters_won', 'eq', True, 'Wygrał EU Masters / EMEA Masters', 'Won EU / EMEA Masters')],
     [('active', 'eq', False, 'Zakończył karierę', 'Retired'),
-     ('career_top5_champion', 'eq', 'Kalista', 'Kalista w TOP 5 kariery', 'Kalista in career top 5 played')],
+     ('career_top5_champion', 'eq', 'Kalista', 'Kalista w jego TOP 5 według liczby gier w karierze', 'Kalista in his top 5 champions by games played in his career')],
     [('worlds_final_lost_to_faker', 'eq', True, 'Przegrał finał Worlds przeciwko Fakerowi', 'Lost a Worlds final to Faker')],
 ]
 ORIGINAL = [

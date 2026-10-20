@@ -37,13 +37,15 @@ def condition_catalog(daily=None):
              f'Ostatni udział w Worlds przed {year}', f'Last Worlds appearance before {year}'),
             ('worlds_debut', MEDIUM, 'worlds_debut_year', 'lt', year,
              f'Debiutował na Worlds przed {year}', f'Worlds debut before {year}'),
-            ('elimination_stage', MEDIUM, 'worlds_group_exit_before', 'lt', year,
-             f'Odpadł w grupie Worlds przynajmniej raz przed {year}', f'Eliminated in Worlds groups before {year}'),
         ])
+        if year <= 2023:
+            conditions.append(('elimination_stage', MEDIUM, 'worlds_group_exit_before', 'eq', year,
+                f'Choć raz odpadł w grupie Worlds przed {year} (główny turniej)',
+                f'Eliminated in Worlds main-event groups at least once before {year}'))
     conditions.extend([
         ('origin', MEDIUM, 'country_excluded', 'eq', 'KR', 'Nie jest Koreańczykiem', 'Not Korean'),
         ('playin', MEDIUM, 'worlds_playin_appearance', 'eq', True, 'Zagrał w play-in Worlds', 'Played in Worlds play-in'),
-        ('league', MEDIUM, 'career_regions_min', 'gte', 2, 'Grał w co najmniej dwóch regionach', 'Played in at least two regions'),
+        ('league', MEDIUM, 'career_regions_min', 'gte', 2, 'Grał w ligach co najmniej 2 różnych regionów', 'Played in domestic leagues in at least 2 regions'),
     ])
     # Keep existing, reviewed custom clues selectable when reopening their board.
     themes = {c[2]: c[0] for c in CONDITION_POOL}

@@ -65,12 +65,12 @@ button:disabled { cursor: default; }
 .rarity-legendary { color: var(--rarity-legendary); }
 .rarity-diamond { color: var(--rarity-diamond); }
 .rarity-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
-.rarity-surface[data-rarity="common"] { --rarity-bg: #ffffff; }
-.rarity-surface[data-rarity="uncommon"] { --rarity-bg: #baf0cf; }
-.rarity-surface[data-rarity="rare"] { --rarity-bg: #d4e6fb; }
-.rarity-surface[data-rarity="epic"] { --rarity-bg: #e4c9f5; }
-.rarity-surface[data-rarity="legendary"] { --rarity-bg: #ffe58c; }
-.rarity-surface[data-rarity="diamond"] { --rarity-bg: #dcf7ff; }
+.rarity-surface[data-rarity="common"] { --rarity-bg: #ffffff; --rarity-border: #9aa79d; }
+.rarity-surface[data-rarity="uncommon"] { --rarity-bg: #baf0cf; --rarity-border: #35a463; }
+.rarity-surface[data-rarity="rare"] { --rarity-bg: #d4e6fb; --rarity-border: #5792d6; }
+.rarity-surface[data-rarity="epic"] { --rarity-bg: #e4c9f5; --rarity-border: #a274d0; }
+.rarity-surface[data-rarity="legendary"] { --rarity-bg: #ffe58c; --rarity-border: #d2a12d; }
+.rarity-surface[data-rarity="diamond"] { --rarity-bg: #dcf7ff; --rarity-border: #35a9cc; }
 
 /* Conditions sit on the field. Mobile keeps them in a readable list. */
 .rift-surface { position: relative; isolation: isolate; width: 100%; max-width: 1000px; margin-inline: auto; aspect-ratio: 1.5; overflow: hidden; background: #142f29; border: 1px solid #234b3c; }
@@ -118,9 +118,9 @@ button:disabled { cursor: default; }
   .slot-list-mobile { display: grid; }
 }
 .rarity-surface[data-rarity], .rift-card[data-state="solved"][data-rarity] { background: var(--rarity-bg); }
-.rarity-surface[data-rarity="diamond"], .rift-card[data-state="solved"][data-rarity="diamond"] {
-  border-color: var(--rarity-diamond-border);
-  box-shadow: inset 0 0 0 2px var(--rarity-diamond-border);
+.rarity-surface[data-rarity], .rift-card[data-state="solved"][data-rarity] {
+  border-color: var(--rarity-border);
+  box-shadow: inset 0 0 0 2px var(--rarity-border);
 }
 @keyframes riseIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .rise { animation: riseIn .18s ease-out both; }

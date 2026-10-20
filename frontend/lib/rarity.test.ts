@@ -8,7 +8,7 @@ describe('accepted rarity palette', () => {
     const css = readFileSync(resolve(process.cwd(), 'app/globals.css'), 'utf8')
     for (const [tier, colors] of Object.entries(rarityPalette)) {
       expect(css).toContain(`--rarity-${tier}: ${colors.text};`)
-      expect(css).toContain(`.rarity-surface[data-rarity="${tier}"] { --rarity-bg: ${colors.background}; }`)
+      expect(css).toContain(`.rarity-surface[data-rarity="${tier}"] { --rarity-bg: ${colors.background}; --rarity-border: ${colors.border}; }`)
     }
   })
 })

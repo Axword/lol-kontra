@@ -7,6 +7,11 @@ Panel korzysta ze standardowego logowania Django Admin. Własne hasło zmienisz
 przez „Zmień hasło” w nagłówku lub pod `/admin/password_change/`.
 Konto redaktora plansz nie wymaga statusu superuser ani dostępu do kont graczy.
 
+Opisy rozróżniają liczbę edycji Worlds od liczby gier, udział w play-in od awansu
+do głównego turnieju oraz odpadnięcie na etapie od osiągnięcia co najmniej tego etapu.
+TOP 5 bohaterów dotyczy liczby rozegranych gier zawodnika (z remisami na piątym miejscu).
+Statystyki Worlds obejmują play-in. Liczba regionów dotyczy występów w ich ligach.
+
 1. Wybierz datę i po jednym lub dwóch warunkach dla pięciu ról. Listę można filtrować nazwą bohatera, krajem lub osiągnięciem.
 2. Licznik pokazuje zawodników spełniających **wszystkie warunki danego pola**. Rozwiń „Pasujący zawodnicy”, by zobaczyć nicki.
 3. Standardowe plansze wymagają minimum 10 odpowiedzi na każde pole. Uzupełnienie autora oznacza planszę gościnną, dla której dopuszczamy mniej odpowiedzi.

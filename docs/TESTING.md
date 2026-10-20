@@ -1,5 +1,14 @@
 # Testy i weryfikacja
 
+Przegląd opisów z 20.10.2026 doprecyzowuje edycje Worlds, progi liczbowe, etapy
+turnieju, play-in, TOP 5 według liczby gier i historyczne nazwy lig/drużyn.
+Migracja 0018 na lokalnym kalendarzu poprawiła 168 etykiet; porównanie reguł,
+identyfikatorów, gier, odpowiedzi i prób potwierdziło brak innych zmian.
+Testy sprawdzają również ochronę własnych tłumaczeń autora i obsługiwane granice
+roku w edytorze. Ramki wszystkich sześciu rzadkości zweryfikowano na rzeczywistych
+komponentach przy szerokości komputera i 390 px: kolory i grubość są spójne,
+diament zachowuje pierwszeństwo, a strona mobilna nie ma poziomego przepełnienia.
+
 Wydanie WORLDS KONTRA z 20.10.2026: pełne kontrole GitHub CI dla backendu,
 frontendu i infrastruktury przeszły na commicie `9e6c210`. Obejmują migracje od
 zera, powtórne wdrożenie bez zmiany postępu, odtworzenie kopii na osobnej bazie,

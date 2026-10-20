@@ -61,7 +61,7 @@ class CareerChampionTests(TestCase):
         players = [player(stats('Hwei')) for _ in range(MIN_CANDIDATES)]
         career = lambda: [c for c in build_condition_pool(players) if c[2] == 'career_top5_champion']
         self.assertEqual([c[4] for c in career()], ['Hwei'])
-        self.assertEqual(career()[0][5], 'Hwei w TOP 5 kariery')
+        self.assertEqual(career()[0][5], 'Hwei w jego TOP 5 według liczby gier w karierze')
         players[-1].attributes['worlds_verified'] = False
         self.assertEqual(career(), [])
         for p in players:

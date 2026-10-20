@@ -1,13 +1,13 @@
 import type { RarityTier } from './api'
 
 export const rarityPalette = {
-  common: { background: '#ffffff', text: '#536056' },
-  uncommon: { background: '#baf0cf', text: '#187240' },
-  rare: { background: '#d4e6fb', text: '#245b9e' },
-  epic: { background: '#e4c9f5', text: '#7850a5' },
-  legendary: { background: '#ffe58c', text: '#865900' },
-  diamond: { background: '#dcf7ff', text: '#126d8c' },
-} as const satisfies Record<RarityTier | 'diamond', { background: string; text: string }>
+  common: { background: '#ffffff', text: '#536056', border: '#9aa79d' },
+  uncommon: { background: '#baf0cf', text: '#187240', border: '#35a463' },
+  rare: { background: '#d4e6fb', text: '#245b9e', border: '#5792d6' },
+  epic: { background: '#e4c9f5', text: '#7850a5', border: '#a274d0' },
+  legendary: { background: '#ffe58c', text: '#865900', border: '#d2a12d' },
+  diamond: { background: '#dcf7ff', text: '#126d8c', border: '#35a9cc' },
+} as const satisfies Record<RarityTier | 'diamond', { background: string; text: string; border: string }>
 
 export function rarityForPercent(percent: number | null | undefined): RarityTier | null {
   if (typeof percent !== 'number' || !Number.isFinite(percent) || percent < 0 || percent > 100) return null
