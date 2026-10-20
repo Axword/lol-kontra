@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Daily, DailySlot, DailySlotCondition
+from .models import Daily, DailySlot, DailySlotCondition, valid_requirement_count
 
 class DailySlotConditionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,6 +22,6 @@ class DailySerializer(serializers.ModelSerializer):
         if attrs.get('status') == 'published':
             slots = list(self.instance.slots.prefetch_related('conditions')) if self.instance else []
             if (len(slots) != 5 or {slot.role for slot in slots} != {'top', 'jungle', 'mid', 'adc', 'support'}
-                    or any(len(slot.conditions.all()) != 2 for slot in slots)):
-                raise serializers.ValidationError({'status': 'Każda z pięciu pozycji musi mieć dokładnie dwa warunki.'})
+                    or any(not valid_requirement_count(list(slot.conditions.all())) for slot in slots)):
+                raise serializers.ValidationError({'status': 'Każda pozycja wymaga jednego trudnego lub dwóch warunków.'})
         return attrs

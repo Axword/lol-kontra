@@ -16,7 +16,7 @@ export type CommunityComment = {
 }
 
 export type DailyCommunity = {
-  author: { name: string; url: string; description: string }
+  author: { name: string; url: string; description: string; avatar_url?: string }
   can_view_solutions: boolean
   can_comment?: boolean
   comments: CommunityComment[]

@@ -31,6 +31,16 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('daily community', () => {
+  it('uses the guest author photo in the existing author card', () => {
+    mocks.query.data = { ...data, author: { name: 'Kaczy', url: 'https://x.com/kaczy102',
+      description: 'Autor wyzwania', avatar_url: '/authors/kaczy.png' } }
+    const { container } = render(<DailyCommunity dailyId={22} state={finished} />)
+    expect(screen.getByRole('link', { name: 'Kaczy' }).getAttribute('href')).toBe('https://x.com/kaczy102')
+    const avatar = container.querySelector('img[src="/authors/kaczy.png"]')
+    expect(avatar?.getAttribute('width')).toBe('40')
+    expect(avatar?.getAttribute('height')).toBe('40')
+  })
+
   it('shows the shared square author avatar while preserving the configured author link', () => {
     mocks.query.data = { ...data, author: { name: 'Guest author', url: 'https://x.com/guest_author', description: 'Autor specjalny' } }
     const { container } = render(<DailyCommunity dailyId={19} state={finished} />)

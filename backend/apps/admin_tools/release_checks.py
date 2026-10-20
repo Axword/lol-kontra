@@ -2,7 +2,7 @@
 from importlib import import_module
 from django.db import connections
 from django.db.migrations.executor import MigrationExecutor
-from apps.dailies.models import Daily
+from apps.dailies.models import Daily, valid_requirement_count
 from apps.dailies.validators import PlayerFacts
 from apps.players.models import Player
 from apps.players.career_roles import with_verified_career_roles
@@ -43,8 +43,8 @@ def check_release_data(*, database='default', strict=False):
     for daily in dailies:
         slots = list(daily.slots.all())
         if ([(slot.position, slot.role) for slot in slots] != list(enumerate(calendar_source.ROLES, 1))
-                or any(len(slot.conditions.all()) != 2 for slot in slots)):
-            raise ValueError(f'Calendar board {daily.date} needs five roles and two requirements each')
+                or any(not valid_requirement_count(list(slot.conditions.all())) for slot in slots)):
+            raise ValueError(f'Calendar board {daily.date} needs five roles with one demanding or two requirements each')
     seeds = Submission.objects.using(database).filter(is_seed=True)
     if seeds.exists():
         raise ValueError('Synthetic test rosters are retired; run all migrations before publishing')

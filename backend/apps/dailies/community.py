@@ -72,6 +72,7 @@ def _author(daily):
     return {
         'name': daily.author_name or 'Axword', 'url': url,
         'description': daily.author_description or 'Autor wyzwania',
+        **({'avatar_url': '/authors/kaczy.png'} if url == 'https://x.com/kaczy102' else {}),
     }
 
 

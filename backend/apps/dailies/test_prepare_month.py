@@ -30,9 +30,10 @@ class PreparedMonthTests(TestCase):
     def setUpTestData(cls):
         cls.players = [Player.objects.create(
             slug=f'person-{index}', nickname=f'Person {index}', primary_role='top',
-            secondary_roles=['jungle', 'mid', 'adc', 'support'], country_code='KR',
+            secondary_roles=['jungle', 'mid', 'adc', 'support'], country_code='KR' if index < 16 else 'CN',
+            is_active=not (8 <= index < 16),
             attributes={'worlds_verified': True, 'activity_verified': True},
-        ) for index in range(8)]
+        ) for index in range(24)]
 
     @patch('django.utils.timezone.localdate', return_value=TODAY)
     @patch('apps.dailies.generator.build_condition_pool', return_value=TEST_POOL)

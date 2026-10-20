@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
-from apps.dailies.models import Daily, DailySlot
+from apps.dailies.models import Daily, DailySlot, valid_requirement_count
 from apps.dailies.serializers import DailySerializer
 from apps.dailies.generator import generate_daily, count_candidates, generate_slot
 from apps.scoring.tasks import score_daily_task
@@ -20,8 +20,8 @@ class AdminDailyViewSet(viewsets.ModelViewSet):
         daily = self.get_object()
         slots = list(daily.slots.prefetch_related('conditions'))
         if (len(slots) != 5 or {slot.role for slot in slots} != {'top', 'jungle', 'mid', 'adc', 'support'}
-                or any(len(slot.conditions.all()) != 2 for slot in slots)):
-            return Response({'detail': 'Każda z pięciu pozycji musi mieć dokładnie dwa warunki.'},
+                or any(not valid_requirement_count(list(slot.conditions.all())) for slot in slots)):
+            return Response({'detail': 'Każda pozycja wymaga jednego trudnego lub dwóch warunków.'},
                             status=status.HTTP_400_BAD_REQUEST)
         from django.utils import timezone
         daily.status = 'published'

@@ -9,7 +9,7 @@ from rest_framework.test import APIClient
 
 from apps.players.models import Player
 from .generator import MAX_CANDIDATES, MIN_CANDIDATES, ROLE_ORDER, _has_distinct_roster, count_candidates, generate_daily, validate_daily
-from .models import Daily, DailySlot, DailySlotCondition
+from .models import Daily, DailySlot, DailySlotCondition, valid_requirement_count
 from .tests_validators import FakePlayer
 from .validators import evaluate_condition
 
@@ -75,10 +75,11 @@ class EvaluatorRegressionTests(TestCase):
 class GeneratorRegressionTests(TestCase):
     def make_pool(self, count=1):
         for role in ROLE_ORDER:
-            for index in range(count):
+            for index in range(count * 3):
                 Player.objects.create(
                     slug=f'{role}-{index}', nickname=f'{role}-{index}', primary_role=role,
-                    country_code='TH', residency='PCS', continent='Asia', is_active=False,
+                    country_code='KR' if index < count * 2 else 'CN',
+                    residency='PCS', continent='Asia', is_active=count <= index < count * 2,
                 )
 
     def test_sparse_dataset_is_rejected_instead_of_creating_trivial_slots(self):
@@ -170,6 +171,7 @@ class GeneratorRegressionTests(TestCase):
         daily = Daily.objects.create(date=date(2026, 1, 1))
         slot = DailySlot.objects.create(daily=daily, position=1, role='top')
         DailySlotCondition.objects.create(slot=slot, condition_type='active', operator='eq', value=False)
+        DailySlotCondition.objects.create(slot=slot, condition_type='country', operator='eq', value='KR')
         with self.assertNumQueries(2):
             self.assertEqual(len(count_candidates(slot)), 8)
 
@@ -205,12 +207,21 @@ class CanonicalGenerationTests(TestCase):
         for index in range(30):
             with self.subTest(day=index):
                 daily = generate_daily(date=date(2026, 1, 1) + timedelta(days=index), seed=index)
+                self.assertEqual(validate_daily(daily), daily)
                 slots = list(daily.slots.prefetch_related('conditions'))
                 self.assertEqual([slot.role for slot in slots], ROLE_ORDER)
                 pools = [count_candidates(slot) for slot in slots]
-                self.assertTrue(all(len(slot.conditions.all()) == 2 for slot in slots))
-                self.assertTrue(all(MIN_CANDIDATES <= len(pool) <= MAX_CANDIDATES for pool in pools))
+                self.assertTrue(all(valid_requirement_count(list(slot.conditions.all())) for slot in slots))
+                self.assertTrue(all((3 if slot.conditions.count() == 1 else MIN_CANDIDATES) <= len(pool)
+                                    <= (18 if slot.conditions.count() == 1 else 50)
+                                    for slot, pool in zip(slots, pools)))
                 self.assertTrue(_has_distinct_roster(pools))
+                from .generator import CONDITION_POOL, STAT_THEMES
+                theme_map = {c[2]: c[0] for c in CONDITION_POOL} | STAT_THEMES
+                self.assertGreaterEqual(len({theme_map.get(c.condition_type, c.condition_type)
+                                             for slot in slots for c in slot.conditions.all()}), 5)
+                self.assertFalse(any(c.condition_type == 'birth_year_range'
+                                     for slot in slots for c in slot.conditions.all()))
                 seen.update(condition.condition_type for slot in slots for condition in slot.conditions.all())
         self.assertTrue({'worlds_win_rate', 'worlds_games', 'worlds_top5_champion'} <= seen)
 

@@ -12,6 +12,17 @@ ROLE_CHOICES = [
     ('support', 'Support'),
 ]
 
+SINGLE_REQUIREMENT_TYPES = {
+    'country', 'worlds_final', 'worlds_final_lost', 'worlds_titles_min',
+    'worlds_titles_exact', 'worlds_title_on_debut', 'worlds_final_lost_to_faker',
+    'pentakill_worlds', 'european_masters_played', 'european_masters_won',
+    'worlds_group_exit_before',
+}
+
+
+def valid_requirement_count(conditions):
+    return len(conditions) == 2 or (len(conditions) == 1 and conditions[0].condition_type in SINGLE_REQUIREMENT_TYPES)
+
 class Daily(models.Model):
     STATUS_CHOICES = [
         ('draft', 'Draft'),
@@ -124,6 +135,15 @@ class DailySlotCondition(models.Model):
         ('worlds_top5_champion', 'Champion w top 5 na Worlds'),
         ('career_top5_champion', 'Champion w top 5 kariery'),
         ('worlds_eliminated_stage', 'Etap odpadnięcia z Worlds'),
+        ('worlds_playin_appearance', 'Udział w play-in Worlds'),
+        ('country_excluded', 'Narodowość inna niż wskazana'),
+        ('worlds_group_exit_before', 'Odpadnięcie w grupie przed rokiem'),
+        ('career_regions_min', 'Min. liczba regionów kariery'),
+        ('worlds_titles_exact', 'Dokładna liczba tytułów Worlds'),
+        ('worlds_title_on_debut', 'Tytuł Worlds w debiucie'),
+        ('worlds_final_lost_to_faker', 'Przegrany finał z Fakerem'),
+        ('european_masters_played', 'Udział w EU/EMEA Masters'),
+        ('european_masters_won', 'Zwycięstwo w EU/EMEA Masters'),
         # inne
         ('msi_appearance', 'Występ na MSI'),
         ('leagues_min', 'Min. liczba lig głównych'),

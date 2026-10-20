@@ -1,0 +1,1516 @@
+{
+  "release": "guest-board-2026-10-22-v1",
+  "source": "Leaguepedia",
+  "source_url": "https://lol.fandom.com/wiki/Special:CargoExport",
+  "as_of": "2026-10-20",
+  "players": [
+    {
+      "slug": "abbedagge",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2026 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "adam-adam-maanane",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2026",
+            "European Masters 2021 Spring",
+            "European Masters 2022 Summer"
+          ],
+          "titles": [
+            "European Masters 2021 Spring"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "alvaro-alvaro-fernandez",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2023 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "archer-lee-keun-hee",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2026 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "armut",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2025"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "attila",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2020 Spring",
+            "European Masters 2020 Summer",
+            "European Masters 2021 Summer",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "balls",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "bean-louis-schmitz",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "EMEA Masters 2025",
+            "European Masters 2021 Spring",
+            "European Masters 2021 Summer",
+            "European Masters 2022 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "bin-chen-ze-bin",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "bolulu",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "bong-cho-bo-woong",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2024 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "bwipo",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2026 Spring",
+            "EMEA Masters 2026"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "cabochard",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Summer",
+            "European Masters 2021 Summer",
+            "European Masters 2022 Spring"
+          ],
+          "titles": [
+            "EMEA Masters 2023 Summer",
+            "European Masters 2021 Summer",
+            "European Masters 2022 Spring"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "caliste",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Summer",
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2024 Summer"
+          ],
+          "titles": [
+            "EMEA Masters 2023 Summer"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "candypanda",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "carzzy",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring",
+            "European Masters 2019 Spring",
+            "European Masters 2019 Summer"
+          ],
+          "titles": [
+            "European Masters 2019 Summer"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "chasy",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "closer-can-celik",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "comp",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "European Masters 2018 Spring",
+            "European Masters 2019 Spring",
+            "European Masters 2019 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "crownie",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "EMEA Masters 2025",
+            "EMEA Masters 2026",
+            "European Masters 2018 Spring",
+            "European Masters 2018 Summer",
+            "European Masters 2022 Spring",
+            "European Masters 2022 Summer"
+          ],
+          "titles": [
+            "European Masters 2018 Summer"
+          ]
+        },
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "diamondprox",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2026"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "elyoya",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2020 Spring",
+            "European Masters 2020 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "expect",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring"
+          ],
+          "titles": [
+            "European Masters 2018 Spring"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "fabfabulous",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "farfetch",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2025 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "febiven",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2023 Summer",
+            "European Masters 2021 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "ferret",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Summer",
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "EMEA Masters 2026 Spring",
+            "EMEA Masters 2026"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "finn",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring",
+            "European Masters 2019 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "flakked",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "European Masters 2020 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "forg1ven",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring"
+          ],
+          "titles": [
+            "European Masters 2018 Spring"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "fresskowy",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2023 Summer",
+            "EMEA Masters 2026 Summer",
+            "EMEA Masters 2026",
+            "European Masters 2020 Summer",
+            "European Masters 2021 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "froggen",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring"
+          ],
+          "titles": [
+            "European Masters 2018 Spring"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "gadget",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2021 Spring",
+            "European Masters 2021 Summer",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "gilius",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2020 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "haru",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "European Masters 2022 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "hjarnan",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2019 Summer",
+            "European Masters 2020 Spring",
+            "European Masters 2020 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "holyphoenix",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2024 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "humanoid",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Summer",
+            "European Masters 2018 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "imp",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 2
+        }
+      }
+    },
+    {
+      "slug": "innaxe",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring",
+            "European Masters 2020 Summer",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "insec",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring"
+          ],
+          "titles": [
+            "European Masters 2018 Spring"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "inspired",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Summer",
+            "European Masters 2019 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "jactroll",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "EMEA Masters 2025",
+            "EMEA Masters 2026",
+            "European Masters 2021 Spring",
+            "European Masters 2021 Summer",
+            "European Masters 2022 Spring",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "jankos",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "jesiz",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring"
+          ],
+          "titles": [
+            "European Masters 2018 Spring"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "jiizuke",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "kaiser",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "EMEA Masters 2025",
+            "EMEA Masters 2026 Summer",
+            "EMEA Masters 2026",
+            "European Masters 2018 Summer",
+            "European Masters 2019 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "kaori",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Summer",
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2025 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "kasing",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2024 Summer",
+            "European Masters 2019 Summer",
+            "European Masters 2020 Spring",
+            "European Masters 2021 Summer",
+            "European Masters 2022 Spring",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "khan",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "kikis",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "European Masters 2018 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "labrov",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring",
+            "European Masters 2019 Spring",
+            "European Masters 2019 Summer"
+          ],
+          "titles": [
+            "European Masters 2019 Summer"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "larssen",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring",
+            "European Masters 2018 Summer",
+            "European Masters 2019 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "maxlore",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2021 Summer",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "mireu",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "mojito",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2023 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "myrwn",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Summer",
+            "European Masters 2022 Spring",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "nemesis",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "EMEA Masters 2025",
+            "EMEA Masters 2026",
+            "European Masters 2018 Spring",
+            "European Masters 2018 Summer"
+          ],
+          "titles": [
+            "European Masters 2018 Summer"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "nl-hsiung-wen-an",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "noah-oh-hyeon-taek",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "nuc",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2021 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "orome",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Spring",
+            "European Masters 2019 Spring",
+            "European Masters 2021 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "oscarinin",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2020 Summer",
+            "European Masters 2021 Spring",
+            "European Masters 2022 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "padden",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "powerofevil",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2026 Spring",
+            "EMEA Masters 2026"
+          ],
+          "titles": [
+            "EMEA Masters 2024 Spring"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "razork",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Summer",
+            "European Masters 2019 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "rekkles",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2025 Summer",
+            "EMEA Masters 2025",
+            "EMEA Masters 2026",
+            "European Masters 2022 Spring"
+          ],
+          "titles": [
+            "European Masters 2022 Spring"
+          ]
+        },
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "renyu",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "rhuckz",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Summer",
+            "European Masters 2018 Spring",
+            "European Masters 2020 Spring",
+            "European Masters 2020 Summer",
+            "European Masters 2021 Spring",
+            "European Masters 2021 Summer",
+            "European Masters 2022 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "route",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "selfmade",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Summer",
+            "European Masters 2018 Spring",
+            "European Masters 2018 Summer"
+          ],
+          "titles": [
+            "European Masters 2018 Summer"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "sencux",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Summer",
+            "European Masters 2020 Summer",
+            "European Masters 2021 Spring",
+            "European Masters 2021 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "serin",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2025 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "shad0w",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2018 Summer",
+            "European Masters 2019 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "sheo",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2022 Spring",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "shogun-nguyen-van-huy",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "skewmond",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2024 Summer"
+          ],
+          "titles": [
+            "EMEA Masters 2024 Summer"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "slayder",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2026"
+          ],
+          "titles": []
+        },
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "soaz",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "starscreen",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2023 Summer",
+            "EMEA Masters 2026 Summer",
+            "EMEA Masters 2026"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "supa",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Spring",
+            "EMEA Masters 2023 Summer",
+            "European Masters 2020 Summer",
+            "European Masters 2021 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "targamas",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2023 Summer",
+            "EMEA Masters 2026",
+            "European Masters 2019 Spring",
+            "European Masters 2020 Summer",
+            "European Masters 2021 Spring",
+            "European Masters 2021 Summer"
+          ],
+          "titles": [
+            "EMEA Masters 2023 Summer",
+            "European Masters 2021 Spring",
+            "European Masters 2021 Summer"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "tierwulf",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2019 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "tolerant",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2021 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "tore",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "trymbi",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2020 Summer"
+          ],
+          "titles": [
+            "European Masters 2020 Summer"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "unf0rgiven",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2025 Summer",
+            "EMEA Masters 2026 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "upset",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "vander",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Summer",
+            "European Masters 2019 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "viper-park-do-hyeon",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "vizicsacsi",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2025 Spring",
+            "EMEA Masters 2026 Spring"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "whitelotus",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    },
+    {
+      "slug": "xerxe",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "EMEA Masters 2024 Spring",
+            "EMEA Masters 2024 Summer",
+            "EMEA Masters 2025 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "yellowstar",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2020 Spring",
+            "European Masters 2020 Summer"
+          ],
+          "titles": [
+            "European Masters 2020 Spring"
+          ]
+        }
+      }
+    },
+    {
+      "slug": "yike",
+      "attributes": {
+        "european_masters": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "played": [
+            "European Masters 2022 Spring",
+            "European Masters 2022 Summer"
+          ],
+          "titles": []
+        }
+      }
+    },
+    {
+      "slug": "zeitnot",
+      "attributes": {
+        "additional_worlds_facts": {
+          "source": "Leaguepedia",
+          "as_of": "2026-10-20",
+          "pentakills": 1
+        }
+      }
+    }
+  ],
+  "board": {
+    "date": "2026-10-22",
+    "author_name": "Kaczy",
+    "author_url": "https://x.com/kaczy102",
+    "author_description": "Autor wyzwania",
+    "slots": [
+      {
+        "role": "top",
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "TW",
+            "label_pl": "Tajwańczyk",
+            "label_en": "Taiwanese"
+          },
+          {
+            "condition_type": "worlds_appearance",
+            "operator": "lte",
+            "value": 2022,
+            "label_pl": "Zagrał na Worlds przed 2023",
+            "label_en": "Played at Worlds before 2023"
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "conditions": [
+          {
+            "condition_type": "country_excluded",
+            "operator": "eq",
+            "value": "KR",
+            "label_pl": "Nie jest Koreańczykiem",
+            "label_en": "Not Korean"
+          },
+          {
+            "condition_type": "worlds_final",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Zagrał w finale Worlds",
+            "label_en": "Played in a Worlds final"
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "conditions": [
+          {
+            "condition_type": "worlds_group_exit_before",
+            "operator": "eq",
+            "value": 2020,
+            "label_pl": "Odpadł w fazie grupowej głównego turnieju Worlds przynajmniej raz przed 2020",
+            "label_en": "Eliminated in the Worlds main-event group stage at least once before 2020"
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "VN",
+            "label_pl": "Wietnamczyk",
+            "label_en": "Vietnamese"
+          },
+          {
+            "condition_type": "worlds_playin_appearance",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Zagrał w play-inach Worlds",
+            "label_en": "Played in the Worlds play-ins"
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "conditions": [
+          {
+            "condition_type": "career_regions_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Grał w co najmniej dwóch regionach w karierze",
+            "label_en": "Played in at least two regions during his career"
+          },
+          {
+            "condition_type": "worlds_group_escape",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Zagrał w fazie pucharowej głównego turnieju Worlds",
+            "label_en": "Played in the Worlds main-event knockout stage"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -138,17 +138,43 @@ class StatisticalConditionPoolTests(TestCase):
         players[-1].career_stats = worlds_stats(champion='Lux')
         self.assertEqual([c for c in self.stat_conditions(players) if c[2] == 'worlds_top5_champion'], [])
 
-    def test_fallback_uses_two_independent_conditions_with_valid_candidate_count(self):
+    def test_no_pair_is_generated_when_neither_clue_narrows_the_pool(self):
         players = self.make_players(count=generator.MIN_CANDIDATES)
         daily = Daily.objects.create(date=date(2026, 1, 1))
         conditions = [
             ('origin', generator.EASY, 'country', 'eq', 'KR', 'Koreańczyk', 'Korean'),
             ('status', generator.EASY, 'active', 'eq', True, 'Aktywny', 'Active'),
         ]
-        slot, candidates = generator.generate_slot(daily, 'mid', 1, generator.HARD,
-                                                   random.Random(1), set(), players, conditions)
-        self.assertEqual(slot.conditions.count(), 2)
-        self.assertEqual(len(candidates), generator.MIN_CANDIDATES)
+        with self.assertRaisesRegex(ValueError, 'independent requirements'):
+            generator.generate_slot(daily, 'mid', 1, generator.HARD,
+                                    random.Random(1), set(), players, conditions)
+        self.assertFalse(daily.slots.exists())
+
+    def test_generation_parses_each_champion_ranking_once_for_all_champion_clues(self):
+        players = self.make_players(count=24)
+        for index, player in enumerate(players):
+            player.country_code = 'KR' if index < 16 else 'CN'
+            player.career_stats = worlds_stats(champion='Lux' if 8 <= index < 16 else 'Azir')
+            player.save()
+        daily = Daily.objects.create(date=date(2026, 1, 1))
+        clues = [
+            ('origin', generator.EASY, 'country', 'eq', 'KR', 'Koreańczyk', 'Korean'),
+            ('champion', generator.HARD, 'worlds_top5_champion', 'eq', 'Azir', 'Azir', 'Azir'),
+            ('champion', generator.HARD, 'worlds_top5_champion', 'eq', 'Lux', 'Lux', 'Lux'),
+        ]
+        parsed = []
+        original = generator.PlayerFacts.worlds_top5_champions.fget
+
+        def top_five(facts):
+            parsed.append(facts.player.pk)
+            return original(facts)
+
+        with patch.object(generator.PlayerFacts, 'worlds_top5_champions', new=property(top_five)):
+            slot, candidates = generator.generate_slot(daily, 'mid', 1, generator.HARD,
+                                                       random.Random(1), set(), players, clues)
+        self.assertCountEqual(parsed, [p.pk for p in players])
+        self.assertEqual({p.pk for p in candidates}, {p.pk for p in generator.count_candidates(slot)})
+        self.assertEqual(len(candidates), 8)
 
     def test_less_than_win_rate_and_games_thresholds(self):
         conditions = self.stat_conditions(self.make_players(career_stats=worlds_stats(games=8, wins=3)))
@@ -164,10 +190,20 @@ class StatisticalConditionPoolTests(TestCase):
                                           operator='eq', value='Removed Champion')
         self.assertIn(generator.STAT_THEMES['worlds_top5_champion'],
                       generator.recent_themes(date(2026, 1, 2)))
+        DailySlotCondition.objects.create(slot=slot, condition_type='worlds_top5_champion',
+                                          operator='eq', value='Another Champion')
+        self.assertEqual(generator.recent_themes(date(2026, 1, 2))['worlds_top5_champion'], 2)
 
     def test_generated_rosters_can_use_every_new_type_and_remain_solvable(self):
         for role in generator.ROLE_ORDER:
-            self.make_players(role=role)
+            players = self.make_players(role=role, count=64)
+            for index, player in enumerate(players):
+                games = (8, 30, 60, 110)[(index // 4) % 4]
+                player.country_code = 'KR' if index % 2 else 'CN'
+                player.is_active = bool(index & 2)
+                player.career_stats = worlds_stats(games=games, wins=int(games * (0.7 if index & 16 else 0.3)),
+                                                   champion='Lux' if index & 32 else 'Azir')
+            Player.objects.bulk_update(players, ['country_code', 'is_active', 'career_stats'])
         seen = set()
         for offset in range(20):
             daily = generator.generate_daily(date=date(2026, 2, 1) + timedelta(days=offset), seed=offset)

@@ -696,9 +696,77 @@ def _c_worlds_playin(f, operator, value):
     return _match_event(f.playin_years, operator, value, known='worlds_playin' in f.attr)
 
 
+@condition('worlds_playin_appearance')
+def _c_playin_appearance(f, operator, value):
+    return _match_event(_years(f.attr.get('worlds_playin_appearances')), operator, value,
+                        known='worlds_playin_appearances' in f.attr)
+
+
+@condition('country_excluded')
+def _c_country_excluded(f, operator, value):
+    return operator == 'eq' and isinstance(value, str) and bool(f.country) and f.country != value.lower()
+
+
+@condition('worlds_group_exit_before')
+def _c_group_exit_before(f, operator, value):
+    if operator != 'eq' or type(value) is not int or not 2012 <= value <= 2023:
+        return False
+    history = f.attr.get('worlds_eliminations')
+    years = history.get('group') if isinstance(history, dict) else None
+    return isinstance(years, list) and any(type(y) is int and 2011 <= y < value for y in years)
+
+
+@condition('career_regions_min')
+def _c_career_regions(f, operator, value):
+    from .career_regions import career_regions
+    known = career_regions(f.attr)
+    return bool(known) and _match_number(len(known), operator, value, minimum=True)
+
+
+@condition('worlds_titles_exact')
+def _c_titles_exact(f, operator, value):
+    return (operator == 'eq' and type(value) is int and value >= 0
+            and f.attr.get('worlds_titles_verified') is True and f.titles_count == value)
+
+
+@condition('worlds_title_on_debut')
+def _c_title_on_debut(f, operator, value):
+    won = bool(f.worlds_years and min(f.worlds_years) in f.title_years)
+    return _match_boolean(won, operator, value, known=bool(f.worlds_years) and 'worlds_titles' in f.attr)
+
+
+@condition('worlds_final_lost_to_faker')
+def _c_final_lost_to_faker(f, operator, value):
+    # Pinned from the verified Faker record in the October 2026 release.
+    titles = {2013, 2015, 2016, 2023, 2024, 2025}
+    lost = bool((f.final_years - f.title_years) & titles)
+    return _match_boolean(lost, operator, value,
+                          known='worlds_finals' in f.attr and 'worlds_titles' in f.attr)
+
+
+def _masters_fact(f, key):
+    data = f.attr.get('european_masters')
+    return data.get(key) if isinstance(data, dict) and data.get('source') == 'Leaguepedia' else None
+
+
+@condition('european_masters_played')
+def _c_masters_played(f, operator, value):
+    events = _masters_fact(f, 'played')
+    return _match_boolean(bool(events), operator, value, known=isinstance(events, list))
+
+
+@condition('european_masters_won')
+def _c_masters_won(f, operator, value):
+    events = _masters_fact(f, 'titles')
+    return _match_boolean(bool(events), operator, value, known=isinstance(events, list))
+
+
 @condition('pentakill_worlds')
 def _c_pentakill(f, operator, value):
-    return 'pentakills_worlds' in f.attr and _match_number(f.pentakills_worlds, operator, value, minimum=True)
+    extra = f.attr.get('additional_worlds_facts') or {}
+    positive = extra.get('pentakills', 0) if isinstance(extra, dict) and extra.get('source') == 'Leaguepedia' else 0
+    count = max(f.pentakills_worlds, positive) if type(positive) is int else f.pentakills_worlds
+    return ('pentakills_worlds' in f.attr or count > 0) and _match_number(count, operator, value, minimum=True)
 
 
 # --- MSI ---

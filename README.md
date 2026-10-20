@@ -1,6 +1,6 @@
 # League of Legends Esports Roster Challenge — WORDS V
 
-Codzienna gra inspirowana Kontra.games: ułóż skład TOP / JUNGLE / MID / ADC / SUPPORT. Każdy zawodnik musi spełniać dokładnie dwa wymagania pozycji, a pięć wyborów musi dotyczyć różnych osób. Interfejs jest dostępny po polsku i angielsku.
+Codzienna gra inspirowana Kontra.games: ułóż skład TOP / JUNGLE / MID / ADC / SUPPORT. Każdy zawodnik musi spełniać wymagania pozycji, a pięć wyborów musi dotyczyć różnych osób. Generator wybiera jeden wymagający warunek albo dwa, z których każdy zawęża odpowiedzi. Interfejs jest dostępny po polsku i angielsku.
 
 Zaczynasz z 500 punktami: każda z pięciu pustych pozycji kosztuje 100. Poprawna odpowiedź zastępuje ten koszt zapisanym procentem popularności zawodnika. Po uzupełnieniu składu wynik to suma pięciu procentów; **mniej punktów oznacza lepszy wynik**, a pięć pierwszych trafień po 0% daje 0 punktów. Niewypełniona pozycja zachowuje koszt 100, więc pomijanie odpowiedzi nie poprawia wyniku. Masz 10 pomyłek. Gry archiwalne również liczą się do wyników i rankingów.
 
@@ -9,6 +9,12 @@ Nick można zmienić bezpośrednio w nagłówku. Obok niego lub w profilu wybier
 Osobna strona rankingu pokazuje domyślnie 50 osób; dostępne limity to 10, 25, 50 i 100. Na końcu listy zawsze pojawia się dodatkowy wiersz bieżącego gracza z jego rzeczywistą pozycją, także poza pierwszą setką. Gracz bez ukończonej oficjalnej gry widzi kreskę zamiast wymyślonej pozycji. Ranking przy planszy pozostaje bez zmian.
 
 Nowe warunki „Urodzony w Europie” i „Urodzony w Ameryce Północnej” korzystają z kraju urodzenia zapisanego przez Leaguepedię. Narodowość i historia lig nie zastępują tej informacji. Istniejące plansze zachowują dotychczasowe wymagania; dawne ogólne etykiety kontynentu są doprecyzowane jako narodowość.
+
+Plansza Kaczego na 22.10.2026 ma uzgodnione warunki: tajwański TOP z występem na Worlds przed 2023, niekoreański JUNGLE z finałem Worlds, MID z co najmniej jednym odpadnięciem w grupie głównego turnieju przed 2020, wietnamski ADC z udziałem w play-in oraz SUPPORT z występami w co najmniej dwóch regionach kariery i w fazie pucharowej Worlds. Udział w play-in nie wymaga awansu. Regiony kariery wynikają z rozegranych spotkań w ligach, z uwzględnieniem zmian ich nazw i rozróżnieniem LTA North/South; turnieje międzynarodowe nie dopisują regionu. Migracja zachowuje planszę, jeżeli rozpoczęto już na niej grę.
+
+Nowa pula obejmuje również pentakill na Worlds, przegrany finał z Fakerem, udział lub zwycięstwo w EU/EMEA Masters, dokładnie jeden tytuł Worlds i tytuł w debiutanckiej edycji. Zamrożone uzupełnienie Leaguepedii ma własną sumę kontrolną. Generator pomija warunek importu, ponieważ narodowość i historia lig nie potwierdzają oficjalnego statusu importu.
+
+Generator pomija również ogólne roczniki i nieprecyzyjny status regionu wildcard. W parze każdy warunek musi zmniejszyć pulę drugiego o co najmniej 20%; nowe pary mają 8–50 odpowiedzi, a pojedyncze wymaganie 3–18 i najwyżej 25% puli danej roli. Dobór uwzględnia liczbę użyć tematów w ostatnich 14 dniach oraz powtórki na tej samej planszy. Zaktualizowany kalendarz 21–31 października pomija planszę Kaczego, dzień wdrożenia, daty archiwalne i wszystkie plansze z rozpoczętą grą.
 
 Stack: Next.js 14, React, TypeScript, Tailwind, Django 5.2 LTS, DRF, PostgreSQL 16, Redis 7 i Celery.
 

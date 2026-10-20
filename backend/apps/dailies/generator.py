@@ -2,13 +2,13 @@
 Generator codziennych plansz.
 
 Zasady:
-  * każdy slot dostaje dokładnie dwa warunki z różnych motywów,
+  * jeden wymagający warunek lub dwa, z których każdy zawęża odpowiedzi,
   * liczba pasujących zawodników musi mieścić się w widełkach MIN/MAX_CANDIDATES,
-  * motyw warunku nie może powtórzyć się w oknie THEME_MEMORY_DAYS dni,
+  * preferujemy motywy nieużywane w oknie THEME_MEMORY_DAYS dni,
   * plansza ma zaplanowany rozkład trudności: 2 łatwe, 2 średnie, 1 trudny slot.
 """
 import random
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import timedelta
 from itertools import combinations
 from types import SimpleNamespace
@@ -19,30 +19,27 @@ from django.utils import timezone
 
 from apps.players.models import Player
 
-from .models import Daily, DailySlot, DailySlotCondition
+from .models import Daily, DailySlot, DailySlotCondition, SINGLE_REQUIREMENT_TYPES, valid_requirement_count
 from .validators import PlayerFacts, _champion_name, evaluate_condition, player_matches_slot
 
 ROLE_ORDER = ['top', 'jungle', 'mid', 'adc', 'support']
 
 MIN_CANDIDATES = 8
 MAX_CANDIDATES = 150
-IDEAL_RANGE = (15, 80)
 THEME_MEMORY_DAYS = 14
 
 EASY, MEDIUM, HARD = 'easy', 'medium', 'hard'
 
 # (theme, difficulty, condition_type, operator, value, label_pl, label_en)
 # `theme` grupuje warunki, które mówią o tym samym – dwa warunki z tym samym motywem
-# nie trafią do jednego slotu ani do dwóch slotów tej samej planszy.
+# nie trafią do jednego slotu; na kolejnych pozycjach wolimy inne motywy.
 CONDITION_POOL = [
     # --- liga / region ---
     ('league', EASY, 'residency', 'eq', 'LCK', 'Grał w LCK', 'Played in LCK'),
     ('league', EASY, 'residency', 'eq', 'LPL', 'Grał w LPL', 'Played in LPL'),
     ('league', EASY, 'residency', 'eq', 'LEC', 'Grał w LEC', 'Played in LEC'),
     ('league', EASY, 'residency', 'eq', 'LCS', 'Grał w LCS', 'Played in LCS'),
-    ('league', HARD, 'wildcard_region', 'eq', True, 'Reprezentował region wildcard', 'Wildcard region'),
     ('league', HARD, 'leagues_min', 'gte', 2, 'Grał w dwóch różnych ligach głównych', 'Played in two major leagues'),
-    ('league', MEDIUM, 'import_player', 'eq', True, 'Import – grał poza swoim regionem', 'Import player'),
 
     # --- pochodzenie ---
     ('origin', EASY, 'country', 'eq', 'KR', 'Koreańczyk', 'Korean'),
@@ -51,6 +48,7 @@ CONDITION_POOL = [
     ('origin', MEDIUM, 'country', 'eq', 'PL', 'Polak', 'Polish'),
     ('origin', MEDIUM, 'country', 'eq', 'FR', 'Francuz', 'French'),
     ('origin', MEDIUM, 'country', 'eq', 'VN', 'Wietnamczyk', 'Vietnamese'),
+    ('origin', MEDIUM, 'country', 'eq', 'TW', 'Tajwańczyk', 'Taiwanese'),
     ('origin', EASY, 'birth_continent', 'eq', 'Europe', 'Urodzony w Europie', 'Born in Europe'),
     ('origin', MEDIUM, 'birth_continent', 'eq', 'North America', 'Urodzony w Ameryce Północnej', 'Born in North America'),
 
@@ -82,8 +80,8 @@ CONDITION_POOL = [
     ('final', MEDIUM, 'worlds_final', 'eq', True, 'Grał w finale Worlds', 'Played a Worlds final'),
     ('final', HARD, 'worlds_final_lost', 'eq', True, 'Przegrał finał Worlds', 'Lost a Worlds final'),
     ('deep_run', MEDIUM, 'worlds_semifinal', 'eq', True, 'Dotarł do półfinału Worlds', 'Reached a Worlds semifinal'),
-    ('deep_run', EASY, 'worlds_group_escape', 'eq', True, 'Wyszedł z fazy grupowej', 'Escaped groups'),
-    ('deep_run', HARD, 'worlds_never_escaped', 'gte', 2, 'Mimo 2+ startów nigdy nie wyszedł z grupy', 'Never escaped groups'),
+    ('deep_run', EASY, 'worlds_group_escape', 'eq', True, 'Zagrał w fazie pucharowej Worlds', 'Played in the Worlds knockout stage'),
+    ('deep_run', HARD, 'worlds_never_escaped', 'gte', 2, 'Mimo 2+ startów nie zagrał w fazie pucharowej Worlds', '2+ Worlds appearances without reaching knockouts'),
     ('elimination_stage', HARD, 'worlds_eliminated_stage', 'eq', 'play_in', 'Odpadł w play-in Worlds', 'Eliminated in Worlds play-in'),
     ('elimination_stage', MEDIUM, 'worlds_eliminated_stage', 'eq', 'group', 'Odpadł w grupie lub Swiss Worlds', 'Eliminated in Worlds groups or Swiss'),
     ('elimination_stage', MEDIUM, 'worlds_eliminated_stage', 'eq', 'quarterfinal', 'Odpadł w 1/4 finału Worlds', 'Eliminated in Worlds quarterfinals'),
@@ -92,14 +90,17 @@ CONDITION_POOL = [
     ('no_title', MEDIUM, 'worlds_never_won', 'gte', 3, 'Mimo 3+ startów nigdy nie wygrał Worlds', 'Never won Worlds'),
     ('playin', HARD, 'worlds_playin', 'eq', True, 'Przeszedł przez play-in', 'Came through play-in'),
     ('penta', HARD, 'pentakill_worlds', 'gte', 1, 'Pentakill na Worlds', 'Pentakill at Worlds'),
+    ('title', HARD, 'worlds_titles_exact', 'eq', 1, 'Wygrał Worlds dokładnie raz', 'Won Worlds exactly once'),
+    ('title', HARD, 'worlds_title_on_debut', 'eq', True, 'Wygrał Worlds w debiutanckiej edycji', 'Won Worlds on his debut'),
+    ('final', HARD, 'worlds_final_lost_to_faker', 'eq', True, 'Przegrał finał Worlds z Fakerem', 'Lost a Worlds final to Faker'),
+    ('masters', HARD, 'european_masters_played', 'eq', True, 'Zagrał w EU Masters / EMEA Masters', 'Played at EU / EMEA Masters'),
+    ('masters', HARD, 'european_masters_won', 'eq', True, 'Wygrał EU Masters / EMEA Masters', 'Won EU / EMEA Masters'),
     ('msi', MEDIUM, 'msi_appearance', 'eq', True, 'Grał na MSI', 'Played at MSI'),
 
     # --- kariera ---
     ('status', EASY, 'active', 'eq', True, 'Wciąż aktywny', 'Still active'),
     ('status', EASY, 'active', 'eq', False, 'Zakończył karierę', 'Retired'),
     ('versatility', HARD, 'worlds_multi_role', 'gte', 2, 'Grał na Worlds na dwóch rolach', 'Two roles at Worlds'),
-    ('birth', MEDIUM, 'birth_year_range', 'eq', {'min': 1990, 'max': 1999}, 'Urodzony w latach 90.', 'Born in the 1990s'),
-    ('birth', MEDIUM, 'birth_year_range', 'eq', {'min': 2000, 'max': 2010}, 'Urodzony w 2000 roku lub później', 'Born in 2000 or later'),
 ]
 
 # Planowany rozkład trudności slotów na jednej planszy.
@@ -219,6 +220,9 @@ def _has_distinct_roster(candidate_pools):
 def _independent_conditions(first, second):
     if first[0] == second[0]:
         return False
+    champion_ranks = {'worlds_top5_champion', 'career_top5_champion'}
+    if first[2] in champion_ranks and second[2] in champion_ranks:
+        return False
     if second[2] == 'worlds_eliminated_stage':
         first, second = second, first
     if first[2] != 'worlds_eliminated_stage' or second[4] is not True:
@@ -241,13 +245,17 @@ def validate_daily(daily):
     themes.update(STAT_THEMES)
     for slot in slots:
         conditions = list(slot.conditions.all())
-        if (len(conditions) != 2 or any(condition.condition_type == 'role' for condition in conditions)
-                or not _independent_conditions(*[(themes.get(c.condition_type, c.condition_type), None,
-                                                 c.condition_type, c.operator, c.value) for c in conditions])):
-            raise ValueError('Every slot must contain exactly two independent requirements')
+        if (not valid_requirement_count(conditions) or any(condition.condition_type == 'role' for condition in conditions)
+                or (len(conditions) == 2 and not _independent_conditions(*[(themes.get(c.condition_type, c.condition_type), None,
+                                                 c.condition_type, c.operator, c.value) for c in conditions]))):
+            raise ValueError('Every slot must contain one demanding or two independent requirements')
     pools = [count_candidates(slot) for slot in slots]
-    if any(not MIN_CANDIDATES <= len(pool) <= MAX_CANDIDATES for pool in pools):
-        raise ValueError(f'Every slot must have {MIN_CANDIDATES}–{MAX_CANDIDATES} valid candidates')
+    curated = daily.date.isoformat() == '2026-10-22' and daily.author_url == 'https://x.com/kaczy102'
+    for slot, pool in zip(slots, pools):
+        single = len(slot.conditions.all()) == 1
+        minimum, maximum = (3, MAX_CANDIDATES) if curated else ((3, 18) if single else (MIN_CANDIDATES, MAX_CANDIDATES))
+        if not minimum <= len(pool) <= maximum:
+            raise ValueError(f'Slot {slot.role} needs {minimum}–{maximum} valid candidates')
     if not _has_distinct_roster(pools):
         raise ValueError('Daily has no solution using five different players')
     return daily
@@ -256,7 +264,7 @@ def validate_daily(daily):
 def recent_themes(before_date, days=THEME_MEMORY_DAYS):
     """Motywy warunków użyte w ostatnich `days` dniach – żeby ich nie powtarzać."""
     since = before_date - timedelta(days=days)
-    used = set()
+    used = Counter()
     conditions = DailySlotCondition.objects.filter(
         slot__daily__date__gte=since, slot__daily__date__lt=before_date
     ).values_list('condition_type', 'value')
@@ -266,7 +274,7 @@ def recent_themes(before_date, days=THEME_MEMORY_DAYS):
     for ctype, value in conditions:
         theme = STAT_THEMES.get(ctype) or by_type.get((ctype, str(value)))
         if theme:
-            used.add(theme)
+            used[theme] += 1
     return used
 
 
@@ -284,81 +292,74 @@ def _write_conditions(slot, chosen):
         )
 
 
-def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None, condition_pool=None):
-    """
-    Buduje jeden slot. Zwraca (slot, candidates).
-
-    Szuka dwóch warunków dających sensowną liczbę kandydatów. Jeśli po
-    wyczerpaniu prób nie znajdzie nic w idealnym zakresie, bierze najlepszy
-    napotkany wariant zamiast zostawiać slot niegrywalny.
-    """
-    slot = DailySlot.objects.create(
-        daily=daily, role=role, position=position,
-        label_pl=role.capitalize(), label_en=role.capitalize(),
-    )
+def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None, condition_pool=None, board_themes=None):
+    """Select a narrow standalone achievement or two materially useful clues."""
     pool = pool if pool is not None else _role_pool(role)
     if not pool:
         raise ValueError(f'No players available for role {role}')
-    condition_pool = condition_pool if condition_pool is not None else build_condition_pool(pool)
-    condition_pool = [condition for condition in condition_pool if condition[2] != 'role']
-
-    primary = [c for c in condition_pool if c[1] == difficulty and c[0] not in used_themes]
-    if not primary:
-        primary = [c for c in condition_pool if c[1] == difficulty]
-    secondary = [c for c in condition_pool if c[0] not in used_themes] or list(condition_pool)
-
-    best = None  # (odległość od ideału, warunki, kandydaci)
-
-    for _ in range(40 if primary else 0):
-        anchor = rnd.choice(primary)
-        others = [c for c in secondary if _independent_conditions(anchor, c)]
-        if not others:
+    conditions = list(condition_pool if condition_pool is not None else build_condition_pool(pool))
+    conditions = [c for c in conditions if c[2] != 'role']
+    rnd.shuffle(conditions)
+    # Champion clues share the same verified ranking. Parse that ranking once
+    # per player, rather than once for every champion in the condition pool.
+    champion_matches = {}
+    for kind, property_name in [('worlds_top5_champion', 'worlds_top5_champions'),
+                                 ('career_top5_champion', 'career_top5_champions')]:
+        if not any(c[2] == kind and c[3] == 'eq' for c in conditions):
             continue
-        chosen = [anchor, rnd.choice(others)]
-        candidates = _candidates_for_conditions(role, chosen, pool)
-        count = len(candidates)
+        index = defaultdict(set)
+        for player in pool:
+            facts = PlayerFacts(player)
+            if facts.attr.get('worlds_verified') is False or role not in facts.roles:
+                continue
+            for champion in getattr(facts, property_name):
+                index[_champion_name(champion)].add(player.pk)
+        champion_matches[kind] = index
+    matches = [champion_matches[c[2]].get(_champion_name(c[4]), set())
+               if c[2] in champion_matches and c[3] == 'eq'
+               else {p.pk for p in _candidates_for_conditions(role, [c], pool)} for c in conditions]
+    quantitative = {'birth', 'worlds_games', 'worlds_win_rate', 'worlds_count'}
+    options = []
 
-        if IDEAL_RANGE[0] <= count <= IDEAL_RANGE[1]:
-            _write_conditions(slot, chosen)
-            return slot, candidates
+    def remember(chosen, matching):
+        n = len(matching)
+        score = abs(n - 18) * 0.25
+        # Count prior uses, so a saturated history still favours variety. Use
+        # the average to avoid rewarding singles merely for having fewer clues.
+        score += 2 * sum(used_themes.get(c[0], 0) if isinstance(used_themes, dict)
+                         else int(c[0] in used_themes) for c in chosen) / len(chosen)
+        score += sum(100 for c in chosen if c[0] in (board_themes or set()))
+        score += 3 if not any(c[1] == difficulty for c in chosen) else 0
+        if len(chosen) == 1:
+            score += 1
+        options.append((score, chosen, matching))
 
-        if MIN_CANDIDATES <= count <= MAX_CANDIDATES:
-            distance = min(abs(count - IDEAL_RANGE[0]), abs(count - IDEAL_RANGE[1]))
-            if best is None or distance < best[0]:
-                best = (distance, chosen, candidates)
-
-    if best:
-        _write_conditions(slot, best[1])
-        return slot, best[2]
-
-    # Exhaust the remaining pairs without ever reducing the requirement count.
-    # Each single-condition candidate set is evaluated once in this fallback.
-    fallbacks = list(condition_pool)
-    rnd.shuffle(fallbacks)
-    matches = {}
-    for first, second in combinations(range(len(fallbacks)), 2):
-        chosen = [fallbacks[first], fallbacks[second]]
+    for i, c in enumerate(conditions):
+        n = len(matches[i])
+        if c[2] in SINGLE_REQUIREMENT_TYPES and 3 <= n <= min(18, len(pool) * 0.25):
+            remember([c], matches[i])
+    for first, second in combinations(range(len(conditions)), 2):
+        chosen = [conditions[first], conditions[second]]
         if not _independent_conditions(*chosen):
             continue
-        for index in (first, second):
-            if index not in matches:
-                matches[index] = {player.pk for player in _candidates_for_conditions(role, [fallbacks[index]], pool)}
-        matching = matches[first] & matches[second]
-        count = len(matching)
-        if not MIN_CANDIDATES <= count <= MAX_CANDIDATES:
+        if all(c[0] in quantitative for c in chosen):
             continue
-        candidates = [player for player in pool if player.pk in matching]
-        if IDEAL_RANGE[0] <= count <= IDEAL_RANGE[1]:
-            _write_conditions(slot, chosen)
-            return slot, candidates
-        distance = min(abs(count - IDEAL_RANGE[0]), abs(count - IDEAL_RANGE[1]))
-        if best is None or distance < best[0]:
-            best = (distance, chosen, candidates)
-    if best:
-        _write_conditions(slot, best[1])
-        return slot, best[2]
-    raise ValueError(f'Cannot find two independent requirements for {role} with {MIN_CANDIDATES}–{MAX_CANDIDATES} candidates')
-
+        matching = matches[first] & matches[second]
+        n = len(matching)
+        if not MIN_CANDIDATES <= n <= min(MAX_CANDIDATES, 50):
+            continue
+        # Neither clue may be merely implied by the other one.
+        if n > 0.8 * min(len(matches[first]), len(matches[second])):
+            continue
+        remember(chosen, matching)
+    if not options:
+        raise ValueError(f'Cannot find independent requirements for {role}')
+    best_score = min(row[0] for row in options)
+    _score, chosen, matching = rnd.choice([row for row in options if row[0] <= best_score + 2])
+    slot = DailySlot.objects.create(daily=daily, role=role, position=position,
+                                   label_pl=role.capitalize(), label_en=role.capitalize())
+    _write_conditions(slot, chosen)
+    return slot, [p for p in pool if p.pk in matching]
 
 @transaction.atomic
 def generate_daily(date=None, seed=None, force=False):
@@ -388,14 +389,17 @@ def generate_daily(date=None, seed=None, force=False):
     }
 
     candidate_pools = []
+    board_themes = set()
     for position, (role, difficulty) in enumerate(zip(ROLE_ORDER, plan), start=1):
         pool = _role_pool(role)
-        slot, candidates = generate_slot(daily, role, position, difficulty, rnd, used_themes, pool)
+        slot, candidates = generate_slot(daily, role, position, difficulty, rnd, used_themes, pool,
+                                         board_themes=board_themes)
         candidate_pools.append(candidates)
         for cond in slot.conditions.all():
             theme = STAT_THEMES.get(cond.condition_type) or theme_by_condition.get((cond.condition_type, str(cond.value)))
             if theme:
-                used_themes.add(theme)
+                used_themes[theme] += 1
+                board_themes.add(theme)
 
     if not _has_distinct_roster(candidate_pools):
         raise ValueError('No solution using five different players')
