@@ -54,7 +54,7 @@ function NicknameDialog({ guestToken, profile, onClose, returnFocusRef }: {
         onChange={(event) => { setDraft(event.target.value); update.reset() }} />
       <div id={feedbackId}>
         {update.isError && <p role="alert" className="text-sm" style={{ color: 'var(--bad)' }}>
-          {formatApiError(update.error, pl ? 'Nie udało się zapisać nicku. Spróbuj ponownie.' : 'Could not save your nickname. Try again.')}
+          {formatApiError(update.error, pl ? 'Nie udało się zapisać nicku. Spróbuj ponownie.' : 'Could not save your nickname. Try again.', pl ? 'pl' : 'en')}
         </p>}
       </div>
       <div className="flex justify-end gap-2">
@@ -93,7 +93,7 @@ export function TeamDialog({ guestToken, team, onClose, returnFocusRef }: {
     <div className="min-h-0 overflow-y-auto p-5 scroll-thin">
       {teams.isLoading && <p role="status" className="py-4 text-sm" style={{ color: 'var(--text-faint)' }}>{pl ? 'Wczytywanie drużyn…' : 'Loading teams…'}</p>}
       {teams.isError && <div role="alert" className="space-y-2 text-sm" style={{ color: 'var(--bad)' }}>
-        <p>{formatApiError(teams.error, pl ? 'Nie udało się wczytać drużyn.' : 'Could not load teams.')}</p>
+        <p>{formatApiError(teams.error, pl ? 'Nie udało się wczytać drużyn.' : 'Could not load teams.', pl ? 'pl' : 'en')}</p>
         <button type="button" className="underline" onClick={() => { void teams.refetch() }}>{pl ? 'Spróbuj ponownie' : 'Try again'}</button>
       </div>}
       {teams.data && <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -109,7 +109,7 @@ export function TeamDialog({ guestToken, team, onClose, returnFocusRef }: {
       </div>}
       {update.isPending && <p role="status" className="mt-4 text-sm" style={{ color: 'var(--text-faint)' }}>{pl ? 'Zapisywanie…' : 'Saving…'}</p>}
       {update.isError && <p role="alert" className="mt-4 text-sm" style={{ color: 'var(--bad)' }}>
-        {formatApiError(update.error, pl ? 'Nie udało się zapisać drużyny. Spróbuj ponownie.' : 'Could not save your team. Try again.')}
+        {formatApiError(update.error, pl ? 'Nie udało się zapisać drużyny. Spróbuj ponownie.' : 'Could not save your team. Try again.', pl ? 'pl' : 'en')}
       </p>}
     </div>
     <div className="flex shrink-0 justify-end border-t px-5 py-4" style={{ borderColor: 'var(--line)' }}>
@@ -132,9 +132,9 @@ export default function GuestIdentity() {
   const team = profile.data?.supported_team
   return <div className="flex min-w-0 items-center gap-1">
     <button type="button" ref={nicknameButton} disabled={!guestToken} onClick={() => setEditor('nickname')}
-      aria-label={`${pl ? 'Zmień nick' : 'Change nickname'}: ${name}`} title={`NICK: ${name}`}
+      aria-label={`${pl ? 'Zmień nick' : 'Change nickname'}: ${name}`} title={`${pl ? 'NICK' : 'NAME'}: ${name}`}
       className="min-h-9 min-w-0 max-w-[90px] truncate px-1 text-[11px] font-medium sm:max-w-[160px]"
-      style={{ color: 'var(--text-dim)' }}>NICK: {name}</button>
+      style={{ color: 'var(--text-dim)' }}>{pl ? 'NICK' : 'NAME'}: {name}</button>
     <button type="button" ref={teamButton} disabled={!guestToken} onClick={() => setEditor('team')}
       aria-label={team ? `${pl ? 'Kibicuję' : 'I support'}: ${team.name}` : (pl ? 'Wybierz drużynę' : 'Choose a team')}
       title={team?.name || (pl ? 'Wybierz drużynę' : 'Choose a team')}

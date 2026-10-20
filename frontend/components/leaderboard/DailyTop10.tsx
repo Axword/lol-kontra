@@ -3,9 +3,11 @@ import Link from 'next/link'
 import { useLeaderboard } from '@/lib/api'
 import { usePrefs } from '@/lib/store'
 import LoadError from '@/app/load-error'
+import { guestDisplayName } from '@/lib/locale'
 
 type Entry = {
   username: string
+  is_guest?: boolean
   total_points: number
   diamond_picks?: number
   legendary_answers?: number
@@ -50,7 +52,7 @@ export default function DailyTop10({ dailyId, limit = 10 }: { dailyId?: number; 
               <span className="w-5 shrink-0 tabular" style={{ color: i < 3 ? 'var(--gold)' : 'var(--text-dim)' }}>
                 {i + 1}
               </span>
-              <span className="min-w-0 flex-1 break-words">{r.username}</span>
+              <span className="min-w-0 flex-1 break-words">{r.is_guest ? guestDisplayName(r.username, locale) : r.username}</span>
               <span className="font-semibold tabular" style={{ color: 'var(--gold)' }}>{Math.round(r.total_points)}</span>
             </li>
           ))}

@@ -7,6 +7,7 @@ import { usePrefs } from '@/lib/store'
 import { downloadProfileAccess, MAX_PROFILE_FILE_BYTES, readProfileAccessFile } from '@/lib/profile-access'
 import { activateProfile } from '@/lib/activate-profile'
 import { LEGACY_ORIGIN } from '@/lib/domain-migration'
+import { guestDisplayName } from '@/lib/locale'
 
 export default function ProfileAccess({ guestToken, onRestored }: { guestToken: string; onRestored: () => void }) {
   const pl = usePrefs(s => s.locale) === 'pl'
@@ -74,7 +75,7 @@ export default function ProfileAccess({ guestToken, onRestored }: { guestToken: 
     {saved && !preview && !restored && <p role="status" className="text-xs">{pl ? 'Plik dostępu został pobrany.' : 'Profile access file downloaded.'}</p>}
     {error && <p role="alert" className="text-xs" style={{ color: 'var(--bad)' }}>{pl ? 'Nie udało się wczytać profilu. Sprawdź plik i czy dane zostały już przeniesione na tę domenę. Bieżący profil nie został zmieniony.' : 'Could not load the profile. Check the file and that its data has been migrated to this domain. Your current profile has not changed.'}</p>}
     {preview && <div className="space-y-3 border p-4" style={{ borderColor: 'var(--line)' }}>
-      <p className="text-sm font-semibold">{preview.profile.display_name} · {preview.profile.stats.games_played} {pl ? 'rozegranych gier' : 'games played'}</p>
+      <p className="text-sm font-semibold">{guestDisplayName(preview.profile.display_name, pl ? 'pl' : 'en')} · {preview.profile.stats.games_played} {pl ? 'rozegranych gier' : 'games played'}</p>
       <p className="text-xs" style={{ color: 'var(--text-dim)' }}>{pl ? 'To przełączy profil w tej przeglądarce. Jeśli używasz tu innego profilu, najpierw zapisz jego plik. Profile nie są łączone.' : 'This switches the profile used in this browser. Save your current profile first if needed. Profiles are not merged.'}</p>
       <div className="flex gap-3">
         <button type="button" disabled={busy} onClick={() => { void activate() }} className="btn btn-gold">{pl ? 'Użyj tego profilu' : 'Use this profile'}</button>

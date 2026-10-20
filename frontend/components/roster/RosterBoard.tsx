@@ -100,7 +100,7 @@ export default function RosterBoard({ daily, state }: Props) {
           sound.error()
           setError(formatApiError(e, locale === 'pl'
                 ? 'Nie udało się wysłać odpowiedzi. Spróbuj ponownie.'
-                : 'Could not submit the answer. Try again.'))
+                : 'Could not submit the answer. Try again.', locale))
         },
         onSettled: () => { pending.current = false },
       }

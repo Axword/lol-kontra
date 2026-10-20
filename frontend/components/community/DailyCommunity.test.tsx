@@ -5,10 +5,11 @@ import type { GameState } from '@/lib/api'
 import DailyCommunity from './DailyCommunity'
 
 const mocks = vi.hoisted(() => ({
+  locale: 'pl' as 'pl' | 'en',
   query: { data: undefined as CommunityData | undefined, isLoading: false, isError: false, error: undefined as unknown, refetch: vi.fn() },
   post: { mutate: vi.fn(), isPending: false, isError: false, error: undefined as unknown, isSuccess: false, reset: vi.fn() },
 }))
-vi.mock('@/lib/store', () => ({ usePrefs: (select: (state: unknown) => unknown) => select({ locale: 'pl', guestToken: 'same-guest' }) }))
+vi.mock('@/lib/store', () => ({ usePrefs: (select: (state: unknown) => unknown) => select({ locale: mocks.locale, guestToken: 'same-guest' }) }))
 vi.mock('@/lib/community', () => ({
   useDailyCommunity: () => mocks.query, usePostCommunityComment: () => mocks.post,
   communityImageUrl: (path: string | null) => path ? `https://api.example.com${path}` : null,
@@ -24,6 +25,7 @@ const data: CommunityData = {
 const finished: GameState = { id: 1, daily: 19, total_points: 15, is_scored: true, is_practice: false,
   errors_used: 0, errors_left: 10, max_errors: 10, slots_total: 5, correct_count: 5, is_over: true, answers: [] }
 beforeEach(() => {
+  mocks.locale = 'pl'
   mocks.query.data = { ...data }
   mocks.query.isLoading = false; mocks.query.isError = false; mocks.query.error = undefined
   mocks.post.isPending = false; mocks.post.isError = false; mocks.post.error = undefined; mocks.post.isSuccess = false
@@ -31,6 +33,20 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('daily community', () => {
+  it('translates author captions, guest prefixes and validation errors while preserving written comments', () => {
+    mocks.locale = 'en'
+    mocks.query.data = { ...data, can_view_solutions: true, can_comment: true,
+      comments: [{ ...data.comments[0], nickname: 'Gość-Axword', text: 'Mój komentarz' }],
+      player_ranking: [{ ...data.player_ranking[0], nickname: 'Gość-Axword' }] }
+    mocks.post.isError = true
+    mocks.post.error = { isAxiosError: true, response: { data: { comment: ['Napisz komentarz bez obraźliwych słów.'] } } }
+    render(<DailyCommunity dailyId={20} state={finished} />)
+    expect(screen.getByText('Challenge author')).toBeTruthy()
+    expect(screen.getAllByText('Guest-Axword')).toHaveLength(2)
+    expect(screen.getByRole('alert').textContent).toBe('Write your comment without offensive language.')
+    expect(screen.getByText('Mój komentarz')).toBeTruthy()
+    expect(screen.queryByText('Autor wyzwania')).toBeNull()
+  })
   it('uses the guest author photo in the existing author card', () => {
     mocks.query.data = { ...data, author: { name: 'Kaczy', url: 'https://x.com/kaczy102',
       description: 'Autor wyzwania', avatar_url: '/authors/kaczy.png' } }

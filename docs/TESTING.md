@@ -83,6 +83,10 @@ Nowe testy obejmują ograniczenia PostgreSQL przy bezpośrednim zapisie przez OR
 
 ## Lokalny kalendarz i kontrola UI
 
+Język interfejsu wybiera pierwsza preferencja przeglądarki: `pl` i `pl-*` oznaczają polski, pozostałe języki angielski. PL/EN wybrane ręcznie pozostaje po odświeżeniu i zmianie języka urządzenia. Starszy zapis domyślnego PL przechodzi na wykrywanie automatyczne, starszy EN zachowuje ręczny wybór. Aktualizacja preferencji nie zmienia identyfikatora gościa, wyników ani ustawień pomocy. Testy obejmują również walidację nicku i komentarza, przywracanie profilu oraz generowane prefiksy nazw w rankingach. Angielski jest początkowym językiem renderowania, żeby nowy zagraniczny gracz nie otrzymywał najpierw polskiego ekranu.
+
+Obrazki składów mają osobne adresy `?v=2&lang=pl` oraz `?v=2&lang=en`. Tłumaczenie zmienia wyłącznie nagłówek i markę; piksele wyniku oraz składu, oryginalny snapshot w bazie i adres bez parametrów pozostają niezmienione. Komentarze i własne nicki graczy zachowują oryginalną treść.
+
 ```sh
 python manage.py prepare_month --month 2026-10
 ```

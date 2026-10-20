@@ -8,8 +8,10 @@ import { middleware } from '@/middleware'
 import { GAME_ORIGIN, LEGACY_ORIGIN, MIGRATED_COOKIE, TRANSFER_COOKIE, readStoredProfile, safeMigrationPath } from './domain-migration'
 
 const token = 'private-migration-test-token'
-function request(origin: string, path: string, init: RequestInit = {}) {
-  return new NextRequest(origin + path, { ...init, headers: { host: new URL(origin).host, ...init.headers } })
+function request(origin: string, path: string, init: NonNullable<ConstructorParameters<typeof NextRequest>[1]> = {}) {
+  const headers = new Headers(init.headers)
+  if (!headers.has('host')) headers.set('host', new URL(origin).host)
+  return new NextRequest(origin + path, { ...init, headers })
 }
 const form = (extra = {}) => request(GAME_ORIGIN, '/profile-transfer', { method: 'POST',
   headers: { origin: LEGACY_ORIGIN, 'content-type': 'application/x-www-form-urlencoded', ...extra },

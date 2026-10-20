@@ -52,7 +52,7 @@ export default function ProfilePage() {
             </div>
             <div id="guest-nickname-feedback" className="text-xs" style={{ color: 'var(--text-faint)' }}>
               {update.isError
-                ? <p role="alert" style={{ color: 'var(--bad)' }}>{formatApiError(update.error, pl ? 'Nie udało się zapisać nicku. Spróbuj ponownie.' : 'Could not save your nickname. Try again.')}</p>
+                ? <p role="alert" style={{ color: 'var(--bad)' }}>{formatApiError(update.error, pl ? 'Nie udało się zapisać nicku. Spróbuj ponownie.' : 'Could not save your nickname. Try again.', locale)}</p>
                 : update.isSuccess && draft === null
                 ? <p role="status">{pl ? 'Nick zapisany.' : 'Nickname saved.'}</p>
                 : <p>{pl ? 'Zostaw puste, aby wrócić do domyślnego nicku.' : 'Leave blank to restore your default nickname.'}</p>}
@@ -60,7 +60,7 @@ export default function ProfilePage() {
           </form>
 
           <section aria-labelledby="profile-badge-title" className="space-y-3">
-            <h2 id="profile-badge-title" className="text-sm font-semibold">Badge</h2>
+            <h2 id="profile-badge-title" className="text-sm font-semibold">{pl ? 'Odznaka' : 'Badge'}</h2>
             <div className="flex flex-wrap items-center gap-3">
               <span className="flex min-h-11 items-center gap-2 text-sm font-medium" style={{ color: 'var(--text-dim)' }}>
                 {team ? <><TeamLogo key={team.id} team={team} /><span>{team.name}</span></> : <Shield size={24} strokeWidth={1.7} aria-hidden="true" />}
@@ -83,7 +83,7 @@ export default function ProfilePage() {
 
           {profile.isLoading && <p role="status" className="text-sm" style={{ color: 'var(--text-faint)' }}>{pl ? 'Wczytywanie profilu…' : 'Loading profile…'}</p>}
           {profile.isError && <div role="alert" className="text-sm" style={{ color: 'var(--bad)' }}>
-            <p>{formatApiError(profile.error, pl ? 'Nie udało się wczytać profilu.' : 'Could not load your profile.')}</p>
+            <p>{formatApiError(profile.error, pl ? 'Nie udało się wczytać profilu.' : 'Could not load your profile.', locale)}</p>
             <button type="button" onClick={() => { void profile.refetch() }} className="mt-2 underline">{pl ? 'Spróbuj ponownie' : 'Try again'}</button>
           </div>}
           {profile.data && <ProfileStatistics stats={profile.data.stats} />}

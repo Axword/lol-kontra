@@ -72,7 +72,7 @@ def render_roster_png(submission):
         image.paste(map_image.convert('RGB').resize((480, 480), Image.Resampling.LANCZOS), (120, 10))
     draw = ImageDraw.Draw(image)
     draw.rectangle((0, 0, 720, 43), fill='#ffffff')
-    draw.text((18, 12), 'WORDS V', fill='#17291f', font=_font(21))
+    draw.text((18, 12), 'WORLDS KONTRA', fill='#17291f', font=_font(21))
     score = f'{submission.total_points:.2f}'.rstrip('0').rstrip('.')
     draw.text((505, 13), f'Wynik: {score}', fill='#215f4e', font=_font(18))
     answers = {answer.daily_slot_id: answer for answer in submission.answers.filter(
@@ -108,3 +108,21 @@ def render_roster_png(submission):
     if not value.startswith(b'\x89PNG\r\n\x1a\n') or len(value) > MAX_ROSTER_BYTES:
         raise ValueError('Roster snapshot exceeds its safe image size')
     return value
+
+
+def localize_roster_png(value, locale):
+    """Translate the header of an immutable snapshot without changing its score or roster."""
+    with Image.open(BytesIO(value)) as stored:
+        image = stored.convert('RGB')
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((0, 0, 490, 43), fill='#ffffff')
+    draw.text((18, 12), 'WORLDS KONTRA', fill='#17291f', font=_font(21))
+    # Stored snapshots use this exact Polish label. Leave the numeric score at
+    # its original coordinates, even if the game's live score has since changed.
+    font = _font(18)
+    end = 505 + int(draw.textlength('Wynik: ', font=font)) - 1
+    draw.rectangle((505, 0, end, 43), fill='#ffffff')
+    draw.text((505, 13), 'Score:' if locale == 'en' else 'Wynik:', fill='#215f4e', font=font)
+    output = BytesIO()
+    image.save(output, format='PNG', optimize=True)
+    return output.getvalue()

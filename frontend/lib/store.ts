@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { deviceLocale, type Locale } from './locale'
 
 /**
  * Store trzyma wyłącznie preferencje i tożsamość gościa.
@@ -12,9 +13,11 @@ import { persist } from 'zustand/middleware'
  */
 type Prefs = {
   guestToken: string
-  locale: 'pl' | 'en'
+  locale: Locale
+  localePreference: 'auto' | Locale
   seenHelp: boolean
-  setLocale: (l: 'pl' | 'en') => void
+  setLocale: (l: Locale) => void
+  syncDeviceLocale: () => void
   markHelpSeen: () => void
   ensureGuestToken: () => string
 }
@@ -28,10 +31,14 @@ export const usePrefs = create<Prefs>()(
   persist(
     (set, get) => ({
       guestToken: '',
-      locale: 'pl',
+      locale: 'en',
+      localePreference: 'auto',
       seenHelp: false,
 
-      setLocale: (locale) => set({ locale }),
+      setLocale: (locale) => set({ locale, localePreference: locale }),
+      syncDeviceLocale: () => {
+        if (get().localePreference === 'auto') set({ locale: deviceLocale() })
+      },
       markHelpSeen: () => set({ seenHelp: true }),
 
       ensureGuestToken: () => {
@@ -44,6 +51,15 @@ export const usePrefs = create<Prefs>()(
     }),
     {
       name: 'worldsxi-prefs',
+      merge: (persisted, current) => {
+        const saved = persisted as Partial<Prefs> | undefined
+        // Before device detection, PL was saved for everyone. Only a legacy EN
+        // value proves a deliberate choice. Preserve identities and help state.
+        const preference = saved?.localePreference === 'pl' || saved?.localePreference === 'en' || saved?.localePreference === 'auto'
+          ? saved.localePreference : saved?.locale === 'en' ? 'en' : 'auto'
+        return { ...current, ...saved, localePreference: preference,
+          locale: preference === 'auto' ? deviceLocale() : preference }
+      },
       // Game/profile hooks create identities explicitly. Migration pages must
       // inspect the existing identity before creating or replacing one.
     }

@@ -20,7 +20,7 @@ from apps.users.models import GuestProfile
 from apps.users.serializers import GuestTokenField
 from apps.users.worlds_teams import supported_team_details
 from .models import CommunityComment
-from .roster_images import render_roster_png
+from .roster_images import localize_roster_png, render_roster_png
 
 
 def validate_comment(value):
@@ -161,7 +161,10 @@ def roster_share(request, share_key):
         submission__daily__date__lte=timezone.localdate(),
         submission__daily__status__in=['published', 'closed', 'scored'],
     ).only('roster_png'))
-    response = HttpResponse(bytes(comment.roster_png), content_type='image/png')
+    value = bytes(comment.roster_png)
+    if request.GET.get('v') == '2':
+        value = localize_roster_png(value, request.GET.get('lang', 'pl'))
+    response = HttpResponse(value, content_type='image/png')
     response['Cache-Control'] = 'public, max-age=31536000, immutable'
     response['X-Content-Type-Options'] = 'nosniff'
     return response

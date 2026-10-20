@@ -7,9 +7,12 @@ import { usePrefs } from '@/lib/store'
 import { activateProfile } from '@/lib/activate-profile'
 import { downloadProfileAccess } from '@/lib/profile-access'
 import { LEGACY_ORIGIN, migrationCompleteUrl, parseMigrationSession, type MigrationSession } from '@/lib/domain-migration'
+import { guestDisplayName } from '@/lib/locale'
 
 type Preview = MigrationSession & { current: string; profile: GuestProfile }
 export default function ProfileMigration() {
+  const locale = usePrefs(state => state.locale)
+  const pl = locale === 'pl'
   const client = useQueryClient()
   const request = useRef<Promise<Preview> | null>(null)
   const [preview, setPreview] = useState<Preview | null>(null)
@@ -46,18 +49,18 @@ export default function ProfileMigration() {
     try { await move(preview) } catch { setError(true); setBusy(false) }
   }
   return <main className="mx-auto max-w-lg space-y-5 px-6 py-20">
-    <h1 className="text-3xl font-semibold">Twój profil WORLDS KONTRA</h1>
-    {busy && <p role="status">Przywracanie profilu…</p>}
-    {error && <p role="alert">Nie udało się przenieść profilu. Bieżący dostęp i stare wyniki nie zostały zmienione.</p>}
+    <h1 className="text-3xl font-semibold">{pl ? 'Twój profil WORLDS KONTRA' : 'Your WORLDS KONTRA profile'}</h1>
+    {busy && <p role="status">{pl ? 'Przywracanie profilu…' : 'Restoring your profile…'}</p>}
+    {error && <p role="alert">{pl ? 'Nie udało się przenieść profilu. Bieżący dostęp i stare wyniki nie zostały zmienione.' : 'Could not transfer your profile. Your current access and previous results have not changed.'}</p>}
     {preview && <>
-      <p className="text-lg font-semibold">{preview.profile.display_name} · {preview.profile.stats.games_played} rozegranych gier</p>
-      <p className="text-sm">Na nowej domenie używasz innego profilu. Możesz wrócić do swojego poprzedniego profilu.</p>
+      <p className="text-lg font-semibold">{guestDisplayName(preview.profile.display_name, locale)} · {preview.profile.stats.games_played} {pl ? 'rozegranych gier' : 'games played'}</p>
+      <p className="text-sm">{pl ? 'Na nowej domenie używasz innego profilu. Możesz wrócić do swojego poprzedniego profilu.' : 'You are using a different profile on the new domain. You can return to your previous profile.'}</p>
       <div className="flex flex-wrap gap-3">
-        <button disabled={busy} onClick={() => { void accept() }} className="btn btn-gold">Przenieś mój profil</button>
-        <button disabled={busy} onClick={() => window.location.replace(migrationCompleteUrl(preview.next))} className="border px-4 py-2 text-sm">Zachowaj bieżący profil</button>
+        <button disabled={busy} onClick={() => { void accept() }} className="btn btn-gold">{pl ? 'Przenieś mój profil' : 'Transfer my profile'}</button>
+        <button disabled={busy} onClick={() => window.location.replace(migrationCompleteUrl(preview.next))} className="border px-4 py-2 text-sm">{pl ? 'Zachowaj bieżący profil' : 'Keep my current profile'}</button>
       </div>
-      <button disabled={busy} onClick={() => { try { downloadProfileAccess(preview.current) } catch { setError(true) } }} className="text-sm underline underline-offset-4">Zapisz dostęp do bieżącego profilu</button>
+      <button disabled={busy} onClick={() => { try { downloadProfileAccess(preview.current) } catch { setError(true) } }} className="text-sm underline underline-offset-4">{pl ? 'Zapisz dostęp do bieżącego profilu' : 'Save access to my current profile'}</button>
     </>}
-    {error && <a href={`${LEGACY_ORIGIN}/legacy-migration?next=%2Fprofile`} className="inline-block underline underline-offset-4">Spróbuj ponownie ze starej strony</a>}
+    {error && <a href={`${LEGACY_ORIGIN}/legacy-migration?next=%2Fprofile`} className="inline-block underline underline-offset-4">{pl ? 'Spróbuj ponownie ze starej strony' : 'Try again from the old site'}</a>}
   </main>
 }

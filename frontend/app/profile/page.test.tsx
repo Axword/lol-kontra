@@ -141,7 +141,7 @@ describe('guest nickname and statistics', () => {
     const input = screen.getByRole('textbox', { name: 'Nick' }) as HTMLInputElement
     await waitFor(() => expect(input.value).toBe('Old name'))
     fireEvent.change(input, { target: { value: 'Unsaved nickname' } })
-    const badge = screen.getByRole('region', { name: 'Badge' })
+    const badge = screen.getByRole('region', { name: 'Odznaka' })
     fireEvent.click(within(badge).getByRole('button', { name: 'Wybierz drużynę' }))
     fireEvent.click(await screen.findByRole('button', { name: 'T1 T1 · LCK' }))
     await screen.findByRole('button', { name: 'Kibicuję: T1' })
@@ -173,7 +173,7 @@ describe('guest nickname and statistics', () => {
     const input = screen.getByRole('textbox', { name: 'Nick' }) as HTMLInputElement
     await waitFor(() => expect(input.value).toBe('Old name'))
     fireEvent.change(input, { target: { value: 'Draft stays' } })
-    const badge = screen.getByRole('region', { name: 'Badge' })
+    const badge = screen.getByRole('region', { name: 'Odznaka' })
     const open = within(badge).getByRole('button', { name: 'Zmień drużynę' })
     fireEvent.click(open)
     fireEvent.click(await screen.findByRole('button', { name: 'G2 G2 · LEC' }))

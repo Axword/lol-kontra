@@ -34,7 +34,7 @@ export default function GameSummary({ daily, state }: { daily: Daily; state: Gam
         <FinalNicknamePrompt eligible={state.is_over && !state.is_practice} />
         <div className="mt-6 flex flex-wrap justify-center gap-3 border-t pt-5" style={{ borderColor: 'var(--line)' }}>
           <Link href="/archiwum" className="btn">{pl ? 'Poprzednie plansze' : 'Previous boards'}</Link>
-          <Link href="/leaderboard" className="btn">{pl ? 'Ranking' : 'Ranking'}</Link>
+          <Link href="/leaderboard" className="btn">{pl ? 'Ranking' : 'Leaderboard'}</Link>
         </div>
       </div>
     </div>}

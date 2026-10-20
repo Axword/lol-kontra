@@ -1,8 +1,10 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { GAME_ORIGIN, LEGACY_ORIGIN, migrationCompleteUrl, readStoredProfile, safeMigrationPath } from '@/lib/domain-migration'
+import { usePrefs } from '@/lib/store'
 
 export default function LegacyBridge({ next: destination }: { next?: string }) {
+  const pl = usePrefs(state => state.locale) === 'pl'
   const started = useRef(false)
   const [failed, setFailed] = useState(false)
   useEffect(() => {
@@ -27,7 +29,9 @@ export default function LegacyBridge({ next: destination }: { next?: string }) {
   }, [destination])
   return <main className="mx-auto max-w-lg space-y-5 px-6 py-20">
     <h1 className="text-3xl font-semibold">WORLDS KONTRA</h1>
-    <p role={failed ? 'alert' : 'status'}>{failed ? 'Nie udało się odczytać dostępu do profilu. Dane starej strony nie zostały zmienione.' : 'Przenosimy Twój profil na nowy adres…'}</p>
-    <a href={GAME_ORIGIN} className="inline-block underline underline-offset-4">Przejdź do gry</a>
+    <p role={failed ? 'alert' : 'status'}>{failed
+      ? (pl ? 'Nie udało się odczytać dostępu do profilu. Dane starej strony nie zostały zmienione.' : 'Could not read your profile access. Your data on the old site has not changed.')
+      : (pl ? 'Przenosimy Twój profil na nowy adres…' : 'Moving your profile to the new address…')}</p>
+    <a href={GAME_ORIGIN} className="inline-block underline underline-offset-4">{pl ? 'Przejdź do gry' : 'Open the game'}</a>
   </main>
 }

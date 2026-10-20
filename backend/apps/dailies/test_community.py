@@ -16,7 +16,7 @@ from apps.users.models import GuestProfile
 from .community import validate_comment
 from .generator import CONDITION_POOL, build_condition_pool
 from .models import CommunityComment, Daily, DailySlot
-from .roster_images import MAX_ROSTER_BYTES, load_player_portrait, render_roster_png
+from .roster_images import MAX_ROSTER_BYTES, load_player_portrait, localize_roster_png, render_roster_png
 from .validators import evaluate_condition
 
 
@@ -102,6 +102,25 @@ class DailyCommunityTests(TestCase):
         self.assertEqual(first['roster_image_url'], changed['roster_image_url'])
         self.assertEqual(bytes(CommunityComment.objects.get().roster_png), snapshot)
         self.assertEqual(changed['text'], 'Jeszcze lepszy skład!')
+
+    def test_translated_share_header_preserves_the_saved_score_roster_and_snapshot(self):
+        game = self.game(score=17.25)
+        row = self.post(comment='Good board.').data['comments'][0]
+        original = bytes(CommunityComment.objects.get().roster_png)
+        # A translated view must keep the score originally captured in the PNG.
+        game.total_points = 99
+        game.save(update_fields=['total_points'])
+        response = self.client.get(row['roster_image_url'] + '?v=2&lang=en')
+        self.assertEqual(response.status_code, 200)
+        self.assertLessEqual(len(response.content), MAX_ROSTER_BYTES)
+        with Image.open(BytesIO(original)) as before, Image.open(BytesIO(response.content)) as after:
+            self.assertEqual(after.size, before.size)
+            self.assertEqual(after.crop((0, 44, 720, 500)).tobytes(), before.crop((0, 44, 720, 500)).tobytes())
+            self.assertEqual(after.crop((562, 0, 720, 44)).tobytes(), before.crop((562, 0, 720, 44)).tobytes())
+            self.assertNotEqual(after.crop((505, 0, 565, 44)).tobytes(), before.crop((505, 0, 565, 44)).tobytes())
+        self.assertEqual(bytes(CommunityComment.objects.get().roster_png), original)
+        self.assertEqual(self.client.get(row['roster_image_url']).content, original)
+        self.assertNotEqual(localize_roster_png(original, 'pl'), response.content)
 
     def test_text_and_roster_urls_stay_hidden_until_viewer_actually_finishes(self):
         self.game(self.other_token)

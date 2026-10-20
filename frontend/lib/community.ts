@@ -4,6 +4,7 @@ import { api } from './api'
 import { isValidDailyId, useGameDate } from './daily'
 import { retryApiQuery } from './errors'
 import { SupportedTeam } from './guest-profile'
+import type { Locale } from './locale'
 
 export type CommunityComment = {
   id: number
@@ -54,11 +55,15 @@ export function usePostCommunityComment(dailyId: number, token: string) {
 }
 
 /** Root-relative share paths belong to Django, including when it is hosted separately. */
-export function communityImageUrl(path: string | null) {
+export function communityImageUrl(path: string | null, locale?: Locale) {
   if (!path) return null
   try {
     const base = api.defaults.baseURL || 'http://localhost:8000/api/v1'
     const url = new URL(path, `${base.replace(/\/$/u, '')}/`)
+    if (locale && /^\/api\/v1\/roster-shares\/[^/]+\.png$/u.test(url.pathname)) {
+      url.searchParams.set('v', '2')
+      url.searchParams.set('lang', locale)
+    }
     return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null
   } catch { return null }
 }

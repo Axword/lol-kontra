@@ -29,7 +29,7 @@ export default function FinalNicknamePrompt({ eligible = true }: { eligible?: bo
       </button>
     </div>
     {update.isError && <p id="result-nickname-error" role="alert" className="text-sm" style={{ color: 'var(--bad)' }}>
-      {formatApiError(update.error, pl ? 'Nie udało się zapisać nicku.' : 'Could not save your nickname.')}
+      {formatApiError(update.error, pl ? 'Nie udało się zapisać nicku.' : 'Could not save your nickname.', pl ? 'pl' : 'en')}
     </p>}
   </form>
 }

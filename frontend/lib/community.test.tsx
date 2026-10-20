@@ -64,6 +64,14 @@ describe('daily community requests', () => {
 })
 
 describe('Django roster image URL', () => {
+  it('uses distinct language and version URLs for translated immutable snapshots', () => {
+    api.defaults.baseURL = 'https://lol-kontra.axword.pl/api/v1'
+    expect(communityImageUrl('/api/v1/roster-shares/private.png', 'en'))
+      .toBe('https://lol-kontra.axword.pl/api/v1/roster-shares/private.png?v=2&lang=en')
+    expect(communityImageUrl('/api/v1/roster-shares/private.png', 'pl'))
+      .toBe('https://lol-kontra.axword.pl/api/v1/roster-shares/private.png?v=2&lang=pl')
+    expect(communityImageUrl('https://cdn.example.com/board.png', 'en')).toBe('https://cdn.example.com/board.png')
+  })
   it('preserves root-relative API prefixes and resolves relative paths against the configured API', () => {
     api.defaults.baseURL = 'https://lol-kontra.onrender.com/api/v1'
     expect(communityImageUrl('/api/v1/roster-shares/private.png')).toBe('https://lol-kontra.onrender.com/api/v1/roster-shares/private.png')

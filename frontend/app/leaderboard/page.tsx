@@ -6,6 +6,7 @@ import { useGuestToken } from '@/lib/guest-profile'
 import { formatPoints } from '@/lib/points'
 import GameLayout from '@/components/layout/GameLayout'
 import LoadError from '@/app/load-error'
+import { guestDisplayName } from '@/lib/locale'
 
 export default function LeaderboardPage() {
   const locale = usePrefs((s) => s.locale)
@@ -22,7 +23,7 @@ export default function LeaderboardPage() {
     className={`border-b last:border-b-0 ${own ? 'border-t-2' : ''}`}
     style={{ borderColor: own ? 'var(--gold)' : 'var(--line-soft)', background: own ? '#eef5ef' : undefined }}>
     <td className="px-4 py-5 tabular" style={{ color: entry.rank != null && entry.rank <= 3 ? 'var(--gold)' : 'var(--text-dim)' }}>{entry.rank ?? '—'}</td>
-    <td className="break-words px-2 py-5 font-medium"><span className={own ? 'underline underline-offset-4' : undefined}>{entry.username}</span>
+    <td className="break-words px-2 py-5 font-medium"><span className={own ? 'underline underline-offset-4' : undefined}>{entry.is_guest ? guestDisplayName(entry.username, locale) : entry.username}</span>
       {own && <span className="ml-2 text-xs" style={{ color: 'var(--gold)' }}>{locale === 'pl' ? 'Ty' : 'You'}</span>}</td>
     <td className="px-3 py-5 text-right font-semibold tabular" style={{ color: 'var(--gold)' }}>{entry.weighted_points == null ? '—' : formatPoints(entry.weighted_points, locale)}</td>
     <td className="px-3 py-5 text-right tabular">{entry.avg_points == null ? '—' : formatPoints(entry.avg_points, locale)}</td>

@@ -12,7 +12,7 @@ const original = 'old-profile-123456789'
 const profile = { display_name: 'Gość-Axword', stats: { games_played: 2 } }
 let client: QueryClient
 beforeEach(() => {
-  usePrefs.setState({ guestToken: current })
+  usePrefs.setState({ guestToken: current, locale: 'pl', localePreference: 'pl' })
   client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ guestToken: original, next: '/daily/20' }) }))
   vi.spyOn(api, 'post').mockResolvedValue({ data: profile })
@@ -25,6 +25,16 @@ function open() {
   return render(<StrictMode><QueryClientProvider client={client}><ProfileMigration /></QueryClientProvider></StrictMode>)
 }
 describe('cross-domain profile recovery', () => {
+  it('shows the recovery decision in English without replacing the current identity', async () => {
+    usePrefs.getState().setLocale('en')
+    open()
+    await screen.findByText('Guest-Axword · 2 games played')
+    expect(screen.getByRole('heading', { name: 'Your WORLDS KONTRA profile' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Transfer my profile' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Keep my current profile' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Save access to my current profile' })).toBeTruthy()
+    expect(usePrefs.getState().guestToken).toBe(current)
+  })
   it('verifies the old identity once and requires confirmation before replacing an existing profile', async () => {
     open()
     await screen.findByText('Gość-Axword · 2 rozegranych gier')
