@@ -135,6 +135,8 @@ class InfinityRun(models.Model):
     # Candidate IDs remain server-only; API serializers expose just the clues.
     board = models.JSONField(default=dict)
     answers = models.JSONField(default=list)
+    ranking_before = models.JSONField(default=dict)
+    ranking_result = models.JSONField(default=dict)
     started_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     finished_at = models.DateTimeField(null=True, blank=True)
@@ -159,7 +161,7 @@ class InfinityAttempt(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['run', 'board_id', 'position', 'player'], name='infinity_attempt_idempotent'),
+            models.UniqueConstraint(fields=['run', 'board_id', 'position', 'player', 'is_correct'], name='infinity_attempt_idempotent'),
             models.UniqueConstraint(fields=['run', 'board_id', 'position'], condition=Q(is_correct=True), name='infinity_slot_correct_once'),
             models.UniqueConstraint(fields=['run', 'board_id', 'player'], condition=Q(is_correct=True), name='infinity_distinct_correct_players'),
             models.CheckConstraint(check=Q(position__gte=1, position__lte=5), name='infinity_position_1_5'),

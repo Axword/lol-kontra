@@ -11,6 +11,7 @@ import RiftBoard from '@/components/roster/RiftBoard'
 import SlotList from '@/components/roster/SlotList'
 import PlayerPickerModal from '@/components/roster/PlayerPickerModal'
 import LoadError from '@/app/load-error'
+import InfinitySummary from '@/components/results/InfinitySummary'
 
 export default function InfinityPage() {
   const pl = usePrefs(s => s.locale) === 'pl'
@@ -68,8 +69,9 @@ export default function InfinityPage() {
           <div><dt className="text-xs" style={{color:'var(--text-faint)'}}>{pl ? 'Rekord' : 'Personal best'}</dt><dd className="mt-1 text-2xl font-semibold tabular">{query.data?.personal_best ?? 0}</dd></div>
           <div><dt className="text-xs" style={{color:'var(--text-faint)'}}>{pl ? 'Życia' : 'Lives'}</dt><dd className="mt-1 text-2xl font-semibold tabular" style={{color:run.is_over?'var(--bad)':undefined}}>{run.errors_left} / {run.max_errors}</dd></div>
         </dl>}
-        {(!run || run.is_over) && <div className="space-y-4 border bg-white p-6" style={{borderColor:'var(--line)'}}>
-          {run?.is_over && <h2 className="text-xl font-semibold">{pl ? 'Seria zakończona' : 'Run finished'}</h2>}
+        {run?.is_over&&<InfinitySummary key={run.id} run={run} pending={start.isPending} error={start.isError}
+          onRestart={()=>{setFeedback(null);start.mutate()}} />}
+        {!run && <div className="space-y-4 border bg-white p-6" style={{borderColor:'var(--line)'}}>
           <button disabled={start.isPending} onClick={() => {setFeedback(null);start.mutate()}} className="btn btn-gold disabled:opacity-50">
             {start.isPending ? (pl?'Losowanie…':'Drawing…') : run ? (pl?'Zagraj ponownie':'Play again') : (pl?'Graj w Infinity':'Play Infinity')}</button>
           {start.isError && <p role="alert" className="text-sm" style={{color:'var(--bad)'}}>{pl?'Nie udało się rozpocząć serii. Spróbuj ponownie.':'Could not start a run. Try again.'}</p>}

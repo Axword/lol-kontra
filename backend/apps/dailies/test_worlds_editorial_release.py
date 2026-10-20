@@ -33,6 +33,11 @@ class WorldsEditorialReleaseTests(TestCase):
         guest_before = list(DailySlotCondition.objects.filter(slot__daily=guest).order_by('pk').values())
         slot_ids = list(DailySlot.objects.order_by('pk').values_list('pk', flat=True))
         self.install()
+        before = list(DailySlotCondition.objects.order_by('pk').values())
+        self.install()
+        self.assertEqual(list(DailySlotCondition.objects.order_by('pk').values()), before)
+        import_module('apps.dailies.migrations.0021_activity_future_boards').install(
+            apps, SimpleNamespace(connection=connection))
         for daily in Daily.objects.exclude(pk=guest.pk):
             validate_daily(daily)
             slots = list(daily.slots.prefetch_related('conditions'))
@@ -41,9 +46,6 @@ class WorldsEditorialReleaseTests(TestCase):
             self.assertFalse(daily.slots.filter(conditions__condition_type='career_top5_champion').exists())
         self.assertEqual(list(DailySlot.objects.order_by('pk').values_list('pk', flat=True)), slot_ids)
         self.assertEqual(list(DailySlotCondition.objects.filter(slot__daily=guest).order_by('pk').values()), guest_before)
-        before = list(DailySlotCondition.objects.order_by('pk').values())
-        self.install()
-        self.assertEqual(list(DailySlotCondition.objects.order_by('pk').values()), before)
 
     def test_started_future_board_preserves_conditions_answers_and_attempts(self):
         daily = Daily.objects.get(date='2026-10-21')

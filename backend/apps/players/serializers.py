@@ -2,6 +2,7 @@ from rest_framework import serializers
 from urllib.parse import urlsplit
 
 from .models import Player, Team
+from .activity import competitive_active
 
 
 class VerifiedPlayerSerializer(serializers.ModelSerializer):
@@ -23,8 +24,11 @@ class VerifiedPlayerSerializer(serializers.ModelSerializer):
         return None
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        if instance.attributes.get('activity_verified') is False:
+        active = competitive_active(instance)
+        if active is None:
             data.pop('is_active', None)
+        elif 'is_active' in data:
+            data['is_active'] = active
         if 'worlds_titles' not in instance.attributes and not instance.worlds_titles_count:
             data.pop('worlds_titles_count', None)
         return data

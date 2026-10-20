@@ -6,6 +6,7 @@ import { roleLabel } from '@/lib/flags'
 import { rarityForPercent, rarityPalette } from '@/lib/rarity'
 import RarityIndicator from './RarityIndicator'
 import PlayerPortrait from './PlayerPortrait'
+import ConditionLabel from './ConditionLabel'
 import { usePrefs } from '@/lib/store'
 
 type Props = {
@@ -65,7 +66,7 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
                 {solved ? <Check size={16} aria-hidden style={{ color: 'var(--ok)' }} /> : !disabled && <Plus size={15} aria-hidden className="opacity-60 shrink-0" />}
               </span>
               <ul className="rift-conditions" id={`${boardId}-${slot.id}`}>
-                {slot.conditions.map((c) => <li key={c.id}>{locale === 'pl' ? c.label_pl : c.label_en}</li>)}
+                {slot.conditions.map((c) => <li key={c.id}><ConditionLabel condition={c} locale={locale} /></li>)}
               </ul>
               {count != null && <div className="mt-3 text-xs tabular">{count} {locale === 'pl' ? 'zawodników' : 'players'}</div>}
               {solved && showRarity && (

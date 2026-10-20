@@ -101,6 +101,8 @@ Przy zmianach interfejsu sprawdzamy na komputerze i telefonie: planszę, wyszuki
 
 ## Infinity i większości ról
 
+Aktualizacja 21.10 dodaje regresję Bang + Retired + Kalista przez dzienne API i wcześniej wylosowaną planszę Infinity. Testy statusu obejmują trenera, streamera, pełny rok nieaktywności, nieznane dane, rocznicę i rok przestępny, mecze pokazowe oraz zgodność autocomplete. Testy rankingów obejmują osobne najlepsze serie dla czterech okresów, jeden wiersz na profil, zero trafień, granice północy i zmianę czasu w Warszawie, prawdziwy awans po kolejnej serii, brak awansu przy słabszym wyniku i trwałość wyniku po ponowieniu. Frontend sprawdza popup PL/EN, zamknięcie, ponowne otwarcie, restart, odnośniki do okresów i tooltip myszą, klawiaturą i dotykiem. Migracja przyszłych plansz ma osobną regresję zachowania rozpoczętej gry, planszy autorskiej, dzisiejszych wymagań i identyfikatorów pozycji.
+
 Regresje `test_majority_roles.py` sprawdzają rzeczywiste większości Kikisa, Yellowstara, Perkza, Ambitiona i Rekklesa, odrzucenie pojedynczych map oraz rozdzielenie Worlds od lig krajowych. Test archiwum zachowuje starą poprawną odpowiedź, jednocześnie odrzucając ten sam wybór nowego gracza według aktualnej zasady.
 
 `test_board_factory.py` sprawdza wiele losowań na rzeczywistych danych: trzy pola Worlds, dwa inne, co najmniej dziesięć odpowiedzi po weryfikacji roli i wspólną drużynę/edycję z pięcioma różnymi pasującymi zawodnikami. Nie dopuszcza TOP 5 kariery; TOP 5 Worlds pojawia się najwyżej raz i jedynie w części zestawów. `test_worlds_editorial_release.py` kontroluje pakiet przyszłych plansz, identyfikatory pozycji, zachowanie autorskiej planszy oraz pominięcie rozpoczętych gier wraz z ich odpowiedziami i próbami.

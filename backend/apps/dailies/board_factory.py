@@ -10,6 +10,8 @@ from django.db.models import Max
 
 from apps.players.models import Player
 from apps.players.majority_roles import SOURCE_SHA256
+from apps.players.activity import SOURCE_SHA256 as ACTIVITY_SHA256
+from django.utils import timezone
 from .models import SINGLE_REQUIREMENT_TYPES
 from .validators import PlayerFacts, _champion_name, evaluate_condition
 
@@ -94,7 +96,7 @@ def build_catalog(players):
 
 def question_catalog():
     version = Player.objects.aggregate(updated=Max('updated_at'))['updated']
-    key = f'worlds-board-catalog-v3:{SOURCE_SHA256}:{version.isoformat() if version else "empty"}:{Player.objects.count()}'
+    key = f'worlds-board-catalog-v4:{SOURCE_SHA256}:{ACTIVITY_SHA256}:{timezone.localdate()}:{version.isoformat() if version else "empty"}:{Player.objects.count()}'
     catalog = cache.get(key)
     if catalog is None:
         catalog = build_catalog(list(Player.objects.order_by('slug')))

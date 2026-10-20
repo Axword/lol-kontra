@@ -7,6 +7,7 @@ import { usePrefs } from '@/lib/store'
 import { sound } from '@/lib/sound'
 import { useDialog } from '../ui/useDialog'
 import PlayerPortrait from './PlayerPortrait'
+import ConditionLabel from './ConditionLabel'
 
 type Props = {
   slot: DailySlot | null
@@ -102,7 +103,7 @@ export default function PlayerPickerModal({ slot, open, busy, error, onClose, on
                 className="text-[14px] leading-relaxed pl-3 border-l-2"
                 style={{ borderColor: 'var(--gold-dim)', color: 'var(--text)' }}
               >
-                {locale === 'pl' ? c.label_pl : c.label_en}
+                <ConditionLabel condition={c} locale={locale} focusable />
               </li>
             ))}
           </ul>

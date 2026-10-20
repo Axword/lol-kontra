@@ -141,6 +141,8 @@ class GuestReleaseTests(TestCase):
         # Current role validation applies after the subsequent editorial release.
         import_module('apps.dailies.migrations.0020_worlds_focused_future_boards').install(
             apps, SimpleNamespace(connection=connection))
+        import_module('apps.dailies.migrations.0021_activity_future_boards').install(
+            apps, SimpleNamespace(connection=connection))
         for board in boards:
             validate_daily(board)
             self.assertFalse(DailySlotCondition.objects.filter(slot__daily=board, condition_type='birth_year_range').exists())

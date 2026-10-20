@@ -36,6 +36,8 @@ class MinimumTenReleaseTests(TestCase):
         # policy to its pools. The new release has its own preservation tests.
         import_module('apps.dailies.migrations.0020_worlds_focused_future_boards').install(
             apps, SimpleNamespace(connection=connection))
+        import_module('apps.dailies.migrations.0021_activity_future_boards').install(
+            apps, SimpleNamespace(connection=connection))
         for spec in release.load_boards():
             board = Daily.objects.get(date=spec['date'])
             self.assertEqual(board.minimum_candidates, 10)

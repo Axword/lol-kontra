@@ -135,7 +135,7 @@ class InfinityConcurrencyTests(TransactionTestCase):
         player=Player.objects.create(slug='concurrent-player',nickname='Player')
         profile=GuestProfile.objects.create(guest_key=guest_identity_key(token))
         run=InfinityRun.objects.create(guest_profile=profile,display_suffix='concurrent',board={
-            'slots':[{'id':1,'position':1,'role':'mid','conditions':[],'candidate_ids':[player.pk]}]})
+            'slots':[{'id':1,'position':1,'role':'mid','conditions':[{'condition_type':'active','operator':'eq','value':True}],'candidate_ids':[player.pk]}]})
         data={'guest_token':token,'run_id':str(run.pk),'board_id':str(run.board_id),'position':1,'player_slug':player.slug}
         def submit(_):
             close_old_connections()

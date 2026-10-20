@@ -40,6 +40,7 @@ from typing import Any
 
 from apps.players.worlds_import import COUNTRIES
 from apps.players.majority_roles import qualified_roles
+from apps.players.activity import competitive_active
 
 logger = logging.getLogger(__name__)
 
@@ -536,8 +537,8 @@ def _c_birth_continent(f, operator, value):
 
 @condition('active')
 def _c_active(f, operator, value):
-    return _match_boolean(f.player.is_active, operator, value,
-                          known=f.attr.get('activity_verified') is not False)
+    active = competitive_active(f.player)
+    return _match_boolean(active, operator, value, known=active is not None)
 
 
 @condition('residency')
