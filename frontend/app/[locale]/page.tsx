@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import { notFound, useParams } from 'next/navigation'
 import { usePrefs } from '@/lib/store'
-import HomePage from '../page'
+import HomePage from '../home-game'
 
 export default function LocalizedHomePage() {
   const locale = useParams()?.locale
