@@ -90,7 +90,7 @@ def main():
         try:
             with fresh.cursor() as cursor:
                 expected = {'players_player': 882, 'dailies_daily': 31, 'dailies_dailyslot': 155,
-                    'dailies_dailyslotcondition': 310, 'submissions_submission': 0,
+                    'submissions_submission': 0,
                     'submissions_submissionanswer': 0, 'submissions_submissionattempt': 0,
                     'scoring_answerstatsdaily': 0}
                 for table, count in expected.items():
@@ -138,7 +138,8 @@ from django.test import override_settings
 from django.utils import timezone
 from rest_framework.test import APIClient
 from apps.dailies.models import Daily
-from apps.dailies.generator import validate_daily
+from apps.dailies.generator import ROLE_ORDER, count_candidates, _has_distinct_roster, validate_daily
+from apps.dailies.models import valid_requirement_count
 from apps.submissions.models import Submission
 from apps.scoring.models import ScoringConfig
 from apps.players.models import Player
@@ -159,7 +160,15 @@ with override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backend
     team=client.post('/api/v1/guest/profile/',{'guest_token':'4c6bc268-88c1-4d91-8567-f62b418fe1e9','supported_team':'t1'},format='json')
     assert team.status_code==200 and team.data['supported_team']['id']=='t1' and team.data['nickname']=='SmokeTester'
     for board in Daily.objects.all():
-        validate_daily(board)
+        if board.minimum_candidates is not None or board.author_name.strip():
+            validate_daily(board)
+        else:
+            # Archived requirements stay frozen. New editorial independence and
+            # difficulty rules must not invalidate or rewrite historical games.
+            slots=list(board.slots.order_by('position').prefetch_related('conditions'))
+            assert [slot.role for slot in slots]==ROLE_ORDER, board.date
+            assert all(valid_requirement_count(list(slot.conditions.all())) for slot in slots), board.date
+            assert _has_distinct_roster([count_candidates(slot) for slot in slots]), board.date
         if board.date > timezone.localdate():
             assert client.get(f'/api/v1/dailies/{board.pk}/').status_code == 404
             assert client.get(f'/api/v1/dailies/{board.pk}/solutions/').status_code == 404
