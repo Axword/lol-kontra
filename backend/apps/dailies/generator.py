@@ -45,7 +45,7 @@ CONDITION_POOL = [
     ('league', EASY, 'residency', 'eq', 'LPL', 'Grał w LPL', 'Played in LPL'),
     ('league', EASY, 'residency', 'eq', 'LEC', 'Grał w LEC / EU LCS', 'Played in LEC / EU LCS'),
     ('league', EASY, 'residency', 'eq', 'LCS', 'Grał w LCS / NA LCS', 'Played in LCS / NA LCS'),
-    ('league', HARD, 'leagues_min', 'gte', 2, 'Grał w min. 2 z lig: LCK, LPL, LEC, LCS, LTA', 'Played in at least 2 of LCK, LPL, LEC, LCS, LTA'),
+    ('league', HARD, 'leagues_min', 'gte', 2, 'Grał w min. 2 z lig: LCK, LPL, LEC, LCS, LTA, LTA North, LTA South', 'Played in at least 2 of LCK, LPL, LEC, LCS, LTA, LTA North, LTA South'),
 
     # --- pochodzenie ---
     ('origin', EASY, 'country', 'eq', 'KR', 'Koreańczyk', 'Korean'),
