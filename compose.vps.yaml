@@ -49,7 +49,7 @@ services:
       POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Set the runtime database password}
       POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:${POSTGRES_VOLUME_TARGET:-/var/lib/postgresql/data}
       - ./infra/vps/grant-runtime.sql:/opt/grant-runtime.sql:ro
     networks: [data]
     healthcheck:

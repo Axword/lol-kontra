@@ -1,6 +1,6 @@
 # WORDS V na jednym VPS
 
-Przygotowany wariant dla **Ubuntu 24.04 LTS**: Next.js, Django/Gunicorn, Celery, Redis,
+Przygotowany wariant dla **Ubuntu 24.04 lub 26.04 LTS**: Next.js, Django/Gunicorn, Celery, Redis,
 PostgreSQL i Caddy. Jedna domena wystarcza: `/` obsługuje frontend, `/api/v1/` API,
 `/admin/` panel Django. Caddy wystawia tylko porty 80/443 i odnawia certyfikaty.
 PostgreSQL i Redis nie mają portów dostępnych z internetu.
@@ -11,14 +11,17 @@ Konfiguracji `compose.vps.yaml` nie łącz z developerskim Compose.
 
 ## 1. Zanim uruchomisz serwer
 
-- VPS z Ubuntu 24.04 LTS, dostęp administracyjny przez SSH na kluczu i konsola ratunkowa OVH.
+- VPS z Ubuntu 24.04 lub 26.04 LTS, dostęp administracyjny przez SSH na kluczu i konsola ratunkowa OVH.
 - Własna domena i możliwość zmiany DNS. Nie potrzeba drugiej domeny dla API.
 - Osobny magazyn kopii poza VPS, np. zgodny z S3, z kluczem ograniczonym do backupów.
 - Dostęp do obecnego Rendera i Neona. **Zachowaj dokładnie dotychczasowy
   `DJANGO_SECRET_KEY` z Rendera**. Z tego klucza powstają identyfikatory profili gości;
   nowy klucz utraci powiązania z nickami i odznakami mimo przeniesienia tabel.
 - Sprawdź wersję PostgreSQL źródła (`SHOW server_version;` w konsoli SQL Neona).
-  Zestaw obsługuje 16 i 17; ustaw tę samą wersję przed pierwszym uruchomieniem bazy.
+  Zestaw obsługuje 16, 17 i 18; ustaw tę samą wersję przed pierwszym uruchomieniem bazy.
+  Konfigurator dla 18 ustawia `POSTGRES_VOLUME_TARGET=/var/lib/postgresql`, zgodnie
+  z katalogiem danych oficjalnego obrazu. Dla 16/17 pozostaje `/var/lib/postgresql/data`.
+  Nie zmieniaj wersji ani miejsca montowania istniejącego wolumenu bez migracji.
   Inna wersja wymaga osobno sprawdzonego wariantu migracji. Zmiana numeru obrazu
   na istniejącym wolumenie **nie wykonuje aktualizacji PostgreSQL**.
 

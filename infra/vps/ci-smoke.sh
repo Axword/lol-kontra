@@ -9,7 +9,7 @@ temporary=$(mktemp -d)
 export RELEASE_SHA=ci
 printf '%s' 'synthetic-ci-$NO_EXPANSION-#=+!*0123456789abcdefghijklm' > "$temporary/django-secret"
 python3 "$root/infra/vps/configure.py" create --django-secret-file "$temporary/django-secret" --file "$temporary/app.env" \
-    --domain game.example.com --email ci@example.com
+    --domain game.example.com --email ci@example.com --postgres-major 18
 mkdir -p "$temporary/backups"
 sudo chown root:root "$temporary/backups"
 sudo chmod 0700 "$temporary/backups"
@@ -63,6 +63,9 @@ dump=$(find "$temporary/backups" -maxdepth 1 -type f -name '*.dump' -print -quit
 [[ -n "$dump" && -s "$dump" ]]
 compose exec -T db sh -ec 'createdb -U "$POSTGRES_USER" restore_ci'
 compose exec -T db sh -ec 'pg_restore -U "$POSTGRES_USER" -d restore_ci --no-owner --no-acl --single-transaction --exit-on-error' < "$dump"
+# Recreate the container to verify that PostgreSQL 18 writes to the named volume.
+# A simple restart would not detect an accidental anonymous data volume.
+compose up -d --wait --wait-timeout 180 --force-recreate --no-deps db
 compose exec -T db sh -ec 'psql -U "$POSTGRES_USER" -d restore_ci --set=app_user="$POSTGRES_APP_USER" --set=owner_user="$POSTGRES_USER" --set=database_name=restore_ci -f /opt/grant-runtime.sql'
 compose run --rm --no-deps -e POSTGRES_DB=restore_ci release python manage.py bootstrap_database
 compose run --rm -T --no-deps -e POSTGRES_DB=restore_ci -e PROFILE_MIGRATION_SMOKE=check release python manage.py shell < "$root/infra/vps/profile-smoke.py"

@@ -1,10 +1,15 @@
 #!/bin/bash
-# Run once on a fresh Ubuntu 24.04 VPS after reviewing this file.
+# Run once on a fresh Ubuntu 24.04 or 26.04 VPS after reviewing this file.
 set -euo pipefail
 umask 077
 [[ $(id -u) == 0 ]] || { echo 'Run with sudo.' >&2; exit 1; }
 source /etc/os-release
-[[ "$ID" == ubuntu && "$VERSION_ID" == 24.04 ]] || { echo 'This provisioner targets Ubuntu 24.04 LTS.' >&2; exit 1; }
+[[ "$ID" == ubuntu ]] || { echo 'This provisioner targets Ubuntu LTS.' >&2; exit 1; }
+case "$VERSION_ID" in
+    24.04) docker_suite=noble ;;
+    26.04) docker_suite=resolute ;;
+    *) echo 'This provisioner targets Ubuntu 24.04 or 26.04 LTS.' >&2; exit 1 ;;
+esac
 if [[ -n "${SSH_CONNECTION:-}" && "${SSH_CONNECTION##* }" != 22 ]]; then
     echo 'This setup opens SSH port 22. Review custom SSH ports before continuing.' >&2; exit 1
 fi
@@ -15,7 +20,7 @@ if ! command -v docker >/dev/null; then
     install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
     chmod a+r /etc/apt/keyrings/docker.asc
-    printf 'Types: deb\nURIs: https://download.docker.com/linux/ubuntu\nSuites: noble\nComponents: stable\nArchitectures: %s\nSigned-By: /etc/apt/keyrings/docker.asc\n' "$(dpkg --print-architecture)" > /etc/apt/sources.list.d/docker.sources
+    printf 'Types: deb\nURIs: https://download.docker.com/linux/ubuntu\nSuites: %s\nComponents: stable\nArchitectures: %s\nSigned-By: /etc/apt/keyrings/docker.asc\n' "$docker_suite" "$(dpkg --print-architecture)" > /etc/apt/sources.list.d/docker.sources
     apt-get update
     apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 fi

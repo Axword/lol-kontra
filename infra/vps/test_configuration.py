@@ -49,10 +49,26 @@ class ConfigurationTests(unittest.TestCase):
     def test_rejects_dangerous_role_and_database_version_configuration(self):
         values = read_env(self.path)
         for update in [{'POSTGRES_APP_USER': values['POSTGRES_USER']}, {'POSTGRES_DB': 'db;DROP DATABASE x'},
-                       {'POSTGRES_MAJOR': '18'}, {'BACKUP_DIR': '/'}, {'DATABASE_URL': 'do-not-load-neon'},
+                       {'POSTGRES_MAJOR': '19'}, {'POSTGRES_MAJOR': '18'},
+                       {'POSTGRES_VOLUME_TARGET': '/var/lib/postgresql'},
+                       {'BACKUP_DIR': '/'}, {'DATABASE_URL': 'do-not-load-neon'},
                        {'POSTGRES_APP_PASSWORD': 'short'}]:
             with self.subTest(keys=list(update)), self.assertRaises(ValueError):
                 validate({**values, **update})
+
+    def test_postgres_18_configuration_uses_the_versioned_image_data_volume(self):
+        path = self.path.with_name('postgres18.env')
+        create(path, 'game.example.com', 'ops@example.com', django_secret=self.secret, postgres_major='18')
+        values = validate(read_env(path))
+        self.assertEqual(values['POSTGRES_MAJOR'], '18')
+        self.assertEqual(values['POSTGRES_VOLUME_TARGET'], '/var/lib/postgresql')
+        with self.assertRaises(ValueError):
+            validate({**values, 'POSTGRES_VOLUME_TARGET': '/var/lib/postgresql/data'})
+
+    def test_existing_postgres_17_configuration_keeps_its_original_volume(self):
+        values = read_env(self.path)
+        values.pop('POSTGRES_VOLUME_TARGET')
+        self.assertEqual(validate(values)['POSTGRES_MAJOR'], '17')
 
     def test_parser_never_executes_shell_or_expands_variables(self):
         self.path.write_text("LITERAL='$(touch do-not-create)${PATH}'\n", encoding='utf-8')
@@ -91,6 +107,21 @@ class ConfigurationTests(unittest.TestCase):
         self.assertNotEqual(services['api']['environment']['POSTGRES_USER'], services['release']['environment']['POSTGRES_USER'])
         self.assertEqual(services['api']['environment']['POSTGRES_PASSWORD'], read_env(self.path)['POSTGRES_APP_PASSWORD'])
         self.assertTrue(json.loads(result.stdout)['networks']['data']['internal'])
+
+    @unittest.skipUnless(shutil.which('docker'), 'Docker CLI is required for Compose validation')
+    def test_postgres_18_compose_persists_the_actual_database_directory(self):
+        path = self.path.with_name('postgres18.env')
+        create(path, 'game.example.com', 'ops@example.com', django_secret=self.secret, postgres_major='18')
+        environment = {key: value for key, value in os.environ.items()
+                       if not key.startswith(('POSTGRES_', 'DJANGO_', 'PUBLIC_DOMAIN', 'COMPOSE_', 'RELEASE_SHA', 'ACME_', 'BACKUP_DIR'))}
+        result = subprocess.run(['docker', 'compose', '--env-file', str(path), '-f',
+                                 str(ROOT / 'compose.vps.yaml'), 'config', '--format', 'json'],
+                                env=environment, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, 'Compose configuration rejected (secret-bearing output suppressed)')
+        database = json.loads(result.stdout)['services']['db']
+        self.assertEqual(database['build']['args']['POSTGRES_MAJOR'], '18')
+        self.assertEqual([volume['target'] for volume in database['volumes'] if volume['type'] == 'volume'],
+                         ['/var/lib/postgresql'])
 
 
 if __name__ == '__main__':

@@ -56,8 +56,11 @@ def validate(values):
             raise ValueError(f'{key} must be a lowercase PostgreSQL identifier')
     if values['POSTGRES_USER'] == values['POSTGRES_APP_USER']:
         raise ValueError('Database owner and runtime role must differ')
-    if values.get('POSTGRES_MAJOR') not in {'16', '17'}:
-        raise ValueError('Set POSTGRES_MAJOR to 16 or 17, matching the source before importing; never change it on an existing data volume')
+    if values.get('POSTGRES_MAJOR') not in {'16', '17', '18'}:
+        raise ValueError('Set POSTGRES_MAJOR to 16, 17 or 18, matching the source before importing; never change it on an existing data volume')
+    volume_target = '/var/lib/postgresql' if values['POSTGRES_MAJOR'] == '18' else '/var/lib/postgresql/data'
+    if values.get('POSTGRES_VOLUME_TARGET', '/var/lib/postgresql/data') != volume_target:
+        raise ValueError('POSTGRES_VOLUME_TARGET must match the database image: /var/lib/postgresql for 18, /var/lib/postgresql/data for 16/17; never move an existing data volume')
     if values.get('BACKUP_DIR') != '/var/backups/words-v':
         raise ValueError('BACKUP_DIR must be /var/backups/words-v (mount additional storage there if needed)')
     if any(key.startswith(('DATABASE_', 'NEXT_PUBLIC_')) for key in values):
@@ -70,6 +73,7 @@ def create(path, domain, email, *, django_secret=None, postgres_major='17'):
         'PUBLIC_DOMAIN': domain, 'ACME_EMAIL': email,
         'DJANGO_SECRET_KEY': secrets.token_urlsafe(60) if django_secret is None else django_secret,
         'POSTGRES_MAJOR': postgres_major,
+        'POSTGRES_VOLUME_TARGET': '/var/lib/postgresql' if postgres_major == '18' else '/var/lib/postgresql/data',
         'POSTGRES_DB': 'words_v', 'POSTGRES_USER': 'words_owner',
         'POSTGRES_PASSWORD': secrets.token_urlsafe(36),
         'POSTGRES_APP_USER': 'words_app', 'POSTGRES_APP_PASSWORD': secrets.token_urlsafe(36),
@@ -88,7 +92,7 @@ if __name__ == '__main__':
     parser.add_argument('--file', type=Path, default=Path('/etc/words-v/app.env'))
     parser.add_argument('--domain')
     parser.add_argument('--email')
-    parser.add_argument('--postgres-major', choices=['16', '17'], default='17')
+    parser.add_argument('--postgres-major', choices=['16', '17', '18'], default='17')
     parser.add_argument('--django-secret-file', type=Path)
     parser.add_argument('--new-install', action='store_true')
     args = parser.parse_args()
