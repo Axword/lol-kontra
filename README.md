@@ -27,6 +27,11 @@ Migracje instalują zamrożony pakiet 882 tożsamości z pełnymi dostępnymi me
 
 Przed publicznym hostingiem użyj oddzielnego `docker-compose.prod.yml`, prywatnego `.env.prod` i zewnętrznego HTTPS proxy. [Instrukcja wdrożenia, uprawnienia i backup](docs/DEPLOYMENT.md).
 
+Gotowy wariant jednego serwera Ubuntu z Docker Compose, Caddy, prywatnym PostgreSQL,
+kopiami poza serwerem i aktualizacją przez GitHub: [wdrożenie VPS i migracja z Neona](docs/VPS.md).
+W profilu można zapisać prywatny plik dostępu gościa i wczytać go na nowej domenie
+po przeniesieniu bazy, zachowując wyniki oraz składy.
+
 ## Polecenia
 
 ```sh

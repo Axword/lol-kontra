@@ -1,0 +1,11 @@
+[Unit]
+Description=Encrypted off-server WORDS V backup
+After=words-v.service network-online.target
+Wants=network-online.target
+ConditionPathExists=/opt/words-v/current/compose.vps.yaml
+
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/words-v/current/infra/vps/backup.py
+TimeoutStartSec=3600

@@ -6,6 +6,7 @@ import { formatApiError } from '@/lib/errors'
 import { useGuestProfile, useGuestToken, useUpdateGuestNickname } from '@/lib/guest-profile'
 import GameLayout from '@/components/layout/GameLayout'
 import ProfileStatistics from '@/components/profile/ProfileStatistics'
+import ProfileAccess from '@/components/profile/ProfileAccess'
 import { TeamDialog, TeamLogo } from '@/components/layout/GuestIdentity'
 
 export default function ProfilePage() {
@@ -74,9 +75,11 @@ export default function ProfilePage() {
 
           <p className="text-[15px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>
             {pl
-              ? 'Grasz jako gość. Twoje wyniki są przypisane do tej przeglądarki – wyczyszczenie danych strony je usunie.'
-              : 'You are playing as a guest. Your results are tied to this browser and will be lost if you clear site data.'}
+              ? 'Grasz jako gość. Wyniki są zapisane na serwerze, a dostęp do nich jest przypisany do tej przeglądarki. Zapisz plik dostępu przed zmianą domeny lub wyczyszczeniem danych strony.'
+              : 'You are playing as a guest. Results are stored on the server; access is tied to this browser. Save your access file before changing domains or clearing site data.'}
           </p>
+
+          <ProfileAccess guestToken={guestToken} onRestored={() => { setDraft(null); update.reset() }} />
 
           {profile.isLoading && <p role="status" className="text-sm" style={{ color: 'var(--text-faint)' }}>{pl ? 'Wczytywanie profilu…' : 'Loading profile…'}</p>}
           {profile.isError && <div role="alert" className="text-sm" style={{ color: 'var(--bad)' }}>

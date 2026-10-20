@@ -1,0 +1,65 @@
+name: Deploy VPS
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [master]
+
+permissions:
+  contents: read
+  checks: read
+
+concurrency:
+  group: words-v-vps-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master') ||
+      (vars.VPS_AUTO_DEPLOY == 'true' && github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    runs-on: ubuntu-latest
+    environment: vps-production
+    timeout-minutes: 30
+    env:
+      RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+      VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+      VPS_SSH_USER: ${{ secrets.VPS_SSH_USER }}
+      VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT || '22' }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_SSH_KNOWN_HOSTS: ${{ secrets.VPS_SSH_KNOWN_HOSTS }}
+    steps:
+      - name: Require successful application and infrastructure checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          checks=$(gh api -H 'Accept: application/vnd.github+json' \
+            "repos/$GITHUB_REPOSITORY/commits/$RELEASE_SHA/check-runs?per_page=100")
+          for name in backend frontend infrastructure; do
+            jq -e --arg name "$name" '[.check_runs[] | select(.name == $name and .app.slug == "github-actions")] | sort_by(.id) | last | .conclusion == "success"' <<< "$checks" >/dev/null
+          done
+      - name: Deploy the tested commit with verified SSH host key
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$VPS_SSH_HOST" =~ ^[A-Za-z0-9.-]+$ ]]
+          [[ "$VPS_SSH_USER" =~ ^[a-z_][a-z0-9_-]*$ ]]
+          [[ "$VPS_SSH_PORT" =~ ^[0-9]{1,5}$ ]]
+          (( VPS_SSH_PORT > 0 && VPS_SSH_PORT < 65536 ))
+          [[ -n "$VPS_SSH_KEY" && -n "$VPS_SSH_KNOWN_HOSTS" ]]
+          umask 077
+          key=$(mktemp)
+          hosts=$(mktemp)
+          trap 'rm -f "$key" "$hosts"' EXIT
+          printf '%s\n' "$VPS_SSH_KEY" > "$key"
+          printf '%s\n' "$VPS_SSH_KNOWN_HOSTS" > "$hosts"
+          ssh -i "$key" -p "$VPS_SSH_PORT" -o BatchMode=yes -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$hosts" \
+            "$VPS_SSH_USER@$VPS_SSH_HOST" "sudo -n /usr/local/sbin/words-v-deploy '$RELEASE_SHA'"

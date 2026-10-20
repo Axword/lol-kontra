@@ -34,7 +34,7 @@ describe('guest nickname and statistics', () => {
     for (const [label, value] of [['Rozegrane gry', '3'], ['Suma punktów', '1350'], ['Najlepszy wynik', '480'], ['Średni wynik', '450']]) {
       expect(within(screen.getByText(label).parentElement!).getByRole('definition').textContent?.replace(/\s/g, '')).toBe(value)
     }
-    expect(screen.getByText(/wyniki są przypisane do tej przeglądarki/)).toBeTruthy()
+    expect(screen.getByText(/Wyniki są zapisane na serwerze/)).toBeTruthy()
     fireEvent.change(input, { target: { value: 'Knight Fan' } })
     fireEvent.click(screen.getByRole('button', { name: 'Zapisz' }))
     await screen.findByText('Nick zapisany.')
