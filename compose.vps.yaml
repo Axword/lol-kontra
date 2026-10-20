@@ -1,0 +1,208 @@
+# Standalone VPS stack; do not combine with the development Compose file.
+name: words-v
+
+x-logs: &logs
+  driver: json-file
+  options: {max-size: "10m", max-file: "3"}
+
+x-backend: &backend
+  image: words-v-backend:${RELEASE_SHA:-local}
+  build: {context: ./backend, dockerfile: Dockerfile.prod}
+  entrypoint: []
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  logging: *logs
+  environment: &backend-env
+    DJANGO_SETTINGS_MODULE: config.settings
+    DJANGO_DEBUG: "false"
+    PUBLIC_DOMAIN: ${PUBLIC_DOMAIN:?Set the public domain}
+    DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?Set a private Django secret}
+    DJANGO_ALLOWED_HOSTS: ${PUBLIC_DOMAIN}
+    DJANGO_TRUST_PROXY_HEADERS: "true"
+    POSTGRES_DB: ${POSTGRES_DB:-words_v}
+    POSTGRES_HOST: db
+    POSTGRES_PORT: "5432"
+    POSTGRES_USER: ${POSTGRES_APP_USER:-words_app}
+    POSTGRES_PASSWORD: ${POSTGRES_APP_PASSWORD:?Set the runtime database password}
+    REDIS_URL: redis://redis:6379/0
+    CELERY_BROKER_URL: redis://redis:6379/1
+    CELERY_RESULT_BACKEND: redis://redis:6379/2
+    DAILY_TIMEZONE: Europe/Warsaw
+    CORS_ALLOWED_ORIGINS: ""
+    CSRF_TRUSTED_ORIGINS: https://${PUBLIC_DOMAIN}
+
+services:
+  db:
+    image: words-v-postgres:${POSTGRES_MAJOR:-17}
+    build:
+      context: ./infra
+      dockerfile: vps/Postgres.Dockerfile
+      args: {POSTGRES_MAJOR: "${POSTGRES_MAJOR:-17}"}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-words_v}
+      POSTGRES_USER: ${POSTGRES_USER:-words_owner}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set the database owner password}
+      POSTGRES_APP_USER: ${POSTGRES_APP_USER:-words_app}
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD:?Set the runtime database password}
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/vps/grant-runtime.sql:/opt/grant-runtime.sql:ro
+    networks: [data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    logging: *logs
+
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, --appendonly, "yes"]
+    restart: unless-stopped
+    volumes: [redisdata:/data]
+    networks: [data]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    logging: *logs
+
+  release:
+    <<: *backend
+    command: [/bin/sh, /opt/release.sh]
+    environment:
+      <<: *backend-env
+      POSTGRES_USER: ${POSTGRES_USER:-words_owner}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set the database owner password}
+      POSTGRES_APP_USER: ${POSTGRES_APP_USER:-words_app}
+      POSTGRES_APP_PASSWORD: ${POSTGRES_APP_PASSWORD}
+    volumes:
+      - staticfiles:/app/staticfiles
+      - ./infra/vps/release.sh:/opt/release.sh:ro
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    networks: [data]
+    restart: "no"
+
+  api:
+    <<: *backend
+    # %(U)s deliberately omits query strings containing old guest credentials.
+    command: [gunicorn, config.wsgi:application, --bind, "0.0.0.0:8000", --workers, "2", --timeout, "60", --access-logfile, "-", --access-logformat, '%(h)s %(t)s "%(m)s %(U)s %(H)s" %(s)s %(b)s', --error-logfile, "-"]
+    restart: unless-stopped
+    volumes: [staticfiles:/app/staticfiles:ro, media:/app/media]
+    depends_on:
+      release: {condition: service_completed_successfully}
+    networks: [app, data, egress]
+    healthcheck:
+      test: [CMD, python, -c, 'import os,urllib.request; r=urllib.request.Request("http://127.0.0.1:8000/healthz/",headers={"Host":os.environ["PUBLIC_DOMAIN"],"X-Forwarded-Proto":"https"}); urllib.request.urlopen(r,timeout=5)']
+      interval: 10s
+      timeout: 6s
+      start_period: 30s
+      retries: 12
+
+  worker:
+    <<: *backend
+    command: [celery, -A, config, worker, -l, info, --concurrency, "2"]
+    restart: unless-stopped
+    depends_on:
+      release: {condition: service_completed_successfully}
+    networks: [data, egress]
+
+  beat:
+    <<: *backend
+    command: [celery, -A, config, beat, -l, info, --pidfile=/tmp/celerybeat.pid, --scheduler, django_celery_beat.schedulers:DatabaseScheduler]
+    restart: unless-stopped
+    depends_on:
+      release: {condition: service_completed_successfully}
+    networks: [data]
+
+  frontend:
+    image: words-v-frontend:${RELEASE_SHA:-local}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args: {NEXT_PUBLIC_API_URL: /api/v1}
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp, "/app/.next/cache:uid=1001,gid=1001,mode=0755"]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    networks: [app]
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, node, -e, 'fetch("http://127.0.0.1:3000/").then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))']
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 30s
+    logging: *logs
+
+  caddy:
+    image: caddy:2.11.7-alpine
+    restart: unless-stopped
+    environment:
+      PUBLIC_DOMAIN: ${PUBLIC_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:?Set the certificate contact email}
+    ports: ["80:80", "443:443"]
+    read_only: true
+    tmpfs: [/tmp]
+    volumes:
+      - ./infra/vps/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - staticfiles:/srv/static:ro
+      - media:/srv/media:ro
+    networks: [app, ingress]
+    depends_on:
+      frontend: {condition: service_healthy}
+    logging: *logs
+
+  backup:
+    profiles: [maintenance]
+    image: words-v-postgres:${POSTGRES_MAJOR:-17}
+    user: "0:0"
+    entrypoint: [/bin/sh, /opt/backup.sh]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-words_v}
+      POSTGRES_USER: ${POSTGRES_USER:-words_owner}
+      POSTGRES_HOST: db
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes: ["${BACKUP_DIR:-/var/backups/words-v}:/backups"]
+    networks: [data]
+
+  backup-media:
+    profiles: [maintenance]
+    image: words-v-postgres:${POSTGRES_MAJOR:-17}
+    user: "0:0"
+    entrypoint: [/bin/sh, -ec]
+    command: ['umask 077; tar -cf "/backups/media-$${BACKUP_STAMP:?}.tar" -C /media .']
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes: ["${BACKUP_DIR:-/var/backups/words-v}:/backups", "media:/media:ro"]
+    networks: [data]
+
+networks:
+  data: {internal: true}
+  app: {internal: true}
+  ingress: {}
+  egress: {}
+
+volumes:
+  pgdata: {}
+  redisdata: {}
+  staticfiles: {}
+  media: {}
+  caddy_data: {}
+  caddy_config: {}

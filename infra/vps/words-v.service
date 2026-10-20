@@ -1,0 +1,15 @@
+[Unit]
+Description=WORDS V containers
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+ConditionPathExists=/opt/words-v/current/compose.vps.yaml
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /opt/words-v/current/infra/vps/start.sh
+TimeoutStartSec=360
+
+[Install]
+WantedBy=multi-user.target

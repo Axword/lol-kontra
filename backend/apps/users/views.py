@@ -82,6 +82,35 @@ class GuestTeamsView(APIView):
         })
 
 
+class GuestProfilePreviewView(APIView):
+    """Check a user's imported credential without creating or changing a profile."""
+    permission_classes = [AllowAny]
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        response = super().finalize_response(request, response, *args, **kwargs)
+        response['Cache-Control'] = 'private, no-store'
+        return response
+
+    def post(self, request):
+        class Input(serializers.Serializer):
+            guest_token = GuestTokenField(r'\A[A-Za-z0-9_-]{16,64}\Z', trim_whitespace=False, max_length=64)
+
+        serializer = Input(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.validated_data['guest_token']
+        profile = GuestProfile.objects.filter(guest_key=guest_identity_key(token)).first()
+        if profile is None and not Submission.objects.filter(
+                user__isnull=True, guest_token=token, is_seed=False).exists():
+            return Response({'detail': 'Nie znaleziono profilu. Sprawdź, czy baza danych została już przeniesiona.'}, status=404)
+        return Response({
+            'nickname': (profile.nickname or None) if profile else None,
+            'display_name': guest_display_name(token, profile.nickname if profile else ''),
+            'has_custom_nickname': bool(profile and (profile.has_custom_nickname or profile.nickname)),
+            'supported_team': supported_team_details(profile.supported_team) if profile else None,
+            'stats': guest_stats(token),
+        })
+
+
 class LeaderboardInputSerializer(serializers.Serializer):
     limit = serializers.ChoiceField(choices=[10, 25, 50, 100], default=50)
     daily_id = serializers.IntegerField(required=False, min_value=1)

@@ -2,10 +2,25 @@ name: CI
 
 on:
   push:
-    branches: [ master, main, develop ]
+    branches: [ master, main, develop, 'codex/**' ]
   pull_request:
 
 jobs:
+  infrastructure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate VPS configuration and shell scripts
+        run: |
+          python -m unittest discover -s infra/vps -p 'test_*.py' -v
+          for script in infra/vps/*.sh; do bash -n "$script"; done
+      - name: Build and exercise the isolated VPS stack
+        run: bash infra/vps/ci-smoke.sh
+
   backend:
     runs-on: ubuntu-latest
     services:
