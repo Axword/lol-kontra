@@ -183,6 +183,35 @@ class StatisticalConditionPoolTests(TestCase):
         self.assertIn(('worlds_games', 'lt', 10), triples)
         self.assertNotIn(('worlds_win_rate', 'gt', 50), triples)
 
+    def test_specific_champion_is_standalone_without_statistical_padding(self):
+        players = self.make_players(count=80)
+        for index, player in enumerate(players):
+            player.career_stats = worlds_stats(games=30 if index < 16 else 110,
+                                               champion='Olaf' if index < 20 else 'Azir')
+            player.save()
+        clues = [
+            ('worlds_top5_champion', generator.MEDIUM, 'worlds_top5_champion', 'eq', 'Olaf', 'Olaf', 'Olaf'),
+            ('worlds_games', generator.EASY, 'worlds_games', 'lt', 100, '<100', '<100'),
+        ]
+        daily = Daily.objects.create(date=date(2026, 1, 1))
+        slot, candidates = generator.generate_slot(daily, 'mid', 1, generator.MEDIUM,
+                                                  random.Random(1), set(), players, clues)
+        self.assertEqual(list(slot.conditions.values_list('condition_type', flat=True)), ['worlds_top5_champion'])
+        self.assertEqual(len(candidates), 20)
+
+    def test_too_broad_champion_does_not_gain_a_numeric_filler(self):
+        players = self.make_players(count=80)
+        for index, player in enumerate(players):
+            player.career_stats = worlds_stats(games=30 if index < 16 else 110)
+            player.save()
+        daily = Daily.objects.create(date=date(2026, 1, 1))
+        clues = [
+            ('worlds_top5_champion', generator.MEDIUM, 'worlds_top5_champion', 'eq', 'Azir', 'Azir', 'Azir'),
+            ('worlds_games', generator.EASY, 'worlds_games', 'lt', 100, '<100', '<100'),
+        ]
+        with self.assertRaisesRegex(ValueError, 'independent requirements'):
+            generator.generate_slot(daily, 'mid', 1, generator.MEDIUM, random.Random(1), set(), players, clues)
+
     def test_recent_themes_remembers_dynamic_champion_even_after_data_disappears(self):
         daily = Daily.objects.create(date=date(2026, 1, 1))
         slot = DailySlot.objects.create(daily=daily, role='mid', position=1)

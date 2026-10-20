@@ -29,6 +29,11 @@ MAX_CANDIDATES = 150
 THEME_MEMORY_DAYS = 14
 
 EASY, MEDIUM, HARD = 'easy', 'medium', 'hard'
+CHAMPION_RANK_TYPES = {'worlds_top5_champion', 'career_top5_champion'}
+
+
+def single_candidate_limit(condition_type):
+    return 25 if condition_type in CHAMPION_RANK_TYPES else 18
 
 # (theme, difficulty, condition_type, operator, value, label_pl, label_en)
 # `theme` grupuje warunki, które mówią o tym samym – dwa warunki z tym samym motywem
@@ -253,7 +258,9 @@ def validate_daily(daily):
     curated = daily.date.isoformat() == '2026-10-22' and daily.author_url == 'https://x.com/kaczy102'
     for slot, pool in zip(slots, pools):
         single = len(slot.conditions.all()) == 1
-        minimum, maximum = (3, MAX_CANDIDATES) if curated else ((3, 18) if single else (MIN_CANDIDATES, MAX_CANDIDATES))
+        minimum, maximum = (3, MAX_CANDIDATES) if curated else (
+            (3, single_candidate_limit(slot.conditions.all()[0].condition_type)) if single
+            else (MIN_CANDIDATES, MAX_CANDIDATES))
         if not minimum <= len(pool) <= maximum:
             raise ValueError(f'Slot {slot.role} needs {minimum}–{maximum} valid candidates')
     if not _has_distinct_roster(pools):
@@ -336,11 +343,16 @@ def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None
 
     for i, c in enumerate(conditions):
         n = len(matches[i])
-        if c[2] in SINGLE_REQUIREMENT_TYPES and 3 <= n <= min(18, len(pool) * 0.25):
+        if c[2] in SINGLE_REQUIREMENT_TYPES and 3 <= n <= min(single_candidate_limit(c[2]), len(pool) * 0.25):
             remember([c], matches[i])
     for first, second in combinations(range(len(conditions)), 2):
         chosen = [conditions[first], conditions[second]]
         if not _independent_conditions(*chosen):
+            continue
+        # An already specific champion clue needs no statistical filler. Keep
+        # this editorial rule here so historical boards remain readable.
+        kinds = {c[2] for c in chosen}
+        if kinds & CHAMPION_RANK_TYPES and kinds & {'worlds_games', 'worlds_win_rate', 'birth_year_range'}:
             continue
         if all(c[0] in quantitative for c in chosen):
             continue

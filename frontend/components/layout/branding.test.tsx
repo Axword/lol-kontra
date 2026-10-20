@@ -24,7 +24,7 @@ afterEach(cleanup)
 
 describe('WORDS V branding', () => {
   it('uses the requested five-player name in metadata and both translations', () => {
-    expect(metadata.title).toBe('WORDS V')
+    expect(metadata.title).toBe('WORDS V — quiz League of Legends i Worlds')
     expect(pl.game.title).toBe('WORDS V')
     expect(en.game.title).toBe('WORDS V')
   })

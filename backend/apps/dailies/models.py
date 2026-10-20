@@ -17,6 +17,7 @@ SINGLE_REQUIREMENT_TYPES = {
     'worlds_titles_exact', 'worlds_title_on_debut', 'worlds_final_lost_to_faker',
     'pentakill_worlds', 'european_masters_played', 'european_masters_won',
     'worlds_group_exit_before',
+    'worlds_top5_champion', 'career_top5_champion',
 }
 
 

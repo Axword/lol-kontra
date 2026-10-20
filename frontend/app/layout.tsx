@@ -5,8 +5,16 @@ import { ReactNode } from 'react'
 import Providers from './providers'
 
 export const metadata: Metadata = {
-  title: 'WORDS V',
-  description: 'Codzienna zagadka o zawodnikach League of Legends z mistrzostw świata.',
+  metadataBase: new URL('https://lol-kontra.axword.pl'),
+  title: 'WORDS V — quiz League of Legends i Worlds',
+  description: 'Codzienny quiz o zawodnikach League of Legends. Ułóż pięcioosobowy skład na podstawie wskazówek o Worlds, bohaterach i karierze graczy.',
+  openGraph: {
+    type: 'website',
+    locale: 'pl_PL',
+    siteName: 'WORDS V',
+    title: 'WORDS V — quiz League of Legends i Worlds',
+    description: 'Ułóż skład League of Legends z pięciu graczy pasujących do codziennych wskazówek.',
+  },
 }
 
 export const viewport: Viewport = {

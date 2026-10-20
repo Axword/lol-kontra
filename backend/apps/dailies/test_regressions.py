@@ -8,7 +8,7 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 from apps.players.models import Player
-from .generator import MAX_CANDIDATES, MIN_CANDIDATES, ROLE_ORDER, _has_distinct_roster, count_candidates, generate_daily, validate_daily
+from .generator import MAX_CANDIDATES, MIN_CANDIDATES, ROLE_ORDER, _has_distinct_roster, count_candidates, generate_daily, single_candidate_limit, validate_daily
 from .models import Daily, DailySlot, DailySlotCondition, valid_requirement_count
 from .tests_validators import FakePlayer
 from .validators import evaluate_condition
@@ -213,7 +213,8 @@ class CanonicalGenerationTests(TestCase):
                 pools = [count_candidates(slot) for slot in slots]
                 self.assertTrue(all(valid_requirement_count(list(slot.conditions.all())) for slot in slots))
                 self.assertTrue(all((3 if slot.conditions.count() == 1 else MIN_CANDIDATES) <= len(pool)
-                                    <= (18 if slot.conditions.count() == 1 else 50)
+                                    <= (single_candidate_limit(
+                                        slot.conditions.first().condition_type) if slot.conditions.count() == 1 else 50)
                                     for slot, pool in zip(slots, pools)))
                 self.assertTrue(_has_distinct_roster(pools))
                 from .generator import CONDITION_POOL, STAT_THEMES
