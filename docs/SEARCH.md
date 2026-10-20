@@ -1,6 +1,16 @@
 # Widoczność w Google
 
 Główna domena gry: https://lol-kontra.axword.pl/.
+Usługę z tym prefiksem potwierdzono w Search Console 20.10.2026 na koncie
+właściciela. Publiczny tag HTML znajduje się w `metadata.verification.google`
+w `frontend/app/layout.tsx`; nie usuwaj go przy kolejnych wdrożeniach.
+Tego dnia Google pomyślnie przetworzyło `/sitemap.xml` i wykryło dwie strony.
+Test wersji opublikowanej w Search Console potwierdził dostęp Google do strony
+głównej i możliwość jej indeksowania. To nie oznacza jeszcze obecności w indeksie.
+Ręczną prośbę o indeksację strony głównej przyjęto 20.10.2026; Search Console
+potwierdziło dodanie adresu do priorytetowej kolejki. Pierwszy błąd połączenia
+reCAPTCHA ustąpił po odświeżeniu panelu. Nie ponawiaj zgłoszenia dla podniesienia
+priorytetu — Google wskazuje, że kolejne prośby go nie zmieniają.
 Frontend udostępnia `/robots.txt` i `/sitemap.xml`. Mapa obejmuje stronę główną
 i archiwum. Strona główna ma wskazany adres kanoniczny, polski opis gry oraz
 tytuł zawierający WORDS V, League of Legends i Worlds. Opis jest dostępny także

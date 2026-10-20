@@ -19,6 +19,9 @@ do fizycznego katalogu z SHA, także przy starcie przez systemd. Usługa
 `words-v.service` uruchamia zestaw po restarcie bez powtarzania migracji.
 Nie wyłączaj logowania hasłem, jeżeli właściciel nie ma własnego sprawdzonego
 klucza: tymczasowy klucz wdrożeniowy jest usuwany po zakończeniu prac.
+Klucz `codex-vps-20261020` usunięto z `authorized_keys` po zakończeniu wdrożenia;
+sprawdzono, że nowe logowanie nim jest odrzucane, i skasowano lokalny klucz.
+Hasłowy dostęp właściciela i konsola OVH pozostały dostępne.
 
 OVH Standard ma włączoną codzienną kopię całego VPS o 09:47 UTC, z jednym
 punktem przywracania. `words-v-local-backup.timer` przygotowuje codziennie
@@ -27,6 +30,9 @@ Pliki mają uprawnienia administratora i są sprawdzane przed zakończeniem zada
 Nie są automatycznie kasowane. Monitoruj wolne miejsce w `/var/backups/words-v`.
 
 To dwa oddzielne mechanizmy od opcjonalnego restic do własnego magazynu S3/SFTP.
+Nieużywany `words-v-backup.timer`, utworzony podczas migracji, wyłączono
+20.10.2026 za wyraźną zgodą właściciela. Nigdy nie był uruchomiony i nie miał
+konfiguracji magazynu. Włącz go dopiero po skonfigurowaniu i sprawdzeniu restic.
 Bez skonfigurowanego magazynu restic nie zgłasza udanego eksportu poza VPS,
 a `words-v-deploy` nadal wymaga udanej niezależnej kopii. Nie włączono
 automatycznych wdrożeń z GitHuba ani nie utworzono płatnego magazynu kopii.
