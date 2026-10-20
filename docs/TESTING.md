@@ -1,5 +1,24 @@
 # Testy i weryfikacja
 
+Wydanie WORLDS KONTRA z 20.10.2026: pełne kontrole GitHub CI dla backendu,
+frontendu i infrastruktury przeszły na commicie `9e6c210`. Obejmują migracje od
+zera, powtórne wdrożenie bez zmiany postępu, odtworzenie kopii na osobnej bazie,
+przetrwanie wymiany wolumenu PostgreSQL oraz ograniczenia konta aplikacji.
+Nowe standardowe plansze przechodzą minimum 10 odpowiedzi na pozycję; archiwalne
+reguły zachowują dotychczasową treść i są sprawdzane pod kątem grywalności.
+
+W przeglądarce sprawdzono grę, edytor z podglądem kandydatów, stronicowany ranking
+ważony oraz przeciąganą listę wyzwań. Końcowa kontrola produkcji potwierdziła
+ciemniejsze ukończone kafelki ze znacznikiem, bez numerów plansz i opisów statusu.
+Przejście ze starego Vercela zachowało profil właściciela, drużynę T1 i wyniki
+dwóch gier. Kontrola przed i po publikacji porównała skróty profili, odpowiedzi,
+prób, komentarzy oraz rzeczywistych bajtów obrazów PNG.
+
+Konto redaktora Axword ma tylko uprawnienia dotyczące plansz. Sprawdzono dostęp
+do edytora oraz standardowego formularza zmiany własnego hasła Django Admin.
+Test klucza wdrożeniowego potwierdza odmowę wykonywania dowolnych komend SSH;
+oddzielne testy odrzucają wstrzyknięcie poleceń, flagi i niepełne identyfikatory.
+
 Weryfikacja bieżących zmian z 19.10.2026: **563 różne testy backendu i 237 testów frontendu przeszło**. Pełny przebieg backendu obejmował 562 testy; po dopracowaniu blokad migracji przeszedł dodatkowo zestaw 22 testów, w tym jeden nowy test współbieżności. Frontend obejmuje 40 testów konfiguracji oraz 197 testów Vitest w 24 plikach. Zakres obejmuje edycję nicku w górnym pasku, historię ustawienia własnego nicku, wybór drużyny Worlds 2026 w nagłówku i profilu, rozszerzone statystyki profilu, komentarze ze zdjęciem składu oraz nową punktację, w której niższy wynik jest lepszy. Końcowy build produkcyjny przeszedł, podobnie jak kontrola zgodności modeli z migracjami i kontrola systemowa Django.
 
 Osobna strona rankingu ma domyślny limit 50 oraz wybór 10/25/50/100. Dodatkowy wiersz własnego gracza jest wyświetlany także wtedy, gdy gracz znajduje się już w głównej liście. Testy sprawdzają rzeczywistą pozycję 116 przy limicie 10 i pozycję 121 dla zalogowanego użytkownika, identyczne nicki różnych osób, stabilne remisy, brak ukończonych gier oraz wykluczenie rozgrywek syntetycznych, treningowych i przyszłych. Odczyt własnej pozycji nie tworzy profilu ani rozgrywki; identyfikator gościa trafia wyłącznie do treści żądania, a odpowiedź ma zakaz współdzielonego cache. Zmiana limitu nie wyświetla przejściowo danych poprzedniej osoby ani poprzedniego limitu. Ranking planszy obok komentarzy zachowuje dotychczasowe działanie.

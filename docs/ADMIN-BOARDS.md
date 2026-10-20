@@ -3,6 +3,10 @@
 Adres po wdrożeniu: `https://lol-kontra.axword.pl/admin/dailies/daily/builder/`.
 Zaloguj się kontem administratora. W menu Dailies wybierz „Przygotuj planszę” albo „Edytor reguł” przy istniejącym dniu.
 
+Panel korzysta ze standardowego logowania Django Admin. Własne hasło zmienisz
+przez „Zmień hasło” w nagłówku lub pod `/admin/password_change/`.
+Konto redaktora plansz nie wymaga statusu superuser ani dostępu do kont graczy.
+
 1. Wybierz datę i po jednym lub dwóch warunkach dla pięciu ról. Listę można filtrować nazwą bohatera, krajem lub osiągnięciem.
 2. Licznik pokazuje zawodników spełniających **wszystkie warunki danego pola**. Rozwiń „Pasujący zawodnicy”, by zobaczyć nicki.
 3. Standardowe plansze wymagają minimum 10 odpowiedzi na każde pole. Uzupełnienie autora oznacza planszę gościnną, dla której dopuszczamy mniej odpowiedzi.
