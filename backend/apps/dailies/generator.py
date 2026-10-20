@@ -98,7 +98,7 @@ CONDITION_POOL = [
     ('penta', HARD, 'pentakill_worlds', 'gte', 1, 'Pentakill na Worlds', 'Pentakill at Worlds'),
     ('title', HARD, 'worlds_titles_exact', 'eq', 1, 'Wygrał Worlds dokładnie raz', 'Won Worlds exactly once'),
     ('title', HARD, 'worlds_title_on_debut', 'eq', True, 'Wygrał Worlds będąc debiutantem turnieju', 'Won Worlds on his first appearance at the tournament'),
-    ('final', HARD, 'worlds_final_lost_to_faker', 'eq', True, 'Przegrał finał Worlds z Fakerem', 'Lost a Worlds final to Faker'),
+    ('final', HARD, 'worlds_final_lost_to_faker', 'eq', True, 'Przegrał finał Worlds przeciwko Fakerowi', 'Lost a Worlds final to Faker'),
     ('masters', HARD, 'european_masters_played', 'eq', True, 'Zagrał w EU Masters / EMEA Masters', 'Played at EU / EMEA Masters'),
     ('masters', HARD, 'european_masters_won', 'eq', True, 'Wygrał EU Masters / EMEA Masters', 'Won EU / EMEA Masters'),
     ('msi', MEDIUM, 'msi_appearance', 'eq', True, 'Grał na MSI', 'Played at MSI'),

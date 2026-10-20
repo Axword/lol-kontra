@@ -144,7 +144,7 @@ class DailySlotCondition(models.Model):
         ('career_regions_min', 'Min. liczba regionów kariery'),
         ('worlds_titles_exact', 'Dokładna liczba tytułów Worlds'),
         ('worlds_title_on_debut', 'Tytuł Worlds w debiucie'),
-        ('worlds_final_lost_to_faker', 'Przegrany finał z Fakerem'),
+        ('worlds_final_lost_to_faker', 'Przegrany finał przeciwko Fakerowi'),
         ('european_masters_played', 'Udział w EU/EMEA Masters'),
         ('european_masters_won', 'Zwycięstwo w EU/EMEA Masters'),
         # inne
