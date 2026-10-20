@@ -29,6 +29,7 @@ describe('cross-domain profile recovery', () => {
     usePrefs.getState().setLocale('en')
     open()
     await screen.findByText('Guest-Axword · 2 games played')
+    expect(document.title).toBe('Profile recovery — WORLDS KONTRA')
     expect(screen.getByRole('heading', { name: 'Your WORLDS KONTRA profile' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Transfer my profile' })).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Keep my current profile' })).toBeTruthy()

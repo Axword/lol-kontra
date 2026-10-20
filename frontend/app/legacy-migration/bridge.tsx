@@ -5,6 +5,7 @@ import { usePrefs } from '@/lib/store'
 
 export default function LegacyBridge({ next: destination }: { next?: string }) {
   const pl = usePrefs(state => state.locale) === 'pl'
+  useEffect(() => { document.title = pl ? 'Przenoszenie profilu — WORLDS KONTRA' : 'Profile transfer — WORLDS KONTRA' }, [pl])
   const started = useRef(false)
   const [failed, setFailed] = useState(false)
   useEffect(() => {

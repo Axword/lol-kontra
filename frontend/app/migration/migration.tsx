@@ -13,6 +13,7 @@ type Preview = MigrationSession & { current: string; profile: GuestProfile }
 export default function ProfileMigration() {
   const locale = usePrefs(state => state.locale)
   const pl = locale === 'pl'
+  useEffect(() => { document.title = pl ? 'Przywracanie profilu — WORLDS KONTRA' : 'Profile recovery — WORLDS KONTRA' }, [pl])
   const client = useQueryClient()
   const request = useRef<Promise<Preview> | null>(null)
   const [preview, setPreview] = useState<Preview | null>(null)
