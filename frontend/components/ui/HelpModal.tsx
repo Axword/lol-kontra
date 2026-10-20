@@ -4,7 +4,7 @@ import { usePrefs } from '@/lib/store'
 import { sound } from '@/lib/sound'
 import { useDialog } from './useDialog'
 
-export default function HelpModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function HelpModal({ open, onClose, infinity = false }: { open: boolean; onClose: () => void; infinity?: boolean }) {
   const locale = usePrefs((s) => s.locale)
   const pl = locale === 'pl'
   const dialogRef = useDialog<HTMLDivElement>(open, () => { sound.close(); onClose() })
@@ -34,7 +34,9 @@ export default function HelpModal({ open, onClose }: { open: boolean; onClose: (
             <li>{pl ? 'Wybierz pozycję na mapie lub kartę pod mapą na telefonie.' : 'Select a position on the map, or a card below it on mobile.'}</li>
             <li>{pl ? 'Trafienie zamyka pozycję na stałe.' : 'A correct answer locks that position.'}</li>
             <li>{pl ? 'Pomyłka kosztuje jedno z dziesięciu żyć – pozycja zostaje otwarta.' : 'A miss costs one of ten lives – the position stays open.'}</li>
-            <li>{pl ? 'Gra kończy się po pięciu trafieniach albo po dziesięciu pomyłkach.' : 'The game ends after five hits or ten misses.'}</li>
+            <li>{infinity
+              ? (pl ? 'Pięć trafień losuje następną planszę. Dziesiąta pomyłka kończy całą serię; życia nie odnawiają się między planszami.' : 'Five correct guesses draw the next board. Your tenth mistake ends the entire run; lives do not reset between boards.')
+              : (pl ? 'Gra kończy się po pięciu trafieniach albo po dziesięciu pomyłkach.' : 'The game ends after five hits or ten misses.')}</li>
           </ol>
 
           <p style={{ color: 'var(--text-dim)' }}>
@@ -43,7 +45,16 @@ export default function HelpModal({ open, onClose }: { open: boolean; onClose: (
               : 'Win rate and game counts cover Worlds, including play-ins. Career top fives and Worlds top fives are separate conditions, based on games played, including ties for fifth. “Above” and “below” exclude an equal value.'}
           </p>
 
-          <div>
+          <p style={{ color: 'var(--text-dim)' }}>{pl
+            ? 'Zmianę pozycji uznajemy, gdy zawodnik zagrał na danej roli w ponad połowie map drużyny na przynajmniej jednej edycji Worlds lub w głównej lidze LEC, LPL, LCK albo NA. Pojedyncze zamiany ról nie wystarczają.'
+            : 'A role swap counts when a player played that role in more than half of their team’s maps at at least one Worlds edition or a top-flight LEC, LPL, LCK or NA league event. One-off swaps do not qualify.'}</p>
+
+          {infinity ? <div>
+            <h3 className="mb-3 text-base font-semibold">{pl ? 'Ranking Infinity' : 'Infinity leaderboard'}</h3>
+            <p style={{color:'var(--text-dim)'}}>{pl
+              ? 'Każdy poprawnie odgadnięty zawodnik daje jedno trafienie. Liczy się Twoja najlepsza seria, również gdy jeszcze trwa. Wyniki Infinity mają osobny ranking.'
+              : 'Each correctly guessed player adds one hit. Your best run counts, including while it is still active. Infinity has its own leaderboard.'}</p>
+          </div> : <div>
             <h3 className="mb-3 text-base font-semibold">{pl ? 'Punktacja' : 'Scoring'}</h3>
             <p className="mb-5" style={{ color: 'var(--text-dim)' }}>
               {pl
@@ -60,7 +71,7 @@ export default function HelpModal({ open, onClose }: { open: boolean; onClose: (
                 ? 'Po wyczerpaniu żyć każda nieuzupełniona pozycja pozostaje warta 100 punktów. Procenty zależą od wyborów uczestników, a końcowy wykres pokazuje Twój wynik na ich tle. Wyniki archiwalnych plansz też liczą się do ich rankingów.'
                 : 'When you run out of lives, each unfilled position remains worth 100 points. Pick shares come from participants’ choices; the final chart compares your score with theirs. Archived boards also count towards their rankings.'}
             </p>
-          </div>
+          </div>}
         </div>
 
         <div className="shrink-0 border-t px-6 py-5 text-right sm:px-8" style={{ borderColor: 'var(--line)' }}>

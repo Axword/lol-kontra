@@ -39,6 +39,7 @@ from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from apps.players.worlds_import import COUNTRIES
+from apps.players.majority_roles import qualified_roles
 
 logger = logging.getLogger(__name__)
 
@@ -286,7 +287,13 @@ class PlayerFacts:
     @property
     def roles(self) -> set:
         roles = {self.primary_role} if self.primary_role else set()
-        roles |= {_norm_role(r) for r in (self.player.secondary_roles or []) if r}
+        secondary = {_norm_role(r) for r in (self.player.secondary_roles or []) if r}
+        if self.attr.get('worlds_verified') is True:
+            # A metadata primary role can itself be a later ERL-only swap.
+            # Once multiple career roles exist, both need qualifying evidence.
+            return qualified_roles(self.player) if secondary else roles
+        else:
+            roles |= secondary
         return {r for r in roles if r}
 
     # --- listy z attributes ---
@@ -369,6 +376,8 @@ class PlayerFacts:
 
     @property
     def worlds_roles(self) -> set:
+        if self.attr.get('worlds_verified') is True:
+            return qualified_roles(self.player, worlds_only=True)
         found = {_norm_role(r) for r in _as_list(self.attr.get('worlds_roles')) if r}
         return {r for r in found if r}
 

@@ -134,13 +134,16 @@ class GuestReleaseTests(TestCase):
         # This frozen release predates the ten-answer policy.
         boards.update(minimum_candidates=None)
         self.assertEqual(boards.count(), 10)
-        for board in boards:
-            validate_daily(board)
-            self.assertFalse(DailySlotCondition.objects.filter(slot__daily=board, condition_type='birth_year_range').exists())
         self.assertEqual(list(guest.slots.values_list('conditions__pk', flat=True)), guest_ids)
         before = list(DailySlotCondition.objects.order_by('pk').values())
         upcoming.install(apps, SimpleNamespace(connection=connection), today=date(2026, 10, 20))
         self.assertEqual(list(DailySlotCondition.objects.order_by('pk').values()), before)
+        # Current role validation applies after the subsequent editorial release.
+        import_module('apps.dailies.migrations.0020_worlds_focused_future_boards').install(
+            apps, SimpleNamespace(connection=connection))
+        for board in boards:
+            validate_daily(board)
+            self.assertFalse(DailySlotCondition.objects.filter(slot__daily=board, condition_type='birth_year_range').exists())
 
     def test_upcoming_calendar_skips_past_today_and_started_games(self):
         upcoming = import_module('apps.dailies.migrations._upcoming_october_2026')

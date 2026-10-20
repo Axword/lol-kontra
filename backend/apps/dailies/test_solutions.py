@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.utils import timezone
@@ -12,6 +13,10 @@ from .solutions import recommended_roster
 
 class CompletedSolutionsTests(TestCase):
     def setUp(self):
+        evidence = patch('apps.dailies.validators.qualified_roles',
+                         return_value={'top', 'jungle', 'mid', 'adc', 'support'})
+        evidence.start()
+        self.addCleanup(evidence.stop)
         self.board = Daily.objects.create(date=timezone.localdate(), status='published')
         self.players = [Player.objects.create(slug=f'person-{index}', nickname=f'Person {index}',
             primary_role='top', secondary_roles=['jungle', 'mid', 'adc', 'support'], country_code='KR',

@@ -47,7 +47,8 @@ class CuratedOctober20Tests(TestCase):
         self.assertEqual(validate_daily(self.daily), self.daily)
         self.assertEqual(ids, list(self.daily.slots.values_list('pk', flat=True)))
         self.assertEqual([s.conditions.count() for s in self.daily.slots.all()], [1, 1, 1, 2, 1])
-        self.assertEqual(len(count_candidates(self.daily.slots.get(role='top'))), 20)
+        # New guesses use the stricter majority-role evidence, including archives.
+        self.assertEqual(len(count_candidates(self.daily.slots.get(role='top'))), 15)
         self.assertFalse(self.daily.slots.filter(conditions__condition_type='birth_year_range').exists())
         self.assertEqual([list(s.conditions.values_list('condition_type', 'operator', 'value')) for s in self.daily.slots.all()],
                          [[c[:3] for c in row] for row in BOARD])

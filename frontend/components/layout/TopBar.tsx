@@ -19,7 +19,7 @@ export default function TopBar({ onMenu, onHelp }: Props) {
   const [soundEnabled, setSoundEnabled] = useState(true)
   useEffect(() => setSoundEnabled(isSoundEnabled()), [])
 
-  const section = pathname.startsWith('/archiwum')
+  const section = pathname.startsWith('/infinity') ? 'Infinity' : pathname.startsWith('/archiwum')
     ? (locale === 'pl' ? 'Archiwum' : 'Archive')
     : pathname.startsWith('/leaderboard')
     ? (locale === 'pl' ? 'Ranking' : 'Leaderboard')

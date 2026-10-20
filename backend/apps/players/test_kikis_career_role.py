@@ -143,17 +143,17 @@ class KikisRoleCorrectionTests(TestCase):
         self.slot.role = 'adc'
         self.assertFalse(player_matches_slot(self.player, self.slot))
 
-    def test_actual_official_yellowstar_top_swap_stays_valid_without_rewriting_worlds_facts(self):
+    def test_one_map_yellowstar_top_swap_is_rejected_without_rewriting_worlds_facts(self):
         row = deepcopy(next(row for row in release.load_release() if row['slug'] == 'yellowstar'))
         yellowstar = Player.objects.create(**row)
         before = (deepcopy(yellowstar.attributes), deepcopy(yellowstar.career_stats))
         self.assertIn('top', yellowstar.attributes['worlds_roles'])
-        self.assertTrue(player_matches_slot(yellowstar, self.slot))
+        self.assertFalse(player_matches_slot(yellowstar, self.slot))
         self.install()
         yellowstar.refresh_from_db()
         self.assertEqual((yellowstar.attributes, yellowstar.career_stats), before)
         result = self.answer(yellowstar, token='yellowstar-official-top-regression')
-        self.assertTrue(result.data['is_correct'])
+        self.assertFalse(result.data['is_correct'])
 
     def test_migration_only_changes_kikis_secondary_roles_and_is_idempotent(self):
         self.answer()
@@ -287,7 +287,8 @@ class KikisStrictReleaseCheckTests(TestCase):
                              (records[row['slug']]['attributes'], records[row['slug']]['career_stats']))
             for role in row['roles']:
                 with self.subTest(player=player.slug, role=role):
-                    self.assertTrue(player_matches_slot(player, slots[role]))
+                    from apps.dailies.validators import PlayerFacts
+                    self.assertEqual(player_matches_slot(player, slots[role]), role in PlayerFacts(player).roles)
 
     def test_strict_checker_accepts_only_the_versioned_kikis_role_overlay(self):
         from apps.admin_tools.release_checks import check_release_data

@@ -29,6 +29,13 @@ class MinimumTenReleaseTests(TestCase):
         before = list(DailySlotCondition.objects.filter(slot__daily=guest).values())
         self.install()
         self.assertEqual(len(release.load_boards()), 10)
+        snapshot = list(DailySlotCondition.objects.order_by('pk').values())
+        self.install()
+        self.assertEqual(list(DailySlotCondition.objects.order_by('pk').values()), snapshot)
+        # The frozen prior release is superseded before applying today's role
+        # policy to its pools. The new release has its own preservation tests.
+        import_module('apps.dailies.migrations.0020_worlds_focused_future_boards').install(
+            apps, SimpleNamespace(connection=connection))
         for spec in release.load_boards():
             board = Daily.objects.get(date=spec['date'])
             self.assertEqual(board.minimum_candidates, 10)
@@ -36,9 +43,6 @@ class MinimumTenReleaseTests(TestCase):
             self.assertTrue(all(len(count_candidates(slot)) >= 10 for slot in board.slots.all()))
             self.assertFalse(board.slots.filter(conditions__condition_type='birth_year_range').exists())
         self.assertEqual(list(DailySlotCondition.objects.filter(slot__daily=guest).values()), before)
-        snapshot = list(DailySlotCondition.objects.order_by('pk').values())
-        self.install()
-        self.assertEqual(list(DailySlotCondition.objects.order_by('pk').values()), snapshot)
 
     def test_started_board_and_today_are_preserved(self):
         board = Daily.objects.create(date=date(2026, 10, 21), status='published', minimum_candidates=None)

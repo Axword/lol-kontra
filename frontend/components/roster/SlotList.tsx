@@ -7,9 +7,9 @@ import { rarityForPercent, rarityPalette } from '@/lib/rarity'
 import RarityIndicator from './RarityIndicator'
 import PlayerPortrait from './PlayerPortrait'
 
-type Props = { slots: DailySlot[]; answers: Record<number, GameAnswer>; onPick: (slot: DailySlot) => void; disabled?: boolean; inspect?: boolean; candidateCounts?: Record<number, number> }
+type Props = { slots: DailySlot[]; answers: Record<number, GameAnswer>; onPick: (slot: DailySlot) => void; disabled?: boolean; inspect?: boolean; candidateCounts?: Record<number, number>; showRarity?: boolean }
 
-export default function SlotList({ slots, answers, onPick, disabled, inspect = false, candidateCounts }: Props) {
+export default function SlotList({ slots, answers, onPick, disabled, inspect = false, candidateCounts, showRarity = true }: Props) {
   const locale = usePrefs((s) => s.locale)
   return (
     <div className="slot-list-mobile border divide-y" style={{ borderColor: 'var(--line)' }}>
@@ -28,7 +28,7 @@ export default function SlotList({ slots, answers, onPick, disabled, inspect = f
             <span className="flex-1 min-w-0">
               <span className="block text-[13px] font-bold mb-1">{roleLabel(slot.role, locale)}{count != null ? ` · ${count} ${locale === 'pl' ? 'zawodników' : 'players'}` : ''}{solved ? ` · ${answer.player_nickname}` : ''}</span>
               {slot.conditions.map((c) => <span key={c.id} className="block text-[12px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>{locale === 'pl' ? c.label_pl : c.label_en}</span>)}
-              {solved && <span className="block text-xs mt-1"><RarityIndicator percent={answer.rarity_percent} locale={locale} isDiamond={answer.is_diamond_pick} showLabel /></span>}
+              {solved && showRarity && <span className="block text-xs mt-1"><RarityIndicator percent={answer.rarity_percent} locale={locale} isDiamond={answer.is_diamond_pick} showLabel /></span>}
             </span>
             {solved ? <Check size={17} style={{ color: 'var(--ok)' }} aria-hidden /> : !disabled && <ChevronRight size={17} style={{ color: 'var(--text-faint)' }} aria-hidden />}
           </button>

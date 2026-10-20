@@ -189,7 +189,8 @@ def _role_pool(role):
     players = (
         Player.objects.filter(Q(primary_role=role) | Q(secondary_roles__contains=[role])).order_by('slug')
     )
-    return [player for player in players if player.attributes.get('worlds_verified') is not False]
+    return [player for player in players if player.attributes.get('worlds_verified') is not False
+            and role in PlayerFacts(player).roles]
 
 
 def count_candidates(slot, pool=None):
@@ -244,11 +245,13 @@ def _independent_conditions(first, second):
 def validate_daily(daily):
     """Return a playable daily or raise without changing any stored answers."""
     slots = list(daily.slots.order_by('position').prefetch_related('conditions'))
-    validate_slots(slots, daily.minimum_candidates, bool(daily.author_name.strip()))
+    from .board_factory import EDITORIAL_FROM
+    historical = daily.minimum_candidates is None and daily.date < EDITORIAL_FROM
+    validate_slots(slots, daily.minimum_candidates, bool(daily.author_name.strip()), historical=historical)
     return daily
 
 
-def validate_slots(slots, minimum_candidates=MIN_CANDIDATES, curated=False):
+def validate_slots(slots, minimum_candidates=MIN_CANDIDATES, curated=False, historical=False):
     """Shared publication and editor validation, including combined answers."""
     if [slot.role for slot in slots] != ROLE_ORDER:
         raise ValueError('Daily must contain five slots in the expected role order')
@@ -264,7 +267,7 @@ def validate_slots(slots, minimum_candidates=MIN_CANDIDATES, curated=False):
     pools = [count_candidates(slot) for slot in slots]
     for slot, pool in zip(slots, pools):
         single = len(slot.conditions.all()) == 1
-        minimum = 1 if curated else (max(MIN_CANDIDATES, minimum_candidates)
+        minimum = 1 if curated or historical else (max(MIN_CANDIDATES, minimum_candidates)
                     if minimum_candidates is not None else (3 if single else 8))
         maximum = MAX_CANDIDATES if curated or not single else single_candidate_limit(slot.conditions.all()[0].condition_type)
         if not minimum <= len(pool) <= maximum:
@@ -420,6 +423,9 @@ def generate_daily(date=None, seed=None, force=False):
     rnd = random.Random(f'{date}-{seed}')
     used_themes = recent_themes(date)
     used_requirements = recent_requirements(date)
+    from .board_factory import EDITORIAL_FROM, store_daily
+    if date >= EDITORIAL_FROM:
+        return validate_daily(store_daily(daily, rnd, used_requirements))
     plan = list(DIFFICULTY_PLAN)
     rnd.shuffle(plan)
 

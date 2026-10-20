@@ -98,3 +98,11 @@ Weryfikacja lokalna z 18.10.2026 objęła 31 październikowych plansz i 155 pozy
 Przy zmianach interfejsu sprawdzamy na komputerze i telefonie: planszę, wyszukiwanie z nickiem i opcjonalnym zdjęciem, odrzucenie wyboru spełniającego tylko jeden warunek, trafienie i pomyłkę, blokady po zakończeniu, wynik, rozwiązania, archiwum, ranking oraz pomoc. Brakujące lub uszkodzone zdjęcie pozostawia sam nick.
 
 Źródła i granice kompletności danych: [WORLDS_DATA.md](WORLDS_DATA.md).
+
+## Infinity i większości ról
+
+Regresje `test_majority_roles.py` sprawdzają rzeczywiste większości Kikisa, Yellowstara, Perkza, Ambitiona i Rekklesa, odrzucenie pojedynczych map oraz rozdzielenie Worlds od lig krajowych. Test archiwum zachowuje starą poprawną odpowiedź, jednocześnie odrzucając ten sam wybór nowego gracza według aktualnej zasady.
+
+`test_board_factory.py` sprawdza wiele losowań na rzeczywistych danych: trzy pola Worlds, dwa inne, co najmniej dziesięć odpowiedzi po weryfikacji roli i wspólną drużynę/edycję z pięcioma różnymi pasującymi zawodnikami. Nie dopuszcza TOP 5 kariery; TOP 5 Worlds pojawia się najwyżej raz i jedynie w części zestawów. `test_worlds_editorial_release.py` kontroluje pakiet przyszłych plansz, identyfikatory pozycji, zachowanie autorskiej planszy oraz pominięcie rozpoczętych gier wraz z ich odpowiedziami i próbami.
+
+Testy Infinity obejmują wspólne dziesięć pomyłek, przejście do kolejnej piątki, wznowienie i restart po zakończeniu, odrzucanie cudzej serii i starej planszy, ponawianie żądań, dwa równoległe trafienia, ograniczenia bazy oraz ranking jednej najlepszej serii na profil z paginacją. Frontend sprawdza PL/EN, ręczne rozpoczęcie, liczniki z API, zamknięcie starej wyszukiwarki po zmianie planszy i ochronę przed zapisaniem spóźnionej odpowiedzi do innego profilu. Lokalny test przeglądarkowy przechodzi pomyłkę, pięć trafień, nową planszę z zachowanymi życiami, odświeżenie i ranking.

@@ -2,12 +2,13 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Archive, CalendarDays, Trophy, User, X } from 'lucide-react'
+import { Archive, CalendarDays, Infinity as InfinityIcon, Trophy, User, X } from 'lucide-react'
 import { usePrefs } from '@/lib/store'
 import { useDialog } from '../ui/useDialog'
 
 const links = [
   { href: '/', pl: 'Dzisiejsza plansza', en: "Today's board", icon: CalendarDays },
+  { href: '/infinity', pl: 'Infinity', en: 'Infinity', icon: InfinityIcon },
   { href: '/archiwum', pl: 'Archiwum', en: 'Archive', icon: Archive },
   { href: '/leaderboard', pl: 'Ranking', en: 'Leaderboard', icon: Trophy },
   { href: '/profile', pl: 'Profil', en: 'Profile', icon: User },

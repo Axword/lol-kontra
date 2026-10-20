@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.db.models import F, Q
+import uuid
 
 # Ile pomyłek gracz może popełnić na jednej planszy. Jedno miejsce w całym projekcie –
 # frontend pobiera tę wartość z API, nie trzyma własnej kopii.
@@ -122,3 +123,44 @@ class SubmissionAttempt(models.Model):
     def __str__(self):
         mark = 'OK' if self.is_correct else 'X'
         return f"[{mark}] {self.player} @ slot {self.daily_slot_id}"
+
+
+class InfinityRun(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    guest_profile = models.ForeignKey('users.GuestProfile', on_delete=models.PROTECT, related_name='infinity_runs')
+    display_suffix = models.CharField(max_length=24)
+    correct_count = models.PositiveIntegerField(default=0)
+    errors_used = models.PositiveSmallIntegerField(default=0)
+    board_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    # Candidate IDs remain server-only; API serializers expose just the clues.
+    board = models.JSONField(default=dict)
+    answers = models.JSONField(default=list)
+    started_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['guest_profile'], condition=Q(finished_at__isnull=True), name='infinity_one_active_run'),
+            models.CheckConstraint(check=Q(errors_used__gte=0, errors_used__lte=10), name='infinity_errors_0_10'),
+            models.CheckConstraint(check=Q(correct_count__gte=0), name='infinity_correct_nonnegative'),
+            models.CheckConstraint(check=Q(finished_at__isnull=True, errors_used__lt=10) | Q(finished_at__isnull=False, errors_used=10), name='infinity_finished_at_ten_errors'),
+        ]
+        indexes = [models.Index(fields=['-correct_count', 'errors_used'], name='infinity_ranking_idx')]
+
+
+class InfinityAttempt(models.Model):
+    run = models.ForeignKey(InfinityRun, on_delete=models.CASCADE, related_name='attempts')
+    board_id = models.UUIDField()
+    position = models.PositiveSmallIntegerField()
+    player = models.ForeignKey('players.Player', on_delete=models.PROTECT)
+    is_correct = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['run', 'board_id', 'position', 'player'], name='infinity_attempt_idempotent'),
+            models.UniqueConstraint(fields=['run', 'board_id', 'position'], condition=Q(is_correct=True), name='infinity_slot_correct_once'),
+            models.UniqueConstraint(fields=['run', 'board_id', 'player'], condition=Q(is_correct=True), name='infinity_distinct_correct_players'),
+            models.CheckConstraint(check=Q(position__gte=1, position__lte=5), name='infinity_position_1_5'),
+        ]

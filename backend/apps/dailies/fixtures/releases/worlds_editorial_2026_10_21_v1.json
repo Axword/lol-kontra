@@ -1,0 +1,1088 @@
+[
+  {
+    "date": "2026-10-21",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LCK",
+            "label_pl": "Grał w LCK",
+            "label_en": "Played in LCK",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "semifinal",
+            "label_pl": "Co najmniej raz odpadł w półfinale Worlds",
+            "label_en": "Eliminated in Worlds semifinals at least once",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "KR",
+            "label_pl": "Koreańczyk",
+            "label_en": "Korean",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": false,
+            "label_pl": "Zakończył karierę",
+            "label_en": "Retired",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "leagues_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Grał w min. 2 z lig: LCK, LPL, LEC, LCS, LTA, LTA North, LTA South",
+            "label_en": "Played in at least 2 of LCK, LPL, LEC, LCS, LTA, LTA North, LTA South",
+            "order": 0
+          },
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "KR",
+            "label_pl": "Koreańczyk",
+            "label_en": "Korean",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "worlds_teams_min",
+            "operator": "gte",
+            "value": 3,
+            "label_pl": "Grał na Worlds w barwach min. 3 organizacji",
+            "label_en": "Played for at least 3 organizations at Worlds",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_count_min",
+            "operator": "gte",
+            "value": 4,
+            "label_pl": "Zagrał w min. 4 edycjach Worlds",
+            "label_en": "Played in at least 4 editions of Worlds",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "worlds_early_era",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Grał na Worlds 2011, 2012 lub 2013",
+            "label_en": "Played at Worlds in 2011, 2012 or 2013",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_semifinal",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Dotarł co najmniej do półfinału Worlds",
+            "label_en": "Reached at least the Worlds semifinals",
+            "order": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-10-23",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LEC",
+            "label_pl": "Grał w LEC / EU LCS",
+            "label_en": "Played in LEC / EU LCS",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Wciąż aktywny",
+            "label_en": "Still active",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "group",
+            "label_pl": "Co najmniej raz odpadł w głównej fazie grupowej / Swiss Worlds",
+            "label_en": "Eliminated in Worlds main-event groups or Swiss at least once",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_top5_champion",
+            "operator": "eq",
+            "value": "Elise",
+            "label_pl": "Elise w jego TOP 5 według liczby gier na Worlds",
+            "label_en": "Elise in his top 5 champions by games played at Worlds",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "european_masters_played",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Zagrał w EU Masters / EMEA Masters",
+            "label_en": "Played at EU / EMEA Masters",
+            "order": 0
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "worlds_count_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Zagrał w min. 2 edycjach Worlds",
+            "label_en": "Played in at least 2 editions of Worlds",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_playin",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Awansował z play-in do głównego turnieju Worlds",
+            "label_en": "Advanced from play-in to the Worlds main event",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "worlds_teams_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Grał na Worlds w barwach min. 2 organizacji",
+            "label_en": "Played for at least 2 organizations at Worlds",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_final_lost",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Przegrał finał Worlds",
+            "label_en": "Lost a Worlds final",
+            "order": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-10-24",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LCS",
+            "label_pl": "Grał w LCS / NA LCS",
+            "label_en": "Played in LCS / NA LCS",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": false,
+            "label_pl": "Zakończył karierę",
+            "label_en": "Retired",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LCS",
+            "label_pl": "Grał w LCS / NA LCS",
+            "label_en": "Played in LCS / NA LCS",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": false,
+            "label_pl": "Zakończył karierę",
+            "label_en": "Retired",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "worlds_debut_year",
+            "operator": "lte",
+            "value": 2015,
+            "label_pl": "Debiutował na Worlds w 2015 lub wcześniej",
+            "label_en": "First Worlds appearance in 2015 or earlier",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "group",
+            "label_pl": "Co najmniej raz odpadł w głównej fazie grupowej / Swiss Worlds",
+            "label_en": "Eliminated in Worlds main-event groups or Swiss at least once",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "worlds_early_era",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Grał na Worlds 2011, 2012 lub 2013",
+            "label_en": "Played at Worlds in 2011, 2012 or 2013",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "group",
+            "label_pl": "Co najmniej raz odpadł w głównej fazie grupowej / Swiss Worlds",
+            "label_en": "Eliminated in Worlds main-event groups or Swiss at least once",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LCS",
+            "label_pl": "Grał w LCS / NA LCS",
+            "label_en": "Played in LCS / NA LCS",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_debut_year",
+            "operator": "lte",
+            "value": 2015,
+            "label_pl": "Debiutował na Worlds w 2015 lub wcześniej",
+            "label_en": "First Worlds appearance in 2015 or earlier",
+            "order": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-10-25",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "worlds_last_year",
+            "operator": "gte",
+            "value": 2023,
+            "label_pl": "Grał na Worlds w 2023 lub później",
+            "label_en": "Worlds 2023 or later",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_never_won",
+            "operator": "gte",
+            "value": 3,
+            "label_pl": "Min. 3 edycje Worlds, bez ani jednego tytułu",
+            "label_en": "Played in at least 3 Worlds editions without winning a title",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "TW",
+            "label_pl": "Tajwańczyk",
+            "label_en": "Taiwanese",
+            "order": 0
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LPL",
+            "label_pl": "Grał w LPL",
+            "label_en": "Played in LPL",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_final",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Grał w finale Worlds",
+            "label_en": "Played a Worlds final",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "worlds_titles_exact",
+            "operator": "eq",
+            "value": 1,
+            "label_pl": "Wygrał Worlds dokładnie raz",
+            "label_en": "Won Worlds exactly once",
+            "order": 0
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LPL",
+            "label_pl": "Grał w LPL",
+            "label_en": "Played in LPL",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Wciąż aktywny",
+            "label_en": "Still active",
+            "order": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-10-26",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "KR",
+            "label_pl": "Koreańczyk",
+            "label_en": "Korean",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "quarterfinal",
+            "label_pl": "Co najmniej raz odpadł w ćwierćfinale Worlds",
+            "label_en": "Eliminated in Worlds quarterfinals at least once",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "leagues_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Grał w min. 2 z lig: LCK, LPL, LEC, LCS, LTA, LTA North, LTA South",
+            "label_en": "Played in at least 2 of LCK, LPL, LEC, LCS, LTA, LTA North, LTA South",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_semifinal",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Dotarł co najmniej do półfinału Worlds",
+            "label_en": "Reached at least the Worlds semifinals",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LCK",
+            "label_pl": "Grał w LCK",
+            "label_en": "Played in LCK",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Wciąż aktywny",
+            "label_en": "Still active",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "worlds_teams_min",
+            "operator": "gte",
+            "value": 3,
+            "label_pl": "Grał na Worlds w barwach min. 3 organizacji",
+            "label_en": "Played for at least 3 organizations at Worlds",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_count_min",
+            "operator": "gte",
+            "value": 4,
+            "label_pl": "Zagrał w min. 4 edycjach Worlds",
+            "label_en": "Played in at least 4 editions of Worlds",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "KR",
+            "label_pl": "Koreańczyk",
+            "label_en": "Korean",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Wciąż aktywny",
+            "label_en": "Still active",
+            "order": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-10-27",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LCK",
+            "label_pl": "Grał w LCK",
+            "label_en": "Played in LCK",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Wciąż aktywny",
+            "label_en": "Still active",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "worlds_teams_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Grał na Worlds w barwach min. 2 organizacji",
+            "label_en": "Played for at least 2 organizations at Worlds",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "semifinal",
+            "label_pl": "Co najmniej raz odpadł w półfinale Worlds",
+            "label_en": "Eliminated in Worlds semifinals at least once",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "worlds_count_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Zagrał w min. 2 edycjach Worlds",
+            "label_en": "Played in at least 2 editions of Worlds",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_group_escape",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Zagrał w fazie pucharowej głównego turnieju Worlds",
+            "label_en": "Played in the Worlds main-event knockout stage",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "worlds_never_won",
+            "operator": "gte",
+            "value": 3,
+            "label_pl": "Min. 3 edycje Worlds, bez ani jednego tytułu",
+            "label_en": "Played in at least 3 Worlds editions without winning a title",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_playin",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Awansował z play-in do głównego turnieju Worlds",
+            "label_en": "Advanced from play-in to the Worlds main event",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "KR",
+            "label_pl": "Koreańczyk",
+            "label_en": "Korean",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": false,
+            "label_pl": "Zakończył karierę",
+            "label_en": "Retired",
+            "order": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-10-28",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "worlds_count_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Zagrał w min. 2 edycjach Worlds",
+            "label_en": "Played in at least 2 editions of Worlds",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_group_escape",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Zagrał w fazie pucharowej głównego turnieju Worlds",
+            "label_en": "Played in the Worlds main-event knockout stage",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "worlds_debut_year",
+            "operator": "lte",
+            "value": 2015,
+            "label_pl": "Debiutował na Worlds w 2015 lub wcześniej",
+            "label_en": "First Worlds appearance in 2015 or earlier",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "quarterfinal",
+            "label_pl": "Co najmniej raz odpadł w ćwierćfinale Worlds",
+            "label_en": "Eliminated in Worlds quarterfinals at least once",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "TW",
+            "label_pl": "Tajwańczyk",
+            "label_en": "Taiwanese",
+            "order": 0
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "quarterfinal",
+            "label_pl": "Co najmniej raz odpadł w ćwierćfinale Worlds",
+            "label_en": "Eliminated in Worlds quarterfinals at least once",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_never_won",
+            "operator": "gte",
+            "value": 3,
+            "label_pl": "Min. 3 edycje Worlds, bez ani jednego tytułu",
+            "label_en": "Played in at least 3 Worlds editions without winning a title",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "TW",
+            "label_pl": "Tajwańczyk",
+            "label_en": "Taiwanese",
+            "order": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-10-29",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LEC",
+            "label_pl": "Grał w LEC / EU LCS",
+            "label_en": "Played in LEC / EU LCS",
+            "order": 0
+          },
+          {
+            "condition_type": "european_masters_played",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Zagrał w EU Masters / EMEA Masters",
+            "label_en": "Played at EU / EMEA Masters",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "leagues_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Grał w min. 2 z lig: LCK, LPL, LEC, LCS, LTA, LTA North, LTA South",
+            "label_en": "Played in at least 2 of LCK, LPL, LEC, LCS, LTA, LTA North, LTA South",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_playin",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Awansował z play-in do głównego turnieju Worlds",
+            "label_en": "Advanced from play-in to the Worlds main event",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "worlds_last_year",
+            "operator": "gte",
+            "value": 2023,
+            "label_pl": "Grał na Worlds w 2023 lub później",
+            "label_en": "Worlds 2023 or later",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "group",
+            "label_pl": "Co najmniej raz odpadł w głównej fazie grupowej / Swiss Worlds",
+            "label_en": "Eliminated in Worlds main-event groups or Swiss at least once",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LCS",
+            "label_pl": "Grał w LCS / NA LCS",
+            "label_en": "Played in LCS / NA LCS",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Wciąż aktywny",
+            "label_en": "Still active",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LEC",
+            "label_pl": "Grał w LEC / EU LCS",
+            "label_en": "Played in LEC / EU LCS",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_group_escape",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Zagrał w fazie pucharowej głównego turnieju Worlds",
+            "label_en": "Played in the Worlds main-event knockout stage",
+            "order": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-10-30",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LPL",
+            "label_pl": "Grał w LPL",
+            "label_en": "Played in LPL",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_final",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Grał w finale Worlds",
+            "label_en": "Played a Worlds final",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "leagues_min",
+            "operator": "gte",
+            "value": 2,
+            "label_pl": "Grał w min. 2 z lig: LCK, LPL, LEC, LCS, LTA, LTA North, LTA South",
+            "label_en": "Played in at least 2 of LCK, LPL, LEC, LCS, LTA, LTA North, LTA South",
+            "order": 0
+          },
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "KR",
+            "label_pl": "Koreańczyk",
+            "label_en": "Korean",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LPL",
+            "label_pl": "Grał w LPL",
+            "label_en": "Played in LPL",
+            "order": 0
+          },
+          {
+            "condition_type": "active",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Wciąż aktywny",
+            "label_en": "Still active",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "worlds_titles_exact",
+            "operator": "eq",
+            "value": 1,
+            "label_pl": "Wygrał Worlds dokładnie raz",
+            "label_en": "Won Worlds exactly once",
+            "order": 0
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "worlds_final_lost",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Przegrał finał Worlds",
+            "label_en": "Lost a Worlds final",
+            "order": 0
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2026-10-31",
+    "slots": [
+      {
+        "role": "top",
+        "position": 1,
+        "conditions": [
+          {
+            "condition_type": "residency",
+            "operator": "eq",
+            "value": "LCS",
+            "label_pl": "Grał w LCS / NA LCS",
+            "label_en": "Played in LCS / NA LCS",
+            "order": 0
+          },
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "KR",
+            "label_pl": "Koreańczyk",
+            "label_en": "Korean",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "jungle",
+        "position": 2,
+        "conditions": [
+          {
+            "condition_type": "worlds_count_min",
+            "operator": "gte",
+            "value": 4,
+            "label_pl": "Zagrał w min. 4 edycjach Worlds",
+            "label_en": "Played in at least 4 editions of Worlds",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_top5_champion",
+            "operator": "eq",
+            "value": "Jarvan IV",
+            "label_pl": "Jarvan IV w jego TOP 5 według liczby gier na Worlds",
+            "label_en": "Jarvan IV in his top 5 champions by games played at Worlds",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "mid",
+        "position": 3,
+        "conditions": [
+          {
+            "condition_type": "worlds_semifinal",
+            "operator": "eq",
+            "value": true,
+            "label_pl": "Dotarł co najmniej do półfinału Worlds",
+            "label_en": "Reached at least the Worlds semifinals",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_eliminated_stage",
+            "operator": "eq",
+            "value": "group",
+            "label_pl": "Co najmniej raz odpadł w głównej fazie grupowej / Swiss Worlds",
+            "label_en": "Eliminated in Worlds main-event groups or Swiss at least once",
+            "order": 1
+          }
+        ]
+      },
+      {
+        "role": "adc",
+        "position": 4,
+        "conditions": [
+          {
+            "condition_type": "country",
+            "operator": "eq",
+            "value": "CN",
+            "label_pl": "Chińczyk",
+            "label_en": "Chinese",
+            "order": 0
+          }
+        ]
+      },
+      {
+        "role": "support",
+        "position": 5,
+        "conditions": [
+          {
+            "condition_type": "worlds_teams_min",
+            "operator": "gte",
+            "value": 3,
+            "label_pl": "Grał na Worlds w barwach min. 3 organizacji",
+            "label_en": "Played for at least 3 organizations at Worlds",
+            "order": 0
+          },
+          {
+            "condition_type": "worlds_last_year",
+            "operator": "gte",
+            "value": 2023,
+            "label_pl": "Grał na Worlds w 2023 lub później",
+            "label_en": "Worlds 2023 or later",
+            "order": 1
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -15,10 +15,11 @@ type Props = {
   slotsTotal?: number
   errorsLeft?: number | null
   maxErrors?: number | null
+  gameMode?: 'daily' | 'infinity'
 }
 
 export default function GameLayout({
-  children, dailyId, dailyDate, score, correctCount, slotsTotal, errorsLeft, maxErrors,
+  children, dailyId, dailyDate, score, correctCount, slotsTotal, errorsLeft, maxErrors, gameMode = 'daily',
 }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [helpOpen, setHelpOpen] = useState(false)
@@ -84,7 +85,7 @@ export default function GameLayout({
             className="underline underline-offset-2 hover:text-[var(--text)]">Axword</a>
         </footer>
       </div>
-      <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} />
+      <HelpModal open={helpOpen} onClose={() => setHelpOpen(false)} infinity={gameMode === 'infinity'} />
     </div>
   )
 }

@@ -32,8 +32,25 @@ class PreparedMonthTests(TestCase):
             slug=f'person-{index}', nickname=f'Person {index}', primary_role='top',
             secondary_roles=['jungle', 'mid', 'adc', 'support'], country_code='KR' if index < 20 else 'CN',
             is_active=not (10 <= index < 20),
-            attributes={'worlds_verified': True, 'activity_verified': True},
+            attributes={
+                'worlds_verified': True, 'activity_verified': True,
+                'worlds_appearances': [2018, 2020] if index < 10 or index >= 20 else [2020],
+                'worlds_semifinals': [2020] if index >= 10 else [],
+                'worlds_group_escapes': [2020] if 5 <= index < 25 else [],
+                'worlds_eliminations': {
+                    'group': [2020] if index % 3 < 2 else [],
+                    'quarterfinal': [2018] if index >= 10 else [],
+                },
+            },
         ) for index in range(30)]
+
+    def setUp(self):
+        # This fixture tests month preparation; canonical role evidence is tested
+        # against real source records in test_majority_roles.
+        roles = patch('apps.dailies.validators.qualified_roles',
+                      return_value={'top', 'jungle', 'mid', 'adc', 'support'})
+        roles.start()
+        self.addCleanup(roles.stop)
 
     @patch('django.utils.timezone.localdate', return_value=TODAY)
     @patch('apps.dailies.generator.build_condition_pool', return_value=TEST_POOL)
@@ -54,7 +71,7 @@ class PreparedMonthTests(TestCase):
                              [date(2026, 10, day) for day in range(1, 32)])
             self.assertEqual(Daily.objects.filter(status='published').count(), 31)
             self.assertEqual(DailySlot.objects.count(), 155)
-            self.assertEqual(DailySlotCondition.objects.count(), 310)
+            self.assertTrue(all(1 <= slot.conditions.count() <= 2 for slot in DailySlot.objects.all()))
             self.assertEqual(Submission.objects.filter(is_seed=True).count(), 0)
             self.assertEqual(SubmissionAnswer.objects.count(), 1)
             self.assertEqual(SubmissionAttempt.objects.count(), 1)

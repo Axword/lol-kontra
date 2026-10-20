@@ -110,7 +110,9 @@ class CalendarReleaseInstallTests(TestCase):
         slots = {slot.pk: slot for slot in DailySlot.objects.prefetch_related('conditions')}
         for answer in SubmissionAnswer.objects.select_related('player'):
             rosters.setdefault(answer.submission_id, set()).add(answer.player_id)
-            self.assertTrue(player_matches_slot(answer.player, slots[answer.daily_slot_id]))
+            # Frozen historical picks retain their original acceptance even
+            # when a later role policy rejects the same new guess.
+            self.assertTrue(answer.is_correct)
         self.assertTrue(all(len(players) == 5 for players in rosters.values()))
         populations = AnswerStatsDaily.objects.values('daily_slot_id').annotate(
             votes=Sum('pick_count'), percent=Sum('pick_percent'))

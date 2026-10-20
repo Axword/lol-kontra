@@ -17,6 +17,7 @@ type Props = {
   inspect?: boolean
   candidateCounts?: Record<number, number>
   portraits?: Record<number, string | null | undefined>
+  showRarity?: boolean
 }
 
 const POSITIONS: Record<Role, { left: string; top: string }> = {
@@ -27,7 +28,7 @@ const POSITIONS: Record<Role, { left: string; top: string }> = {
   support: { left: '51%', top: '84%' },
 }
 
-export default function RiftBoard({ slots, answers, onPick, disabled, activeSlotId, inspect = false, candidateCounts, portraits }: Props) {
+export default function RiftBoard({ slots, answers, onPick, disabled, activeSlotId, inspect = false, candidateCounts, portraits, showRarity = true }: Props) {
   const locale = usePrefs((s) => s.locale)
   const boardId = useId()
   return (
@@ -67,7 +68,7 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
                 {slot.conditions.map((c) => <li key={c.id}>{locale === 'pl' ? c.label_pl : c.label_en}</li>)}
               </ul>
               {count != null && <div className="mt-3 text-xs tabular">{count} {locale === 'pl' ? 'zawodników' : 'players'}</div>}
-              {solved && (
+              {solved && showRarity && (
                 <div className="rift-result">
                   <RarityIndicator percent={answer.rarity_percent} locale={locale} isDiamond={answer.is_diamond_pick} showLabel />
                 </div>
@@ -82,7 +83,7 @@ export default function RiftBoard({ slots, answers, onPick, disabled, activeSlot
                 <img src={`/roles/${slot.role}.svg`} alt="" aria-hidden draggable={false} />
               </>}
               <span>{solved ? answer.player_nickname : label}</span>
-              {solved && <RarityIndicator percent={answer.rarity_percent} locale={locale} isDiamond={answer.is_diamond_pick} className="text-[10px]" />}
+              {solved && showRarity && <RarityIndicator percent={answer.rarity_percent} locale={locale} isDiamond={answer.is_diamond_pick} className="text-[10px]" />}
             </button>
           </div>
         )
