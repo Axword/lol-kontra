@@ -1,13 +1,14 @@
-# WORDS V na jednym VPS
+# WORLDS KONTRA na jednym VPS
 
 Przygotowany wariant dla **Ubuntu 24.04 lub 26.04 LTS**: Next.js, Django/Gunicorn, Celery, Redis,
 PostgreSQL i Caddy. Jedna domena wystarcza: `/` obsługuje frontend, `/api/v1/` API,
 `/admin/` panel Django. Caddy wystawia tylko porty 80/443 i odnawia certyfikaty.
 PostgreSQL i Redis nie mają portów dostępnych z internetu.
 
-To instrukcja przygotowania i późniejszego przełączenia. Dopóki nie ma VPS, domeny,
-DNS i zewnętrznego magazynu kopii, **aplikacja pozostaje na Vercel + Render + Neon**.
-Konfiguracji `compose.vps.yaml` nie łącz z developerskim Compose.
+Produkcja działa na `https://lol-kontra.axword.pl`, na OVH. PostgreSQL i klucz
+tożsamości zostały przeniesione z poprzedniego hostingu. Poniższe kroki migracji
+służą odtwarzaniu instalacji na nowym serwerze; nie wykonuj ponownego importu
+na działającej bazie. Konfiguracji `compose.vps.yaml` nie łącz z developerskim Compose.
 
 ## 1. Zanim uruchomisz serwer
 
@@ -106,14 +107,23 @@ python3 infra/vps/restic-command.py init
 python3 infra/vps/restic-command.py snapshots
 ```
 
-Codzienny timer zapisuje dump, media i zaszyfrowaną konfigurację do magazynu poza
-VPS. Każda aktualizacja wymaga udanej kopii poza serwerem; błąd zatrzymuje wdrożenie.
+Codzienny timer restic zapisuje dump, media i zaszyfrowaną konfigurację do magazynu poza
+VPS. Domyślnie każda aktualizacja wymaga udanej kopii restic; błąd zatrzymuje wdrożenie.
 Sprawdzaj `systemctl status words-v-backup.timer` i
 `journalctl -u words-v-backup.service`. Kopie zawierają prywatne dane i klucze.
 Magazyn repozytorium i jego hasło również muszą być niezależnie dostępne po awarii VPS.
 
 Zestaw celowo nie usuwa kopii automatycznie. Monitoruj miejsce na dysku i ustal
 retencję po zweryfikowaniu odtwarzania; nie kasuj jedynej sprawdzonej kopii.
+
+Obecna instalacja OVH używa codziennej kopii całego VPS u dostawcy oraz sprawdzonego
+zadania `words-v-local-backup.service`. Administrator wybiera ten wariant przez
+root-owned plik `/etc/words-v/deploy-backup-mode` o prawach 0600, zawierający
+`ovh-managed`. Wtedy przed każdą aktualizacją musi udać się dodatkowa kopia lokalna.
+Kopia lokalna nie chroni przed utratą całego VPS; kopia OVH powstaje według własnego
+harmonogramu, a nie przy każdym wdrożeniu. Nieskonfigurowany timer restic pozostaje
+wyłączony. Nie ustawiaj tego trybu na nowym hoście bez działających kopii OVH
+i zweryfikowanej usługi lokalnej.
 
 ## 5. Przeniesienie z Neona
 
@@ -184,15 +194,16 @@ sudo /usr/local/sbin/words-v-deploy PELNY_40_ZNAKOWY_SHA
 ```
 
 Skrypt pobiera mastera, wymaga dokładnie wskazanego aktualnego commita, buduje obrazy,
-zatrzymuje procesy zapisujące, robi backup, uruchamia migracje jako właściciel bazy,
+robi backup, zatrzymuje procesy zapisujące, uruchamia migracje jako właściciel bazy,
 kontrole danych i zbiera static. API działa jako ograniczona rola bez prawa DDL.
 Uruchamia frontend/backend i sprawdza publiczny HTTPS, health oraz dzisiejszą planszę.
 Udane wydanie staje się `/opt/words-v/current`. Katalogi wydań i trwałe wolumeny
 pozostają oddzielne. Aktualizacja wiąże się z krótką przerwą w API.
 
-Po błędzie backupu/migracji/health aplikacja może wymagać ręcznego wznowienia.
-Niezmieniony symlink `current` **nie oznacza**, że stare kontenery nadal obsługują ruch.
-Nie ma automatycznego cofania bazy. Dla znanej, zgodnej ze schematem poprzedniej wersji:
+Po błędzie migracji lub kontroli dostępności skrypt próbuje ponownie uruchomić
+poprzednie kontenery i przywrócić wskaźnik wydania. Nie cofa migracji bazy;
+zmiany schematu muszą zachowywać zgodność ze starszym kodem. Nieudane wznowienie
+wymaga ręcznej kontroli. Dla znanej, zgodnej ze schematem poprzedniej wersji:
 
 ```bash
 sudo /usr/local/sbin/words-v-deploy POPRZEDNI_ZDROWY_SHA --rollback
@@ -218,17 +229,26 @@ Workflow `Deploy VPS` działa po zielonym `CI`; również ręczne uruchomienie w
 zielonych kontroli `backend`, `frontend`, `infrastructure` dla tego samego SHA.
 Automatyczne wdrożenia są domyślnie wyłączone.
 
-Utwórz dedykowane konto SSH do wdrożeń, bez grupy Docker, z oddzielnym kluczem.
-Jedynym dozwolonym poleceniem sudo powinno być root-owned
-`/usr/local/sbin/words-v-deploy`. Administrator sprawdza wpis przez `visudo`;
-nie przyznawaj pełnego `NOPASSWD: ALL`. Klucz wdrożeniowy daje możliwość publikacji
-kodu, więc dostęp do środowiska GitHub ogranicz do zaufanych osób.
+Wygeneruj osobny klucz Ed25519. Na serwer prześlij tylko jego część publiczną,
+a prywatną umieść w sekrecie środowiska GitHub. Po zatwierdzeniu trwałego dostępu:
 
-W GitHub Environment **vps-production** ustaw sekrety:
+```bash
+sudo bash infra/vps/configure-deploy-access.sh /sciezka/github-actions-ed25519.pub
+```
+
+Powstaje konto `words-deploy`, bez grupy Docker, z zablokowanym hasłem. Katalog
+domowy i klucz należą do roota. Wymuszona komenda SSH akceptuje wyłącznie
+`deploy PELNY_SHA`; blokuje sesję interaktywną, przekierowania i dowolne polecenia.
+Jedyny wpis sudo pozwala uruchomić root-owned `words-v-deploy`; skrypt wymaga
+bieżącego commita mastera. Nadal jest to uprawnienie publikacji kodu aplikacji,
+więc dostęp do tego repozytorium i środowiska mają tylko zaufane osoby.
+
+W GitHub Environment **vps-production** ogranicz dozwoloną gałąź do **master** i ustaw sekrety:
 `VPS_SSH_HOST`, `VPS_SSH_USER`, `VPS_SSH_PORT`, `VPS_SSH_KEY`,
 `VPS_SSH_KNOWN_HOSTS`. Odcisk hosta potwierdź przez konsolę OVH lub inne zaufane
 połączenie. Workflow wymusza `StrictHostKeyChecking=yes`; nie akceptuje automatycznie
-nowych kluczy hosta. Po pierwszym sprawdzonym wdrożeniu ustaw repo variable
+nowych kluczy hosta. `VPS_SSH_USER` ma wartość `words-deploy`. Hasła bazy i klucz
+Django pozostają na VPS; workflow ich nie potrzebuje. Po pierwszym sprawdzonym wdrożeniu ustaw repo variable
 `VPS_AUTO_DEPLOY=true`. Bez serwera i sekretów nie włączaj automatyzacji.
 
 ## 8. Odtwarzanie kopii poza VPS

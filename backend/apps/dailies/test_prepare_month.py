@@ -30,10 +30,10 @@ class PreparedMonthTests(TestCase):
     def setUpTestData(cls):
         cls.players = [Player.objects.create(
             slug=f'person-{index}', nickname=f'Person {index}', primary_role='top',
-            secondary_roles=['jungle', 'mid', 'adc', 'support'], country_code='KR' if index < 16 else 'CN',
-            is_active=not (8 <= index < 16),
+            secondary_roles=['jungle', 'mid', 'adc', 'support'], country_code='KR' if index < 20 else 'CN',
+            is_active=not (10 <= index < 20),
             attributes={'worlds_verified': True, 'activity_verified': True},
-        ) for index in range(24)]
+        ) for index in range(30)]
 
     @patch('django.utils.timezone.localdate', return_value=TODAY)
     @patch('apps.dailies.generator.build_condition_pool', return_value=TEST_POOL)
@@ -132,12 +132,12 @@ class PreparedMonthTests(TestCase):
         client.force_authenticate(user)
         response = client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([len(result['players']) for result in response.data['slots']], [8] * 5)
+        self.assertEqual([len(result['players']) for result in response.data['slots']], [10] * 5)
         first_slot = response.data['slots'][0]
         self.assertEqual(first_slot['sample_size'], 1)
         self.assertEqual(first_slot['players'][0]['pick_count'], 1)
         self.assertEqual(first_slot['players'][0]['pick_percent'], 100)
-        self.assertEqual([player['pick_percent'] for player in first_slot['players'][1:]], [0] * 7)
+        self.assertEqual([player['pick_percent'] for player in first_slot['players'][1:]], [0] * 9)
         for result in response.data['slots'][1:]:
             self.assertEqual(result['sample_size'], 0)
             self.assertTrue(all(player['pick_percent'] == 0 for player in result['players']))

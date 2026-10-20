@@ -1,4 +1,4 @@
-# League of Legends Esports Roster Challenge — WORDS V
+# League of Legends Esports Roster Challenge — WORLDS KONTRA
 
 Codzienna gra inspirowana Kontra.games: ułóż skład TOP / JUNGLE / MID / ADC / SUPPORT. Każdy zawodnik musi spełniać wymagania pozycji, a pięć wyborów musi dotyczyć różnych osób. Generator wybiera jeden wymagający warunek albo dwa, z których każdy zawęża odpowiedzi. Interfejs jest dostępny po polsku i angielsku.
 
@@ -6,7 +6,7 @@ Zaczynasz z 500 punktami: każda z pięciu pustych pozycji kosztuje 100. Poprawn
 
 Nick można zmienić bezpośrednio w nagłówku. Obok niego lub w profilu wybierzesz badge drużyny Worlds 2026, której kibicujesz. Profil pokazuje skuteczność, serie dni, diamenty i najczęściej wybieranych zawodników. Po zakończeniu gry można opublikować moderowany komentarz z automatycznym obrazem własnego składu; treść i obraz są ukryte przed osobami, które jeszcze nie skończyły tej planszy. Pole „Zapisz jako…” zapisuje wyłącznie nick i pojawia się tylko przed pierwszym ustawieniem własnego nicku.
 
-Osobna strona rankingu pokazuje domyślnie 50 osób; dostępne limity to 10, 25, 50 i 100. Na końcu listy zawsze pojawia się dodatkowy wiersz bieżącego gracza z jego rzeczywistą pozycją, także poza pierwszą setką. Gracz bez ukończonej oficjalnej gry widzi kreskę zamiast wymyślonej pozycji. Ranking przy planszy pozostaje bez zmian.
+Ranking pokazuje liczbę ukończonych gier, sumę punktów, średnią i wynik ważony. Wynik ważony to `(suma punktów + 5 × średnia wszystkich ukończonych gier) / (liczba gier + 5)`; niższy jest lepszy. Można przełączać sposób sortowania i przeglądać wszystkie strony, po 10, 25, 50 lub 100 osób. Własny wiersz pokazuje rzeczywistą pozycję również poza bieżącą stroną. Gracz bez ukończonej oficjalnej gry widzi kreskę zamiast pozycji. Ranking przy planszy pozostaje bez zmian.
 
 Nowe warunki „Urodzony w Europie” i „Urodzony w Ameryce Północnej” korzystają z kraju urodzenia zapisanego przez Leaguepedię. Narodowość i historia lig nie zastępują tej informacji. Istniejące plansze zachowują dotychczasowe wymagania; dawne ogólne etykiety kontynentu są doprecyzowane jako narodowość.
 
@@ -14,7 +14,7 @@ Plansza Kaczego na 22.10.2026 ma uzgodnione warunki: tajwański TOP z występem 
 
 Nowa pula obejmuje również pentakill na Worlds, przegrany finał z Fakerem, udział lub zwycięstwo w EU/EMEA Masters, dokładnie jeden tytuł Worlds i tytuł w debiutanckiej edycji. Zamrożone uzupełnienie Leaguepedii ma własną sumę kontrolną. Generator pomija warunek importu, ponieważ narodowość i historia lig nie potwierdzają oficjalnego statusu importu.
 
-Generator pomija również ogólne roczniki i nieprecyzyjny status regionu wildcard. W parze każdy warunek musi zmniejszyć pulę drugiego o co najmniej 20%; nowe pary mają 8–50 odpowiedzi, a pojedyncze wymaganie 3–18 i najwyżej 25% puli danej roli. Dobór uwzględnia liczbę użyć tematów w ostatnich 14 dniach oraz powtórki na tej samej planszy. Zaktualizowany kalendarz 21–31 października pomija planszę Kaczego, dzień wdrożenia, daty archiwalne i wszystkie plansze z rozpoczętą grą.
+Generator pomija również ogólne roczniki i nieprecyzyjny status regionu wildcard. Nowa standardowa pozycja ma co najmniej 10 poprawnych odpowiedzi po połączeniu wymagań; plansze gościnnych autorów mogą mieć mniej. W parze każdy warunek musi zmniejszyć pulę drugiego o co najmniej 20%; nowe pary mają 10–50 odpowiedzi, a pojedyncze wymaganie 10–18 i najwyżej 25% puli danej roli. Dobór uwzględnia liczbę użyć tematów w ostatnich 14 dniach oraz niedawne powtórki. Zaktualizowany kalendarz 21–31 października pomija planszę Kaczego, dzień wdrożenia, daty archiwalne i wszystkie plansze z rozpoczętą grą. [Edytor plansz dla administratora](docs/ADMIN-BOARDS.md) pozwala dobierać warunki, podejrzeć pasujących graczy i zapisywać szkic lub publikować planszę.
 
 Stack: Next.js 14, React, TypeScript, Tailwind, Django 5.2 LTS, DRF, PostgreSQL 16, Redis 7 i Celery.
 

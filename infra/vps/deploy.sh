@@ -9,6 +9,27 @@ mode=${2:-}
 }
 root=/opt/words-v
 repo="$root/repository.git"
+previous=$(readlink -f "$root/current" 2>/dev/null || true)
+maintenance_started=0
+recover_previous() {
+    result=$?
+    trap - EXIT
+    if [[ -n "${stage:-}" && "$stage" == "$root/releases/.staging-$sha-"* ]]; then
+        rm -rf -- "$stage"
+    fi
+    if (( result != 0 && maintenance_started == 1 )) && [[ "$previous" =~ ^/opt/words-v/releases/[a-f0-9]{40}$ ]]; then
+        echo 'Deployment failed; restoring the previous application containers. Database migrations are retained.' >&2
+        (
+            export RELEASE_SHA=${previous##*/}
+            source "$previous/infra/vps/common.sh"
+            compose up -d --wait --wait-timeout 180 --no-deps api worker beat frontend caddy
+            ln -sfn "$previous" "$root/.current-recovery"
+            mv -Tf "$root/.current-recovery" "$root/current"
+        ) || echo 'Previous containers require manual inspection.' >&2
+    fi
+    exit "$result"
+}
+trap recover_previous EXIT
 exec 9>/run/lock/words-v-deploy.lock
 flock -n 9 || { echo 'Another deployment is in progress.' >&2; exit 1; }
 [[ -d "$repo" ]] || { echo 'Provision the repository first.' >&2; exit 1; }
@@ -25,7 +46,6 @@ fi
 release="$root/releases/$sha"
 if [[ ! -d "$release" ]]; then
     stage=$(mktemp -d "$root/releases/.staging-$sha-XXXXXX")
-    trap 'if [[ -n "${stage:-}" && "$stage" == "$root/releases/.staging-$sha-"* ]]; then rm -rf -- "$stage"; fi' EXIT
     git --git-dir="$repo" archive "$sha" | tar --no-same-owner --same-permissions -x -C "$stage"
     chmod 0755 "$stage"
     mv -- "$stage" "$release"
@@ -38,8 +58,21 @@ check_env
 compose config --quiet
 compose build --pull db api frontend
 compose up -d --wait --wait-timeout 120 db redis
+backup_mode=restic
+backup_mode_file=/etc/words-v/deploy-backup-mode
+if [[ -e "$backup_mode_file" ]]; then
+    [[ ! -L "$backup_mode_file" && $(stat -c %u "$backup_mode_file") == 0 && $(stat -c %a "$backup_mode_file") == 600 ]] || {
+        echo 'Expected a root-owned mode 0600 deploy-backup-mode file.' >&2; exit 1;
+    }
+    backup_mode=$(cat "$backup_mode_file")
+fi
+case "$backup_mode" in
+    restic) python3 "$SCRIPT_DIR/backup.py" --release "$RELEASE_DIR" ;;
+    ovh-managed) systemctl start words-v-local-backup.service ;;
+    *) echo 'Unknown deployment backup mode.' >&2; exit 1 ;;
+esac
+maintenance_started=1
 compose stop api worker beat
-python3 "$SCRIPT_DIR/backup.py" --release "$RELEASE_DIR"
 if [[ "$mode" != --rollback ]]; then
     compose run --rm --no-deps release
 fi
@@ -63,4 +96,9 @@ touch "$release/.deployed-success"
 # Atomic replacement also updates the deployment tool for subsequent releases.
 install -m 0755 "$release/infra/vps/deploy.sh" /usr/local/sbin/.words-v-deploy-next
 mv -f /usr/local/sbin/.words-v-deploy-next /usr/local/sbin/words-v-deploy
+if [[ -f "$release/infra/vps/deploy-command.sh" ]]; then
+    install -m 0755 "$release/infra/vps/deploy-command.sh" /usr/local/sbin/.words-v-deploy-command-next
+    mv -f /usr/local/sbin/.words-v-deploy-command-next /usr/local/sbin/words-v-deploy-command
+fi
+maintenance_started=0
 echo "Deployment healthy: $sha"

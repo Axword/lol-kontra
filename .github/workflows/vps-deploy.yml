@@ -20,17 +20,13 @@ jobs:
     if: >-
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master') ||
       (vars.VPS_AUTO_DEPLOY == 'true' && github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'push' && github.event.workflow_run.head_branch == 'master' &&
        github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     environment: vps-production
     timeout-minutes: 30
     env:
       RELEASE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-      VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
-      VPS_SSH_USER: ${{ secrets.VPS_SSH_USER }}
-      VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT || '22' }}
-      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
-      VPS_SSH_KNOWN_HOSTS: ${{ secrets.VPS_SSH_KNOWN_HOSTS }}
     steps:
       - name: Require successful application and infrastructure checks
         env:
@@ -45,6 +41,12 @@ jobs:
             jq -e --arg name "$name" '[.check_runs[] | select(.name == $name and .app.slug == "github-actions")] | sort_by(.id) | last | .conclusion == "success"' <<< "$checks" >/dev/null
           done
       - name: Deploy the tested commit with verified SSH host key
+        env:
+          VPS_SSH_HOST: ${{ secrets.VPS_SSH_HOST }}
+          VPS_SSH_USER: ${{ secrets.VPS_SSH_USER }}
+          VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT || '22' }}
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_SSH_KNOWN_HOSTS: ${{ secrets.VPS_SSH_KNOWN_HOSTS }}
         shell: bash
         run: |
           set -euo pipefail
@@ -60,6 +62,6 @@ jobs:
           trap 'rm -f "$key" "$hosts"' EXIT
           printf '%s\n' "$VPS_SSH_KEY" > "$key"
           printf '%s\n' "$VPS_SSH_KNOWN_HOSTS" > "$hosts"
-          ssh -i "$key" -p "$VPS_SSH_PORT" -o BatchMode=yes -o IdentitiesOnly=yes \
+          ssh -i "$key" -p "$VPS_SSH_PORT" -o BatchMode=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 \
             -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$hosts" \
-            "$VPS_SSH_USER@$VPS_SSH_HOST" "sudo -n /usr/local/sbin/words-v-deploy '$RELEASE_SHA'"
+            "$VPS_SSH_USER@$VPS_SSH_HOST" "deploy $RELEASE_SHA"
