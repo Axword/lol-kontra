@@ -85,6 +85,9 @@ def main():
             'DJANGO_ALLOWED_HOSTS': 'localhost,127.0.0.1,testserver', 'DAILY_TIMEZONE': 'Europe/Warsaw',
             'PYTHONUTF8': '1', 'PYTHONUNBUFFERED': '1'}
         run(environment, 'bootstrap_database', '--skip-today')
+        run(environment, 'shell', '-c',
+            "from apps.dailies.models import Daily; from apps.dailies.generator import validate_daily; "
+            "board=Daily.objects.get(date='2026-10-22'); assert board.author_name == 'Kaczy'; validate_daily(board)")
         run(environment, 'check_release_data', '--strict')
         fresh = psycopg2.connect(**fresh_parameters)
         try:
