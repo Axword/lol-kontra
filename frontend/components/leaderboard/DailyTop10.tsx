@@ -19,7 +19,7 @@ export default function DailyTop10({ dailyId, limit = 10 }: { dailyId?: number; 
   const rows: Entry[] = (data?.results || []).slice(0, limit)
 
   return (
-    <div className="min-w-0 border bg-white" style={{ borderColor: 'var(--line)' }}>
+    <div className="min-w-0 border bg-[var(--panel)]" style={{ borderColor: 'var(--line)' }}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 border-b px-5 py-5" style={{ borderColor: 'var(--line)' }}>
         <h2 className="text-base font-semibold">
           {dailyId

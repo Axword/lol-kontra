@@ -122,7 +122,7 @@ describe('the map and mobile roster show server answers', () => {
     for (const surface of [cards[0], mobileRows[0]]) {
       const label = within(surface).getByText(rarityLabel)
       expect(label.previousElementSibling?.textContent).toBe(percent)
-      expect(getComputedStyle(label).color).toBe('rgb(120, 80, 165)')
+      expect(getComputedStyle(label).color).toBe('var(--rarity-epic)')
     }
     expect(within(container.querySelector<HTMLElement>('.rift-marker')!).queryByText(rarityLabel)).toBeNull()
     expect(cards[0].textContent).not.toMatch(/pkt|pts|−4/)
@@ -141,12 +141,12 @@ describe('the map and mobile roster show server answers', () => {
   })
 
   it.each([
-    [0, 'legendary', 'rgb(255, 229, 140)', 'rgb(134, 89, 0)'], [1.99, 'legendary', 'rgb(255, 229, 140)', 'rgb(134, 89, 0)'],
-    [2, 'epic', 'rgb(228, 201, 245)', 'rgb(120, 80, 165)'], [4.99, 'epic', 'rgb(228, 201, 245)', 'rgb(120, 80, 165)'],
-    [5, 'rare', 'rgb(212, 230, 251)', 'rgb(36, 91, 158)'], [9.09, 'rare', 'rgb(212, 230, 251)', 'rgb(36, 91, 158)'],
-    [14.99, 'rare', 'rgb(212, 230, 251)', 'rgb(36, 91, 158)'], [15, 'uncommon', 'rgb(186, 240, 207)', 'rgb(24, 114, 64)'],
-    [24.99, 'uncommon', 'rgb(186, 240, 207)', 'rgb(24, 114, 64)'], [25, 'common', 'rgb(255, 255, 255)', 'rgb(83, 96, 86)'],
-    [100, 'common', 'rgb(255, 255, 255)', 'rgb(83, 96, 86)'],
+    [0, 'legendary', 'var(--rarity-legendary-bg)', 'var(--rarity-legendary)'], [1.99, 'legendary', 'var(--rarity-legendary-bg)', 'var(--rarity-legendary)'],
+    [2, 'epic', 'var(--rarity-epic-bg)', 'var(--rarity-epic)'], [4.99, 'epic', 'var(--rarity-epic-bg)', 'var(--rarity-epic)'],
+    [5, 'rare', 'var(--rarity-rare-bg)', 'var(--rarity-rare)'], [9.09, 'rare', 'var(--rarity-rare-bg)', 'var(--rarity-rare)'],
+    [14.99, 'rare', 'var(--rarity-rare-bg)', 'var(--rarity-rare)'], [15, 'uncommon', 'var(--rarity-uncommon-bg)', 'var(--rarity-uncommon)'],
+    [24.99, 'uncommon', 'var(--rarity-uncommon-bg)', 'var(--rarity-uncommon)'], [25, 'common', 'var(--rarity-common-bg)', 'var(--rarity-common)'],
+    [100, 'common', 'var(--rarity-common-bg)', 'var(--rarity-common)'],
   ])('uses the same rarity for %s%% while playing, reviewing and on mobile', (percent, tier, background, text) => {
     const { container } = render(<>
       <RiftBoard slots={slots} answers={{ 11: { ...solved, rarity_percent: Number(percent) } }} onPick={vi.fn()} />
@@ -181,9 +181,9 @@ describe('the map and mobile roster show server answers', () => {
     expect(surfaces.length).toBe(3)
     surfaces.forEach((surface) => {
       expect(surface.getAttribute('data-rarity')).toBe('diamond')
-      expect(getComputedStyle(surface).backgroundColor).toBe('rgb(220, 247, 255)')
+      expect(getComputedStyle(surface).backgroundColor).toBe('var(--rarity-diamond-bg)')
       if (percent !== null) {
-        expect(getComputedStyle(surface.querySelector('.rarity-indicator')!).color).toBe('rgb(18, 109, 140)')
+        expect(getComputedStyle(surface.querySelector('.rarity-indicator')!).color).toBe('var(--rarity-diamond)')
         if (!surface.matches('.rift-marker')) expect(within(surface as HTMLElement).getByText('Diamentowy').previousElementSibling?.textContent).toContain('%')
       }
     })

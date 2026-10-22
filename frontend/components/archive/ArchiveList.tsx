@@ -19,7 +19,7 @@ export default function ArchiveList() {
     return (
       <div className="grid grid-cols-3 gap-3 sm:grid-cols-5 lg:grid-cols-7" aria-hidden="true">
         {Array.from({ length: 14 }).map((_, i) => (
-          <div key={i} className="h-[132px] border bg-white" style={{ borderColor: 'var(--line)', opacity: 0.5 }} />
+          <div key={i} className="h-[132px] border bg-[var(--panel)]" style={{ borderColor: 'var(--line)', opacity: 0.5 }} />
         ))}
       </div>
     )
@@ -29,7 +29,7 @@ export default function ArchiveList() {
 
   if (items.length === 0) {
     return (
-      <p className="border bg-white px-6 py-12 text-center text-sm" style={{ borderColor: 'var(--line)', color: 'var(--text-dim)' }}>
+      <p className="border bg-[var(--panel)] px-6 py-12 text-center text-sm" style={{ borderColor: 'var(--line)', color: 'var(--text-dim)' }}>
         {locale === 'pl' ? 'Brak archiwalnych plansz.' : 'No archived boards yet.'}
       </p>
     )

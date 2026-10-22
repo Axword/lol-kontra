@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { ReactNode } from 'react'
 import Providers from './providers'
+import { themeBootstrap } from '@/lib/theme-bootstrap'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://lol-kontra.axword.pl'),
@@ -27,6 +28,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head><script dangerouslySetInnerHTML={{ __html: themeBootstrap }} /></head>
       <body className="antialiased">
         <Providers>{children}</Providers>
         <Analytics />

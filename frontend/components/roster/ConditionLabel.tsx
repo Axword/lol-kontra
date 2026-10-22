@@ -22,7 +22,7 @@ export default function ConditionLabel({condition,locale,focusable=false}:{condi
     onClick={focusable?e=>{e.stopPropagation();show(e.currentTarget)}:()=>setPosition(null)}
     onKeyDown={e=>{if(e.key==='Escape'&&position){e.stopPropagation();setPosition(null)}}}>
     {text}
-    {position&&createPortal(<span role="tooltip" id={id} className="pointer-events-none fixed z-[80] w-[280px] max-w-[calc(100vw-20px)] border bg-white px-3 py-2 text-left text-xs font-normal leading-relaxed shadow-lg"
+    {position&&createPortal(<span role="tooltip" id={id} className="pointer-events-none fixed z-[80] w-[280px] max-w-[calc(100vw-20px)] border bg-[var(--panel)] px-3 py-2 text-left text-xs font-normal leading-relaxed shadow-lg"
       style={{left:position.left,top:position.top,color:'var(--text)',borderColor:'var(--line)'}}>{tip}</span>,document.body)}
   </span>
 }

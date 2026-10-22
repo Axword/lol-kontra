@@ -38,7 +38,7 @@ export default function ProfileStatistics({ stats }: { stats: GuestProfile['stat
         ? <p className="mt-3 text-sm" style={{ color: 'var(--text-faint)' }}>{pl ? 'Brak poprawnych wyborów.' : 'No correct picks yet.'}</p>
         : <ol className="mt-4 space-y-3">
           {players.map((player) => <li key={player.id} className="flex items-center gap-3">
-            <PlayerPortrait url={player.portrait_url} fallback={<span aria-hidden="true" className="h-12 w-12 shrink-0 border bg-[#f0f4f0]" style={{ borderColor: 'var(--line)' }} />} />
+            <PlayerPortrait url={player.portrait_url} fallback={<span aria-hidden="true" className="h-12 w-12 shrink-0 border bg-[var(--panel-2)]" style={{ borderColor: 'var(--line)' }} />} />
             <span className="min-w-0 flex-1 truncate text-sm font-semibold">{player.nickname}</span>
             <span className="shrink-0 text-xs tabular" style={{ color: 'var(--text-faint)' }}>{pl ? 'Wybory' : 'Picks'}: {count(player.pick_count)}</span>
           </li>)}

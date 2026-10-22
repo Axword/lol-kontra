@@ -15,10 +15,10 @@ export default function HelpModal({ open, onClose, infinity = false }: { open: b
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <div className="absolute inset-0" style={{ background: 'rgba(24,36,28,.35)' }} onClick={() => { sound.close(); onClose() }} />
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="relative flex max-h-[calc(100dvh-32px)] w-full max-w-xl flex-col border bg-white rise" style={{ borderColor: 'var(--line)' }}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="relative flex max-h-[calc(100dvh-32px)] w-full max-w-xl flex-col border bg-[var(--panel)] rise" style={{ borderColor: 'var(--line)' }}>
         <div className="flex items-center justify-between gap-4 border-b px-6 py-5 sm:px-8" style={{ borderColor: 'var(--line)' }}>
           <h2 id={titleId} className="text-[24px] font-semibold leading-tight">{pl ? 'Zasady' : 'How to play'}</h2>
-          <button aria-label={pl ? 'Zamknij' : 'Close'} onClick={() => { sound.close(); onClose() }} className="flex h-10 w-10 shrink-0 items-center justify-center border text-[24px] leading-none transition-colors hover:bg-[#f0f4f0]" style={{ borderColor: 'var(--line)', color: 'var(--text-dim)' }}>
+          <button aria-label={pl ? 'Zamknij' : 'Close'} onClick={() => { sound.close(); onClose() }} className="flex h-10 w-10 shrink-0 items-center justify-center border text-[24px] leading-none transition-colors hover:bg-[var(--panel-2)]" style={{ borderColor: 'var(--line)', color: 'var(--text-dim)' }}>
             &times;
           </button>
         </div>

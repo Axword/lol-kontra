@@ -25,7 +25,7 @@ export default function CalendarCard({
       href={isToday ? '/' : `/daily/${id}`}
       aria-current={isToday ? 'date' : undefined}
       aria-label={`${d.toLocaleDateString(locale === 'pl' ? 'pl-PL' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} · ${status}`}
-      className={`relative flex flex-col border text-center transition-colors ${compact ? 'min-h-[80px] w-[90px] shrink-0 rounded-xl px-2 py-3' : 'min-h-[132px] px-3 py-4'} ${completed ? 'bg-[#e0e6df]' : isToday ? 'bg-[#eef5ef]' : 'bg-white hover:bg-[#eef4ef]'}`}
+      className={`relative flex flex-col border text-center transition-colors ${compact ? 'min-h-[80px] w-[90px] shrink-0 rounded-xl px-2 py-3' : 'min-h-[132px] px-3 py-4'} ${completed ? 'bg-[var(--panel-2)]' : isToday ? 'bg-[var(--panel-2)]' : 'bg-[var(--panel)] hover:bg-[var(--panel-2)]'}`}
       style={{ borderColor: isToday ? 'var(--gold)' : completed ? '#cad4c9' : 'var(--line)' }}
     >
       {completed && <Check className="absolute right-2 top-2" size={14} strokeWidth={2.5} style={{ color: 'var(--gold)' }} aria-hidden="true" />}

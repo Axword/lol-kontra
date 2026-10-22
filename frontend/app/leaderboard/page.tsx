@@ -21,7 +21,7 @@ export default function LeaderboardPage() {
   const current = data?.current_player ?? null
   const row = (entry: LeaderboardEntry, key: string, own = false) => <tr key={key} data-current-player={own || undefined}
     className={`border-b last:border-b-0 ${own ? 'border-t-2' : ''}`}
-    style={{ borderColor: own ? 'var(--gold)' : 'var(--line-soft)', background: own ? '#eef5ef' : undefined }}>
+    style={{ borderColor: own ? 'var(--gold)' : 'var(--line-soft)', background: own ? 'var(--panel-2)' : undefined }}>
     <td className="px-4 py-5 tabular" style={{ color: entry.rank != null && entry.rank <= 3 ? 'var(--gold)' : 'var(--text-dim)' }}>{entry.rank ?? '—'}</td>
     <td className="break-words px-2 py-5 font-medium"><span className={own ? 'underline underline-offset-4' : undefined}>{entry.is_guest ? guestDisplayName(entry.username, locale) : entry.username}</span>
       {own && <span className="ml-2 text-xs" style={{ color: 'var(--gold)' }}>{locale === 'pl' ? 'Ty' : 'You'}</span>}</td>
@@ -43,13 +43,13 @@ export default function LeaderboardPage() {
           </p>
           <label className="flex items-center gap-3 pt-2 text-xs" style={{ color: 'var(--text-dim)' }}>
             <span>{locale === 'pl' ? 'Graczy na stronie' : 'Players per page'}</span>
-            <select value={limit} onChange={(event) => {setLimit(Number(event.target.value) as LeaderboardLimit);setPage(1)}} className="min-h-10 border bg-white px-3 text-sm tabular" style={{ borderColor: 'var(--line)' }}>
+            <select value={limit} onChange={(event) => {setLimit(Number(event.target.value) as LeaderboardLimit);setPage(1)}} className="min-h-10 border bg-[var(--panel)] px-3 text-sm tabular" style={{ borderColor: 'var(--line)' }}>
               {([10, 25, 50, 100] as const).map((value) => <option key={value} value={value}>{value}</option>)}
             </select>
           </label>
           <div className="flex flex-wrap gap-2 pt-2" role="group" aria-label={locale === 'pl' ? 'Sortowanie rankingu' : 'Leaderboard sorting'}>
             {(['weighted', 'average'] as const).map(value => <button key={value} aria-pressed={mode === value} className="min-h-10 border px-4 text-sm"
-              style={{ borderColor: mode === value ? 'var(--gold)' : 'var(--line)', background: mode === value ? '#eef5ef' : '#fff' }}
+              style={{ borderColor: mode === value ? 'var(--gold)' : 'var(--line)', background: mode === value ? 'var(--panel-2)' : 'var(--panel)' }}
               onClick={() => {setMode(value);setPage(1)}}>{value === 'weighted' ? (locale === 'pl' ? 'Ranking ważony' : 'Weighted ranking') : (locale === 'pl' ? 'Według średniej' : 'By average')}</button>)}
           </div>
           <details className="text-xs" style={{ color: 'var(--text-dim)' }}><summary className="cursor-pointer">{locale === 'pl' ? 'Jak liczymy wynik ważony?' : 'How is the weighted score calculated?'}</summary>
@@ -57,7 +57,7 @@ export default function LeaderboardPage() {
           </details>
         </header>
 
-        <div className="border bg-white" style={{ borderColor: 'var(--line)' }}>
+        <div className="border bg-[var(--panel)]" style={{ borderColor: 'var(--line)' }}>
           {!token || isLoading ? (
             <p role="status" className="px-6 py-12 text-center text-sm" style={{ color: 'var(--text-dim)' }}>
               {locale === 'pl' ? 'Wczytywanie…' : 'Loading…'}
@@ -95,7 +95,7 @@ export default function LeaderboardPage() {
           <div className="flex gap-2"><button className="min-h-10 border px-3 disabled:opacity-40" disabled={currentPage <= 1} onClick={() => setPage(1)}>{locale === 'pl' ? 'Pierwsza' : 'First'}</button>
             <button className="min-h-10 border px-3 disabled:opacity-40" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}>{locale === 'pl' ? 'Poprzednia' : 'Previous'}</button></div>
           <label className="flex items-center gap-2">{locale === 'pl' ? 'Strona' : 'Page'}<input aria-label={locale === 'pl' ? 'Numer strony' : 'Page number'} type="number" min={1} max={totalPages} value={currentPage}
-            className="w-16 border bg-white px-2 py-2" onChange={event => {const value = Number(event.target.value);if(Number.isInteger(value) && value >= 1 && value <= totalPages) setPage(value)}} /> / {totalPages}</label>
+            className="w-16 border bg-[var(--panel)] px-2 py-2" onChange={event => {const value = Number(event.target.value);if(Number.isInteger(value) && value >= 1 && value <= totalPages) setPage(value)}} /> / {totalPages}</label>
           <div className="flex gap-2"><button className="min-h-10 border px-3 disabled:opacity-40" disabled={currentPage >= totalPages} onClick={() => setPage(currentPage + 1)}>{locale === 'pl' ? 'Następna' : 'Next'}</button>
             <button className="min-h-10 border px-3 disabled:opacity-40" disabled={currentPage >= totalPages} onClick={() => setPage(totalPages)}>{locale === 'pl' ? 'Ostatnia' : 'Last'}</button></div>
         </nav>}

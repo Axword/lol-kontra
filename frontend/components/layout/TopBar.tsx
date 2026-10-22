@@ -6,6 +6,7 @@ import { BookOpen, ChevronRight, Menu, Volume2, VolumeX } from 'lucide-react'
 import { usePrefs } from '@/lib/store'
 import { isSoundEnabled, sound, toggleSound } from '@/lib/sound'
 import GuestIdentity from './GuestIdentity'
+import ThemeToggle from './ThemeToggle'
 
 type Props = {
   onMenu: () => void
@@ -30,7 +31,7 @@ export default function TopBar({ onMenu, onHelp }: Props) {
     : null
 
   return (
-    <header className="sticky top-0 z-30 border-b" style={{ background: '#fff', borderColor: 'var(--line)' }}>
+    <header className="sticky top-0 z-30 border-b" style={{ background: 'var(--panel)', borderColor: 'var(--line)' }}>
       <div className="max-w-[1180px] mx-auto min-h-14 px-3 py-2 sm:h-14 sm:px-6 sm:py-0 flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-4">
         <button
           type="button"
@@ -54,6 +55,7 @@ export default function TopBar({ onMenu, onHelp }: Props) {
 
         <div className="ml-auto min-w-0 max-[420px]:w-full flex items-center justify-end gap-1 sm:gap-2">
           <GuestIdentity />
+          <ThemeToggle />
           <div className="shrink-0 flex items-center border" style={{ borderColor: 'var(--line)' }}>
             {(['pl', 'en'] as const).map((language) => (
               <button
@@ -63,8 +65,8 @@ export default function TopBar({ onMenu, onHelp }: Props) {
                 onClick={() => { setLocale(language); sound.click() }}
                 className="h-8 px-2.5 text-[11px] font-semibold uppercase transition-colors"
                 style={{
-                  background: locale === language ? 'var(--gold)' : '#fff',
-                  color: locale === language ? '#fff' : 'var(--text-dim)',
+                  background: locale === language ? 'var(--gold)' : 'var(--panel)',
+                  color: locale === language ? 'var(--on-accent)' : 'var(--text-dim)',
                 }}
               >
                 {language}

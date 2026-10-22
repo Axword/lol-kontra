@@ -18,12 +18,12 @@ function IdentityDialog({ title, onClose, returnFocusRef, children, wide = false
   return <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
     <div className="absolute inset-0" style={{ background: 'rgba(24,36,28,.35)' }} onClick={onClose} />
     <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}
-      className={`relative flex max-h-[calc(100dvh-32px)] w-full flex-col border bg-white ${wide ? 'max-w-xl' : 'max-w-sm'}`}
+      className={`relative flex max-h-[calc(100dvh-32px)] w-full flex-col border bg-[var(--panel)] ${wide ? 'max-w-xl' : 'max-w-sm'}`}
       style={{ borderColor: 'var(--line)' }}>
       <div className="flex items-center justify-between gap-4 border-b px-5 py-4" style={{ borderColor: 'var(--line)' }}>
         <h2 id={titleId} className="text-xl font-semibold">{title}</h2>
         <button type="button" onClick={onClose} aria-label={pl ? 'Zamknij' : 'Close'}
-          className="flex h-9 w-9 shrink-0 items-center justify-center border hover:bg-[#f0f4f0]" style={{ borderColor: 'var(--line)' }}>
+          className="flex h-9 w-9 shrink-0 items-center justify-center border hover:bg-[var(--panel-2)]" style={{ borderColor: 'var(--line)' }}>
           <X size={18} aria-hidden="true" />
         </button>
       </div>
@@ -60,7 +60,7 @@ function NicknameDialog({ guestToken, profile, onClose, returnFocusRef }: {
       <div className="flex justify-end gap-2">
         <button type="button" onClick={onClose} className="min-h-10 border px-4 text-sm" style={{ borderColor: 'var(--line)' }}>{pl ? 'Anuluj' : 'Cancel'}</button>
         <button type="submit" disabled={!guestToken || update.isPending} className="min-h-10 border px-4 text-sm font-semibold disabled:opacity-50"
-          style={{ borderColor: 'var(--gold)', background: 'var(--gold)', color: '#fff' }}>
+          style={{ borderColor: 'var(--gold)', background: 'var(--gold)', color: 'var(--panel)' }}>
           {update.isPending ? (pl ? 'Zapisywanie…' : 'Saving…') : (pl ? 'Zapisz' : 'Save')}
         </button>
       </div>
@@ -99,7 +99,7 @@ export function TeamDialog({ guestToken, team, onClose, returnFocusRef }: {
       {teams.data && <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {teams.data.teams.map((option) => <button key={option.id} type="button" disabled={update.isPending || !guestToken}
           aria-pressed={team?.id === option.id} onClick={() => selectTeam(option.id)}
-          className="flex min-h-[68px] items-center gap-3 border p-3 text-left hover:bg-[#f0f4f0] disabled:opacity-50"
+          className="flex min-h-[68px] items-center gap-3 border p-3 text-left hover:bg-[var(--panel-2)] disabled:opacity-50"
           style={{ borderColor: team?.id === option.id ? 'var(--gold)' : 'var(--line)' }}>
           <TeamLogo team={option} />
           <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{option.name}</span>
@@ -138,7 +138,7 @@ export default function GuestIdentity() {
     <button type="button" ref={teamButton} disabled={!guestToken} onClick={() => setEditor('team')}
       aria-label={team ? `${pl ? 'Kibicuję' : 'I support'}: ${team.name}` : (pl ? 'Wybierz drużynę' : 'Choose a team')}
       title={team?.name || (pl ? 'Wybierz drużynę' : 'Choose a team')}
-      className="flex h-9 w-8 shrink-0 items-center justify-center hover:bg-[#f0f4f0]" style={{ color: 'var(--text-dim)' }}>
+      className="flex h-9 w-8 shrink-0 items-center justify-center hover:bg-[var(--panel-2)]" style={{ color: 'var(--text-dim)' }}>
       {team ? <TeamLogo key={team.id} team={team} small /> : <Shield size={18} strokeWidth={1.7} aria-hidden="true" />}
     </button>
     {editor === 'nickname' && <NicknameDialog guestToken={guestToken} profile={profile.data}

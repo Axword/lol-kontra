@@ -20,10 +20,52 @@
   --rarity-common: #536056;
   --rarity-uncommon: #187240;
   --rarity-rare: #245b9e;
-  --rarity-epic: #7850a5;
+  --rarity-epic: #704694;
   --rarity-legendary: #865900;
   --rarity-diamond: #126d8c;
   --rarity-diamond-border: #35a9cc;
+  --on-accent: #ffffff;
+  --rarity-common-bg: #ffffff;
+  --rarity-common-border: #9aa79d;
+  --rarity-uncommon-bg: #baf0cf;
+  --rarity-uncommon-border: #35a463;
+  --rarity-rare-bg: #d4e6fb;
+  --rarity-rare-border: #5792d6;
+  --rarity-epic-bg: #e4c9f5;
+  --rarity-epic-border: #a274d0;
+  --rarity-legendary-bg: #ffe58c;
+  --rarity-legendary-border: #d2a12d;
+  --rarity-diamond-bg: #dcf7ff;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111713;
+  --panel: #18201b;
+  --panel-2: #242e27;
+  --line: #3a483e;
+  --line-soft: #2c382f;
+  --text: #e7eee8;
+  --text-dim: #b8c6bb;
+  --text-faint: #a0b2a4;
+  --gold: #83d8ab;
+  --gold-dim: #93e4bc;
+  --gold-lite: #b8efd0;
+  --on-accent: #102619;
+  --ok: #83d8ab;
+  --bad: #ffaaa2;
+  --rarity-common: #c4d0c7;
+  --rarity-uncommon: #87e5aa;
+  --rarity-rare: #a2c8ff;
+  --rarity-epic: #e2b6ff;
+  --rarity-legendary: #ffe197;
+  --rarity-diamond: #9de5ff;
+  --rarity-common-bg: #202a24;
+  --rarity-uncommon-bg: #163c2a;
+  --rarity-rare-bg: #1c3554;
+  --rarity-epic-bg: #3c254d;
+  --rarity-legendary-bg: #493917;
+  --rarity-diamond-bg: #123c4c;
+  --rarity-diamond-border: #65cce9;
 }
 html, body {
   background: var(--bg);
@@ -50,11 +92,11 @@ button:disabled { cursor: default; }
 }
 .btn:hover:not(:disabled) { background: var(--panel-2); border-color: #aab9aa; }
 .btn:disabled { opacity: .45; cursor: not-allowed; }
-.btn-gold { background: var(--gold); border-color: var(--gold); color: #fff; }
-.btn-gold:hover:not(:disabled) { background: #174c34; border-color: #174c34; }
+.btn-gold { background: var(--gold); border-color: var(--gold); color: var(--on-accent); }
+.btn-gold:hover:not(:disabled) { background: var(--gold-lite); border-color: var(--gold-lite); }
 .tag { display: inline-block; padding: 3px 8px; font-size: 11px; line-height: 1.5; border: 1px solid var(--line); color: var(--text-dim); background: var(--bg); }
-.tag-gold { background: #e9f2eb; border-color: #b9d2c0; color: var(--gold); }
-.field { width: 100%; min-height: 48px; padding: 12px 14px; background: #fff; border: 1px solid #b9c5b9; color: var(--text); font-size: 16px; }
+.tag-gold { background: var(--panel-2); border-color: var(--line); color: var(--gold); }
+.field { width: 100%; min-height: 48px; padding: 12px 14px; background: var(--panel); border: 1px solid var(--line); color: var(--text); font-size: 16px; }
 .field:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
 .field::placeholder { color: var(--text-faint); }
 .country-code { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 30px; padding: 2px 5px; font-size: 10px; font-weight: 700; border: 1px solid var(--line); color: var(--text-dim); background: var(--bg); }
@@ -65,12 +107,12 @@ button:disabled { cursor: default; }
 .rarity-legendary { color: var(--rarity-legendary); }
 .rarity-diamond { color: var(--rarity-diamond); }
 .rarity-indicator { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
-.rarity-surface[data-rarity="common"] { --rarity-bg: #ffffff; --rarity-border: #9aa79d; }
-.rarity-surface[data-rarity="uncommon"] { --rarity-bg: #baf0cf; --rarity-border: #35a463; }
-.rarity-surface[data-rarity="rare"] { --rarity-bg: #d4e6fb; --rarity-border: #5792d6; }
-.rarity-surface[data-rarity="epic"] { --rarity-bg: #e4c9f5; --rarity-border: #a274d0; }
-.rarity-surface[data-rarity="legendary"] { --rarity-bg: #ffe58c; --rarity-border: #d2a12d; }
-.rarity-surface[data-rarity="diamond"] { --rarity-bg: #dcf7ff; --rarity-border: #35a9cc; }
+.rarity-surface[data-rarity="common"] { --rarity-bg: var(--rarity-common-bg); --rarity-border: var(--rarity-common-border); }
+.rarity-surface[data-rarity="uncommon"] { --rarity-bg: var(--rarity-uncommon-bg); --rarity-border: var(--rarity-uncommon-border); }
+.rarity-surface[data-rarity="rare"] { --rarity-bg: var(--rarity-rare-bg); --rarity-border: var(--rarity-rare-border); }
+.rarity-surface[data-rarity="epic"] { --rarity-bg: var(--rarity-epic-bg); --rarity-border: var(--rarity-epic-border); }
+.rarity-surface[data-rarity="legendary"] { --rarity-bg: var(--rarity-legendary-bg); --rarity-border: var(--rarity-legendary-border); }
+.rarity-surface[data-rarity="diamond"] { --rarity-bg: var(--rarity-diamond-bg); --rarity-border: var(--rarity-diamond-border); }
 
 /* Conditions sit on the field. Mobile keeps them in a readable list. */
 .rift-surface { position: relative; isolation: isolate; width: 100%; max-width: 1000px; margin-inline: auto; aspect-ratio: 1.5; overflow: hidden; background: #142f29; border: 1px solid #234b3c; }
@@ -80,7 +122,7 @@ button:disabled { cursor: default; }
 .rift-card { width: 100%; min-height: 126px; padding: 14px; text-align: left; color: #fff; background: #12362df5; border: 1px solid #b8d5b46e; box-shadow: 0 4px 14px #071b1738; transition: background .15s, border-color .15s, transform .15s; }
 .rift-card:hover:not(:disabled), .rift-card:focus-visible { background: #1a4a38; border-color: #d6e7b9; transform: translateY(-2px); }
 .rift-card:focus-visible { outline-color: #e1edc9; }
-.rift-card[data-state="solved"] { background: #f8faf5f5; color: var(--text); border-color: #fff; }
+.rift-card[data-state="solved"] { background: var(--panel); color: var(--text); border-color: var(--line); }
 .rift-card[data-state="wrong"] { border-color: #ec9c8d; }
 .rift-card:disabled[data-state="empty"] { opacity: .65; }
 .rift-card-head { display: flex; align-items: center; gap: 10px; }
@@ -100,8 +142,8 @@ button:disabled { cursor: default; }
 .picker-backdrop { background: #13231bc2; backdrop-filter: blur(3px); }
 .picker-panel { box-shadow: 0 24px 80px #0e291d38; }
 .picker-panel .field { padding-left: 44px; }
-.picker-option:hover { background: #edf4ed; }
-.picker-option[data-active="true"] { background: #edf4ed; border-color: var(--gold); }
+.picker-option:hover { background: var(--panel-2); }
+.picker-option[data-active="true"] { background: var(--panel-2); border-color: var(--gold); }
 @media (max-width: 767px) {
   .rift-surface { aspect-ratio: 1.12; }
   .rift-surface::after { inset: 8px; }
@@ -110,7 +152,7 @@ button:disabled { cursor: default; }
   .rift-card { display: none; }
   .rift-marker { display: flex; width: 70px; min-height: 56px; padding: 4px; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: #12362df2; color: #fff; border: 1px solid #bbd6b6; font-size: 11px; line-height: 1.2; font-weight: 700; overflow-wrap: anywhere; }
   .rift-marker img { width: 23px; height: 23px; filter: brightness(0) invert(1); }
-  .rift-marker[data-state="solved"] { background: #f8faf5; color: var(--text); }
+  .rift-marker[data-state="solved"] { background: var(--panel); color: var(--text); }
   .rift-marker[data-state="solved"] img { filter: brightness(.3); }
   .rift-marker img.rift-player-portrait { filter: none; }
   .rift-marker[data-state="wrong"] { border-color: #ec9c8d; }
@@ -130,6 +172,8 @@ button:disabled { cursor: default; }
 .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
 .scroll-thin::-webkit-scrollbar-track { background: transparent; }
 .scroll-thin::-webkit-scrollbar-thumb { background: #c4cec3; }
+:root[data-theme="dark"] .rift-card[data-state="solved"] .rift-role-icon img,
+:root[data-theme="dark"] .rift-marker[data-state="solved"] img:not(.rift-player-portrait) { filter: brightness(0) invert(1); }
 /* The challenge calendar supports mouse dragging and native touch/keyboard scrolling. */
 .challenge-rail { scrollbar-width: none; -ms-overflow-style: none; overscroll-behavior-x: contain; }
 .challenge-rail::-webkit-scrollbar { display: none; }

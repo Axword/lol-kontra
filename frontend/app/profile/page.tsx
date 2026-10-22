@@ -37,7 +37,7 @@ export default function ProfilePage() {
           <h1 className="text-[28px] font-semibold leading-tight sm:text-[32px]">{pl ? 'Profil' : 'Profile'}</h1>
         </header>
 
-        <div className="max-w-2xl space-y-6 border bg-white p-6 sm:p-8" style={{ borderColor: 'var(--line)' }}>
+        <div className="max-w-2xl space-y-6 border bg-[var(--panel)] p-6 sm:p-8" style={{ borderColor: 'var(--line)' }}>
           <form onSubmit={save} className="space-y-3">
             <label htmlFor="guest-nickname" className="block text-sm font-semibold">{pl ? 'Nick' : 'Nickname'}</label>
             <div className="flex flex-wrap items-start gap-2">
@@ -46,7 +46,7 @@ export default function ProfilePage() {
                 onChange={(event) => { setDraft(event.target.value); if (!update.isPending) update.reset() }} />
               <button type="submit" disabled={!guestToken || update.isPending}
                 className="min-h-11 border px-5 text-sm font-semibold disabled:opacity-50"
-                style={{ borderColor: 'var(--gold)', background: 'var(--gold)', color: '#fff' }}>
+                style={{ borderColor: 'var(--gold)', background: 'var(--gold)', color: 'var(--panel)' }}>
                 {update.isPending ? (pl ? 'Zapisywanie…' : 'Saving…') : (pl ? 'Zapisz' : 'Save')}
               </button>
             </div>

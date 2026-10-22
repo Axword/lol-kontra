@@ -64,14 +64,14 @@ export default function InfinityPage() {
     {!token || query.isLoading ? <p role="status">{pl ? 'Wczytywanie…' : 'Loading…'}</p>
       : query.isError ? <LoadError onRetry={() => {void query.refetch()}} />
       : <>
-        {run && <dl className="flex flex-wrap justify-between gap-4 border bg-white px-4 py-3" style={{borderColor:'var(--line)'}}>
+        {run && <dl className="flex flex-wrap justify-between gap-4 border bg-[var(--panel)] px-4 py-3" style={{borderColor:'var(--line)'}}>
           <div><dt className="text-xs" style={{color:'var(--text-faint)'}}>{pl ? 'Trafienia' : 'Correct guesses'}</dt><dd className="mt-1 text-2xl font-semibold tabular" style={{color:'var(--gold)'}}>{run.correct_count}</dd></div>
           <div><dt className="text-xs" style={{color:'var(--text-faint)'}}>{pl ? 'Rekord' : 'Personal best'}</dt><dd className="mt-1 text-2xl font-semibold tabular">{query.data?.personal_best ?? 0}</dd></div>
           <div><dt className="text-xs" style={{color:'var(--text-faint)'}}>{pl ? 'Życia' : 'Lives'}</dt><dd className="mt-1 text-2xl font-semibold tabular" style={{color:run.is_over?'var(--bad)':undefined}}>{run.errors_left} / {run.max_errors}</dd></div>
         </dl>}
         {run?.is_over&&<InfinitySummary key={run.id} run={run} pending={start.isPending} error={start.isError}
           onRestart={()=>{setFeedback(null);start.mutate()}} />}
-        {!run && <div className="space-y-4 border bg-white p-6" style={{borderColor:'var(--line)'}}>
+        {!run && <div className="space-y-4 border bg-[var(--panel)] p-6" style={{borderColor:'var(--line)'}}>
           <button disabled={start.isPending} onClick={() => {setFeedback(null);start.mutate()}} className="btn btn-gold disabled:opacity-50">
             {start.isPending ? (pl?'Losowanie…':'Drawing…') : run ? (pl?'Zagraj ponownie':'Play again') : (pl?'Graj w Infinity':'Play Infinity')}</button>
           {start.isError && <p role="alert" className="text-sm" style={{color:'var(--bad)'}}>{pl?'Nie udało się rozpocząć serii. Spróbuj ponownie.':'Could not start a run. Try again.'}</p>}

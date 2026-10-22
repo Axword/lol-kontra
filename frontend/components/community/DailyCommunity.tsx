@@ -35,7 +35,7 @@ export default function DailyCommunity({ dailyId, state }: { dailyId: number; st
     post.mutate(comment, { onSuccess: () => setComment('') })
   }
   return <section aria-label={pl ? 'Społeczność planszy' : 'Board community'} className="grid items-start gap-6 pt-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-    <div className="min-w-0 border bg-white" style={{ borderColor: 'var(--line)' }}>
+    <div className="min-w-0 border bg-[var(--panel)]" style={{ borderColor: 'var(--line)' }}>
       <div className="border-b px-5 py-5" style={{ borderColor: 'var(--line)' }}>
         <h2 className="text-base font-semibold">{pl ? 'Komentarze' : 'Comments'}{data ? ` (${data.comments.length})` : ''}</h2>
       </div>
@@ -85,7 +85,7 @@ export default function DailyCommunity({ dailyId, state }: { dailyId: number; st
       </ol>}
     </div>
     <aside className="min-w-0 space-y-5">
-      <div className="flex items-start gap-3 border bg-white p-5" style={{ borderColor: 'var(--line)' }}>
+      <div className="flex items-start gap-3 border bg-[var(--panel)] p-5" style={{ borderColor: 'var(--line)' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={author.avatar_url || '/authors/axword.png'} alt="" width={40} height={40} className="h-10 w-10 shrink-0 object-cover" />
         <div className="min-w-0 space-y-1">
@@ -93,7 +93,7 @@ export default function DailyCommunity({ dailyId, state }: { dailyId: number; st
           <p className="text-xs leading-relaxed" style={{ color: 'var(--text-faint)' }}>{!pl && ['Autor wyzwania', 'Autor'].includes(author.description) ? 'Challenge author' : author.description}</p>
         </div>
       </div>
-      <div className="border bg-white" style={{ borderColor: 'var(--line)' }}>
+      <div className="border bg-[var(--panel)]" style={{ borderColor: 'var(--line)' }}>
         <div className="space-y-3 border-b p-5" style={{ borderColor: 'var(--line)' }}>
           <h2 className="text-base font-semibold">{pl ? 'Ranking planszy' : 'Board ranking'}</h2>
           <div role="tablist" aria-label={pl ? 'Rodzaj rankingu' : 'Ranking type'} className="flex border" style={{ borderColor: 'var(--line)' }}>
@@ -106,7 +106,7 @@ export default function DailyCommunity({ dailyId, state }: { dailyId: number; st
                 setRanking(next)
                 document.getElementById(`ranking-${dailyId}-${next}`)?.focus()
               }} className="min-h-9 flex-1 px-2 text-xs font-semibold"
-              style={{ color: ranking === value ? '#fff' : 'var(--text-dim)', background: ranking === value ? 'var(--gold)' : '#fff' }}>
+              style={{ color: ranking === value ? 'var(--on-accent)' : 'var(--text-dim)', background: ranking === value ? 'var(--gold)' : 'var(--panel)' }}>
               {value === 'players' ? (pl ? 'Gracze' : 'Players') : (pl ? 'Drużyny' : 'Teams')}
             </button>)}
           </div>

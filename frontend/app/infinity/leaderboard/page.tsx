@@ -32,8 +32,8 @@ function InfinityLeaderboardContent() {
     </nav>
     {query.isLoading ? <p role="status">{pl?'Wczytywanie…':'Loading…'}</p>
       : query.isError ? <LoadError onRetry={()=>{void query.refetch()}} />
-      : !data?.results.length ? <p className="border bg-white p-6" style={{borderColor:'var(--line)'}}>{pl?'Brak wyników.':'No results yet.'}</p>
-      : <div className="overflow-x-auto border bg-white" style={{borderColor:'var(--line)'}}><table className="w-full text-sm">
+      : !data?.results.length ? <p className="border bg-[var(--panel)] p-6" style={{borderColor:'var(--line)'}}>{pl?'Brak wyników.':'No results yet.'}</p>
+      : <div className="overflow-x-auto border bg-[var(--panel)]" style={{borderColor:'var(--line)'}}><table className="w-full text-sm">
         <thead><tr className="border-b" style={{borderColor:'var(--line)'}}><th className="px-4 py-4 text-left">#</th><th className="px-4 py-4 text-left">{pl?'Gracz':'Player'}</th><th className="px-4 py-4 text-right">{pl?'Trafienia':'Correct guesses'}</th></tr></thead>
         <tbody>{data.results.map(row=><tr key={row.rank} className="border-b last:border-b-0" style={{borderColor:'var(--line-soft)'}}>
           <td className="px-4 py-4 tabular">{row.rank}</td><td className="break-words px-4 py-4">{guestDisplayName(row.nickname,locale)}</td>

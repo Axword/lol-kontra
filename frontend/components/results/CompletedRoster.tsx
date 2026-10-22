@@ -59,7 +59,7 @@ export default function CompletedRoster({ daily, state }: { daily: Daily; state:
     <SlotList slots={daily.slots} answers={mode === 'all' ? {} : answers} onPick={open} inspect candidateCounts={candidateCounts} />
     <div className="flex justify-center">
       <select aria-label={pl ? 'Wyświetlany skład' : 'Displayed roster'} value={mode} onChange={(event) => setMode(event.target.value as Mode)}
-        className="border bg-white px-4 py-2 text-sm" style={{ borderColor: 'var(--line)' }}>
+        className="border bg-[var(--panel)] px-4 py-2 text-sm" style={{ borderColor: 'var(--line)' }}>
         <option value="mine">{pl ? 'Mój skład' : 'My roster'}</option>
         <option value="rare" disabled={!data.data}>{pl ? 'Najrzadszy skład' : 'Rarest roster'}</option>
         <option value="popular" disabled={!data.data}>{pl ? 'Najpopularniejszy skład' : 'Most popular roster'}</option>

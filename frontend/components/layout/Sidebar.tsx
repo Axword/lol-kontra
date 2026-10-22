@@ -44,7 +44,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
         tabIndex={-1}
         className={'fixed lg:sticky top-0 left-0 h-[100dvh] z-50 w-[220px] max-w-[90vw] shrink-0 flex flex-col overflow-y-auto border-r transition-transform duration-200 ' +
           (open ? 'translate-x-0 visible' : '-translate-x-full invisible lg:visible lg:translate-x-0')}
-        style={{ background: '#fff', borderColor: 'var(--line)' }}
+        style={{ background: 'var(--panel)', borderColor: 'var(--line)' }}
       >
         <div className="h-14 shrink-0 px-4 flex items-center border-b gap-1" style={{ borderColor: 'var(--line)' }}>
           <Link href="/" onClick={onClose} className="font-bold text-[18px] whitespace-nowrap tracking-[-.055em]" style={{ color: 'var(--text)' }}>WORLDS KONTRA</Link>
@@ -74,7 +74,7 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
                 className="min-h-11 px-3 flex items-center gap-3 border text-[13px] transition-colors"
                 style={{
                   borderColor: active ? 'var(--line)' : 'transparent',
-                  background: active ? '#f0f5f1' : 'transparent',
+                  background: active ? 'var(--panel-2)' : 'transparent',
                   color: active ? 'var(--gold)' : 'var(--text-dim)',
                   fontWeight: active ? 600 : 400,
                 }}

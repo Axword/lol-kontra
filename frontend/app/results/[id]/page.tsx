@@ -80,7 +80,7 @@ export default function ResultsPage() {
         </header>
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
-        <section className="min-w-0 border bg-white" style={{ borderColor: 'var(--line)' }}>
+        <section className="min-w-0 border bg-[var(--panel)]" style={{ borderColor: 'var(--line)' }}>
         <div className="flex flex-wrap gap-1 border-b p-3" style={{ borderColor: 'var(--line)' }}>
           {ROLE_ORDER.map((r) => (
             <button
@@ -90,7 +90,7 @@ export default function ResultsPage() {
               className="min-h-10 flex-1 border px-2 py-2 text-[13px] transition-colors"
               style={
                 role === r
-                  ? { borderColor: 'var(--gold)', color: 'var(--gold)', background: '#eef5ef', fontWeight: 600 }
+                  ? { borderColor: 'var(--gold)', color: 'var(--gold)', background: 'var(--panel-2)', fontWeight: 600 }
                   : { borderColor: 'transparent', color: 'var(--text-dim)' }
               }
             >

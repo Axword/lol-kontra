@@ -53,7 +53,7 @@ export default function GameLayout({
               </div>
               <dl
                 className="grid grid-cols-3 sm:flex sm:items-center sm:justify-between gap-3 border px-3 sm:px-4 py-3"
-                style={{ background: '#fff', borderColor: 'var(--line)' }}
+                style={{ background: 'var(--panel)', borderColor: 'var(--line)' }}
               >
                 <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-2">
                   <dt className="text-[11px] sm:text-[12px]" style={{ color: 'var(--text-faint)' }}>{locale === 'pl' ? 'Wynik' : 'Score'}</dt>

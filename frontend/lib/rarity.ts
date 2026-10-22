@@ -1,12 +1,12 @@
 import type { RarityTier } from './api'
 
 export const rarityPalette = {
-  common: { background: '#ffffff', text: '#536056', border: '#9aa79d' },
-  uncommon: { background: '#baf0cf', text: '#187240', border: '#35a463' },
-  rare: { background: '#d4e6fb', text: '#245b9e', border: '#5792d6' },
-  epic: { background: '#e4c9f5', text: '#7850a5', border: '#a274d0' },
-  legendary: { background: '#ffe58c', text: '#865900', border: '#d2a12d' },
-  diamond: { background: '#dcf7ff', text: '#126d8c', border: '#35a9cc' },
+  common: { background: 'var(--rarity-common-bg)', text: 'var(--rarity-common)', border: 'var(--rarity-common-border)' },
+  uncommon: { background: 'var(--rarity-uncommon-bg)', text: 'var(--rarity-uncommon)', border: 'var(--rarity-uncommon-border)' },
+  rare: { background: 'var(--rarity-rare-bg)', text: 'var(--rarity-rare)', border: 'var(--rarity-rare-border)' },
+  epic: { background: 'var(--rarity-epic-bg)', text: 'var(--rarity-epic)', border: 'var(--rarity-epic-border)' },
+  legendary: { background: 'var(--rarity-legendary-bg)', text: 'var(--rarity-legendary)', border: 'var(--rarity-legendary-border)' },
+  diamond: { background: 'var(--rarity-diamond-bg)', text: 'var(--rarity-diamond)', border: 'var(--rarity-diamond-border)' },
 } as const satisfies Record<RarityTier | 'diamond', { background: string; text: string; border: string }>
 
 export function rarityForPercent(percent: number | null | undefined): RarityTier | null {
