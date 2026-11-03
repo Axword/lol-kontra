@@ -64,7 +64,7 @@ class HistoricalPlayoffRevisionTests(TestCase):
         tomorrow_old = Daily.objects.get(date='2026-11-04', is_current=True)
         game = Submission.objects.create(daily=old, guest_token='historical-playoff-progress', total_points=42)
         answer = SubmissionAnswer.objects.create(
-            submission=game, daily_slot=old.slots.get(role='mid'), player=Player.objects.get(slug='knight'),
+            submission=game, daily_slot=old.slots.get(role='mid'), player=Player.objects.get(slug='knight-zhuo-ding'),
             is_correct=True, rarity_percent=0, points_awarded=0, is_diamond_pick=True,
         )
         before = list(DailySlotCondition.objects.filter(slot__daily=old).values())
