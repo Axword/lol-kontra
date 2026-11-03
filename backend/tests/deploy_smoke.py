@@ -92,7 +92,7 @@ def main():
         fresh = psycopg2.connect(**fresh_parameters)
         try:
             with fresh.cursor() as cursor:
-                expected = {'players_player': 882, 'dailies_daily': 36, 'dailies_dailyslot': 180,
+                expected = {'players_player': 882, 'dailies_daily': 37, 'dailies_dailyslot': 185,
                     'submissions_submission': 0,
                     'submissions_submissionanswer': 0, 'submissions_submissionattempt': 0,
                     'scoring_answerstatsdaily': 0}

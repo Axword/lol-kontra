@@ -17,12 +17,21 @@ class PublishRequirementsTests(TestCase):
 
     def board(self, count=10, author='', minimum=10):
         daily = Daily.objects.create(date=timezone.localdate() + timedelta(days=1), author_name=author, minimum_candidates=minimum)
+        requirements = [
+            ('worlds_final', 'eq', True),
+            ('worlds_final_lost', 'eq', True),
+            ('worlds_titles_min', 'gte', 1),
+            ('country', 'eq', 'KR'),
+            ('worlds_title_on_debut', 'eq', True),
+        ]
         for position, role in enumerate(ROLE_ORDER, 1):
             slot = DailySlot.objects.create(daily=daily, position=position, role=role)
-            DailySlotCondition.objects.create(slot=slot, condition_type='worlds_final', operator='eq', value=True)
+            kind, operator, value = requirements[position - 1]
+            DailySlotCondition.objects.create(slot=slot, condition_type=kind, operator=operator, value=value)
             for index in range(count):
                 Player.objects.create(slug=f'{role}-{index}', nickname=f'{role}-{index}', primary_role=role,
-                                      attributes={'worlds_finals': [2020]})
+                    country_code='KR', attributes={'worlds_finals': [2020], 'worlds_appearances': [2020],
+                        'worlds_titles': [] if role == 'jungle' else [2020]})
         return daily
 
     def test_publish_and_direct_status_update_enforce_ten_combined_answers(self):

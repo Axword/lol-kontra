@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "release": "worlds-opponent-board-2026-11-04-v1",
+  "date": "2026-11-04",
+  "teams": [
+    "geng",
+    "lyon"
+  ],
+  "author_name": "Axword",
+  "author_url": "https://x.com/AxwordLol",
+  "author_description": "Ćwierćfinał Worlds 2026: Gen.G – LYON",
+  "source_snapshot_sha256": "820f8fd0b56fe03ec60fdbe8a007babafe276ba88a54ab8cd6118e00b36f6221",
+  "opponents_through_year": 2025,
+  "opponents_as_of": "2026-10-19T07:18:52+00:00",
+  "slots": [
+    {
+      "role": "top",
+      "conditions": [
+        {
+          "condition_type": "birth_country",
+          "operator": "eq",
+          "value": "KR",
+          "label_pl": "Urodzony w Korei Południowej",
+          "label_en": "Born in South Korea"
+        },
+        {
+          "condition_type": "worlds_group_escape",
+          "operator": "eq",
+          "value": true,
+          "label_pl": "Zagrał w fazie pucharowej głównego turnieju Worlds",
+          "label_en": "Played in the Worlds main-event knockout stage"
+        }
+      ],
+      "audited_candidates": [
+        "acorn",
+        "burdol",
+        "canna",
+        "cuvee",
+        "dandy",
+        "doran-choi-hyeon-jun",
+        "duke-lee-ho-seong",
+        "gimgoon",
+        "huni",
+        "impact",
+        "insec",
+        "khan",
+        "kiin",
+        "kingen",
+        "looper",
+        "maknoon",
+        "marin",
+        "morgan",
+        "nuguri",
+        "perfect-lee-seung-min",
+        "rascal",
+        "ray",
+        "save",
+        "score",
+        "shy",
+        "smeb",
+        "ssumday",
+        "sw0rd",
+        "theshy",
+        "woong-jang-gun-woong",
+        "zeus"
+      ],
+      "label_pl": "Top",
+      "label_en": "Top"
+    },
+    {
+      "role": "jungle",
+      "conditions": [
+        {
+          "condition_type": "league",
+          "operator": "eq",
+          "value": "LCS",
+          "label_pl": "Grał w LCS / NA LCS",
+          "label_en": "Played in LCS / NA LCS"
+        },
+        {
+          "condition_type": "worlds_count_min",
+          "operator": "gte",
+          "value": 2,
+          "label_pl": "Zagrał w co najmniej 2 edycjach Worlds",
+          "label_en": "Played at least 2 editions of Worlds"
+        }
+      ],
+      "audited_candidates": [
+        "amazing-maurice-stuckenschneider",
+        "bigfatlp",
+        "blaber",
+        "broxah",
+        "bwipo",
+        "chauster",
+        "closer-can-celik",
+        "contractz",
+        "dandy",
+        "hai",
+        "hotshotgg",
+        "inspired",
+        "meteos",
+        "pyosik",
+        "river-kim-dong-woo",
+        "ryu",
+        "santorin",
+        "shernfire",
+        "svenskeren",
+        "theoddone",
+        "xmithie"
+      ],
+      "label_pl": "Dżungla",
+      "label_en": "Jungle"
+    },
+    {
+      "role": "mid",
+      "conditions": [
+        {
+          "condition_type": "worlds_opponent_team",
+          "operator": "eq",
+          "value": "geng",
+          "label_pl": "Zagrał przeciwko Gen.G na Worlds przed 2026 rokiem",
+          "label_en": "Played against Gen.G at Worlds before 2026"
+        }
+      ],
+      "audited_candidates": [
+        "abbedagge",
+        "bdd",
+        "bjergsen",
+        "caps",
+        "creme",
+        "faker",
+        "fudge",
+        "huhi",
+        "humanoid",
+        "icon",
+        "jensen",
+        "jiizuke",
+        "kati",
+        "kiaya",
+        "maple-huang-yi-tang",
+        "mission",
+        "nemesis",
+        "perkz",
+        "quad",
+        "scout",
+        "shanks",
+        "showmaker",
+        "xiaohu",
+        "xiye",
+        "yagao",
+        "zeka-kim-geon-woo"
+      ],
+      "label_pl": "Mid",
+      "label_en": "Mid"
+    },
+    {
+      "role": "adc",
+      "conditions": [
+        {
+          "condition_type": "worlds_final",
+          "operator": "eq",
+          "value": true,
+          "label_pl": "Grał w finale Worlds",
+          "label_en": "Played in a Worlds final"
+        }
+      ],
+      "audited_candidates": [
+        "bang",
+        "bebe-chang-bo-wei",
+        "bwipo",
+        "caps",
+        "corejj",
+        "deft",
+        "deokdam",
+        "elk",
+        "ghost-jang-yong-jun",
+        "gumayusi",
+        "huanfeng",
+        "imp",
+        "jackeylove",
+        "lamiazealot",
+        "light-wang-guang-yu",
+        "lwx",
+        "perkz",
+        "piglet",
+        "pray",
+        "rekkles",
+        "ruler",
+        "uzi-jian-zi-hao",
+        "viper-park-do-hyeon",
+        "woong-jang-gun-woong",
+        "xpeke",
+        "yellowstar"
+      ],
+      "label_pl": "Strzelec",
+      "label_en": "Bot"
+    },
+    {
+      "role": "support",
+      "conditions": [
+        {
+          "condition_type": "worlds_teams_min",
+          "operator": "gte",
+          "value": 2,
+          "label_pl": "Grał na Worlds w co najmniej 2 organizacjach",
+          "label_en": "Played for at least 2 organizations at Worlds"
+        },
+        {
+          "condition_type": "worlds_playin_appearance",
+          "operator": "eq",
+          "value": true,
+          "label_pl": "Zagrał w play-in Worlds",
+          "label_en": "Played in Worlds play-in"
+        }
+      ],
+      "audited_candidates": [
+        "aladoric",
+        "alvaro-alvaro-fernandez",
+        "beryl",
+        "bie",
+        "busio",
+        "corejj",
+        "destiny-mitchell-shaw",
+        "edward",
+        "hylissang",
+        "impact",
+        "jesiz",
+        "jojo-gabriel-dzelme",
+        "kaiwing",
+        "keria",
+        "koala-lin-chih-chiang",
+        "labrov",
+        "mark-ling-xu",
+        "meiko",
+        "nisqy",
+        "palette",
+        "redbert",
+        "slow",
+        "snowflower",
+        "taki-dinh-anh-tai",
+        "venus",
+        "vsta",
+        "vulcan-philippe-laflamme",
+        "zero-yoon-kyung-sup",
+        "zven"
+      ],
+      "label_pl": "Wsparcie",
+      "label_en": "Support"
+    }
+  ]
+}

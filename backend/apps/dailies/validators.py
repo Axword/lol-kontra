@@ -41,6 +41,7 @@ from typing import Any
 from apps.players.worlds_import import COUNTRIES
 from apps.players.majority_roles import qualified_roles
 from apps.players.activity import competitive_active
+from apps.players.worlds_opponents import SOURCE_SHA256 as OPPONENT_SOURCE_SHA256, normalize_opponent_team
 
 logger = logging.getLogger(__name__)
 
@@ -766,6 +767,45 @@ def _c_final_lost_to_faker(f, operator, value):
                           known='worlds_finals' in f.attr and 'worlds_titles' in f.attr)
 
 
+def _worlds_opponent(f, operator, value, field):
+    if operator != 'eq' or not isinstance(value, str) or not value.strip():
+        return False
+    data = f.attr.get('worlds_opponents')
+    if (not isinstance(data, dict) or f.attr.get('worlds_verified') is not True
+            or data.get('source') != 'Leaguepedia' or data.get('scope') != 'worlds_before_2026'
+            or data.get('complete') is not True or type(data.get('complete_through_year')) is not int
+            or data['complete_through_year'] != 2025 or data.get('source_sha256') != OPPONENT_SOURCE_SHA256):
+        return False
+    targets = data.get(field)
+    if not isinstance(targets, list) or any(not isinstance(target, str) or not target for target in targets):
+        return False
+    if field in {'teams', 'won_teams'}:
+        return normalize_opponent_team(value) in targets
+    # Player values are stable natural slugs. Do not conflate disambiguated
+    # Leaguepedia identities through nickname, punctuation or fuzzy matching.
+    return bool(re.fullmatch(r'[a-zA-Z0-9_-]{1,80}', value)) and value.casefold() in targets
+
+
+@condition('worlds_opponent_team')
+def _c_worlds_opponent_team(f, operator, value):
+    return _worlds_opponent(f, operator, value, 'teams')
+
+
+@condition('worlds_opponent_player')
+def _c_worlds_opponent_player(f, operator, value):
+    return _worlds_opponent(f, operator, value, 'players')
+
+
+@condition('worlds_beat_team')
+def _c_worlds_beat_team(f, operator, value):
+    return _worlds_opponent(f, operator, value, 'won_teams')
+
+
+@condition('worlds_beat_player')
+def _c_worlds_beat_player(f, operator, value):
+    return _worlds_opponent(f, operator, value, 'won_players')
+
+
 def _masters_fact(f, key):
     data = f.attr.get('european_masters')
     return data.get(key) if isinstance(data, dict) and data.get('source') == 'Leaguepedia' else None
@@ -929,7 +969,8 @@ def evaluate_condition(player, condition_type: str, operator: str, value: Any) -
     boolean_types = {'active', 'worlds_champion', 'worlds_early_era', 'wildcard_region', 'import_player'}
     if condition_type in {'worlds_win_rate', 'worlds_games'}:
         allowed = {'eq', 'gt', 'lt', 'gte', 'lte'}
-    elif condition_type in ('worlds_top5_champion', 'career_top5_champion', 'worlds_eliminated_stage', 'worlds_team_year'):
+    elif condition_type in ('worlds_top5_champion', 'career_top5_champion', 'worlds_eliminated_stage', 'worlds_team_year',
+                           'worlds_opponent_team', 'worlds_opponent_player', 'worlds_beat_team', 'worlds_beat_player'):
         allowed = {'eq'}
     else:
         allowed = {'eq', 'in', 'any'} if condition_type in scalar_types else (

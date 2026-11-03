@@ -96,7 +96,7 @@ def build_catalog(players):
 
 def question_catalog():
     version = Player.objects.aggregate(updated=Max('updated_at'))['updated']
-    key = f'worlds-board-catalog-v4:{SOURCE_SHA256}:{ACTIVITY_SHA256}:{timezone.localdate()}:{version.isoformat() if version else "empty"}:{Player.objects.count()}'
+    key = f'worlds-board-catalog-v5:{SOURCE_SHA256}:{ACTIVITY_SHA256}:{timezone.localdate()}:{version.isoformat() if version else "empty"}:{Player.objects.count()}'
     catalog = cache.get(key)
     if catalog is None:
         catalog = build_catalog(list(Player.objects.order_by('slug')))
@@ -105,7 +105,7 @@ def question_catalog():
 
 
 def choose_board(catalog, rnd=None, recent=None, previous=None):
-    from .generator import ROLE_ORDER, requirement_key, _has_distinct_roster
+    from .generator import ROLE_ORDER, requirement_key, _has_distinct_roster, validate_board_diversity
     rnd = rnd or random.SystemRandom()
     recent = recent or Counter()
     previous = previous or []
@@ -133,8 +133,16 @@ def choose_board(catalog, rnd=None, recent=None, previous=None):
                 history = sum(recent[requirement_key(*c[2:5])] for c in option['conditions'])
                 # Prefer achievements; at most one champion clue on a board.
                 return repeated * 20 + history * 3
-            available = [o for o in options if not ((not include_champion or 'worlds_top5_champion' in used)
-                and any(c[2] == 'worlds_top5_champion' for c in o['conditions']))]
+            available = []
+            for option in options:
+                if ((not include_champion or 'worlds_top5_champion' in used)
+                        and any(c[2] == 'worlds_top5_champion' for c in option['conditions'])):
+                    continue
+                try:
+                    validate_board_diversity([o['conditions'] for o in chosen] + [option['conditions']])
+                except ValueError:
+                    continue
+                available.append(option)
             if not available:
                 break
             minimum = min(map(cost, available))
@@ -155,9 +163,14 @@ def choose_board(catalog, rnd=None, recent=None, previous=None):
 
 
 def store_daily(daily, rnd, recent):
-    from .generator import ROLE_ORDER, _has_distinct_roster, _write_conditions
+    from .generator import ROLE_ORDER, _has_distinct_roster, _write_conditions, validate_board_diversity
+    from .match_boards import store_match_board
     from .models import DailySlot
+    match_board = store_match_board(daily)
+    if match_board is not None:
+        return match_board
     selected, year = choose_board(question_catalog(), rnd, recent)
+    validate_board_diversity([entry['conditions'] for entry in selected])
     pools = [list(Player.objects.filter(pk__in=entry['candidate_ids'])) for entry in selected]
     if not _has_distinct_roster(pools):
         raise ValueError('Board needs five different players')

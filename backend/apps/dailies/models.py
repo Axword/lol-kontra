@@ -18,6 +18,7 @@ SINGLE_REQUIREMENT_TYPES = {
     'pentakill_worlds', 'european_masters_played', 'european_masters_won',
     'worlds_group_exit_before',
     'worlds_top5_champion', 'career_top5_champion', 'worlds_team_year',
+    'worlds_opponent_team', 'worlds_opponent_player', 'worlds_beat_team', 'worlds_beat_player',
 }
 
 
@@ -152,6 +153,10 @@ class DailySlotCondition(models.Model):
         ('worlds_final_lost_to_faker', 'Przegrany finał przeciwko Fakerowi'),
         ('european_masters_played', 'Udział w EU/EMEA Masters'),
         ('european_masters_won', 'Zwycięstwo w EU/EMEA Masters'),
+        ('worlds_opponent_team', 'Rywal drużyny na Worlds przed 2026'),
+        ('worlds_opponent_player', 'Rywal zawodnika na Worlds przed 2026'),
+        ('worlds_beat_team', 'Wygrana mapa z drużyną na Worlds przed 2026'),
+        ('worlds_beat_player', 'Wygrana mapa z zawodnikiem na Worlds przed 2026'),
         # inne
         ('msi_appearance', 'Występ na MSI'),
         ('leagues_min', 'Min. liczba lig głównych'),

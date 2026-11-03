@@ -14,7 +14,8 @@ from django.views.decorators.cache import never_cache
 
 from apps.players.models import Player
 from .generator import (CONDITION_POOL, MEDIUM, MIN_CANDIDATES, ROLE_ORDER,
-                        build_condition_pool, count_candidates, validate_daily, validate_slots)
+                        build_condition_pool, count_candidates, validate_daily, validate_slots,
+                        validate_board_diversity)
 from .models import Daily, DailySlot, DailySlotCondition
 
 
@@ -129,6 +130,8 @@ def builder_view(request, model_admin):
         issues = []
         try:
             validate_slots(slots, MIN_CANDIDATES, bool(author['author_name']))
+            if target > timezone.localdate():
+                validate_board_diversity([slot.conditions.all() for slot in slots])
         except ValueError as exc:
             issues.append(str(exc))
         if action == 'preview':

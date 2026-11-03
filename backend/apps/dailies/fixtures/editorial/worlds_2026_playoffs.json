@@ -1,0 +1,805 @@
+{
+  "schema_version": 1,
+  "timezone": "Europe/Warsaw",
+  "sources": [
+    "https://lolesports.com/en-GB/leagues/worlds",
+    "https://lolesports.com/en-GB/news/worlds-2026-primer"
+  ],
+  "matches": [
+    {
+      "date": "2026-11-04",
+      "teams": [
+        "geng",
+        "lyon"
+      ],
+      "review_status": "approved",
+      "starts_at": "2026-11-04T23:00:00+01:00",
+      "description_pl": "Ćwierćfinał Worlds 2026: Gen.G – LYON",
+      "slots": [
+        {
+          "role": "top",
+          "conditions": [
+            {
+              "condition_type": "birth_country",
+              "operator": "eq",
+              "value": "KR",
+              "label_pl": "Urodzony w Korei Południowej",
+              "label_en": "Born in South Korea"
+            },
+            {
+              "condition_type": "worlds_group_escape",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Zagrał w fazie pucharowej głównego turnieju Worlds",
+              "label_en": "Played in the Worlds main-event knockout stage"
+            }
+          ],
+          "match_context": "Gen.G: koreański kontekst meczu",
+          "audited_candidates": [
+            "acorn",
+            "burdol",
+            "canna",
+            "cuvee",
+            "dandy",
+            "doran-choi-hyeon-jun",
+            "duke-lee-ho-seong",
+            "gimgoon",
+            "huni",
+            "impact",
+            "insec",
+            "khan",
+            "kiin",
+            "kingen",
+            "looper",
+            "maknoon",
+            "marin",
+            "morgan",
+            "nuguri",
+            "perfect-lee-seung-min",
+            "rascal",
+            "ray",
+            "save",
+            "score",
+            "shy",
+            "smeb",
+            "ssumday",
+            "sw0rd",
+            "theshy",
+            "woong-jang-gun-woong",
+            "zeus"
+          ],
+          "candidate_count": 31,
+          "role_pool": 162,
+          "pool_fraction": 0.191
+        },
+        {
+          "role": "jungle",
+          "conditions": [
+            {
+              "condition_type": "league",
+              "operator": "eq",
+              "value": "LCS",
+              "label_pl": "Grał w LCS / NA LCS",
+              "label_en": "Played in LCS / NA LCS"
+            },
+            {
+              "condition_type": "worlds_count_min",
+              "operator": "gte",
+              "value": 2,
+              "label_pl": "Zagrał w co najmniej 2 edycjach Worlds",
+              "label_en": "Played at least 2 editions of Worlds"
+            }
+          ],
+          "match_context": "LYON: północnoamerykański kontekst meczu",
+          "audited_candidates": [
+            "amazing-maurice-stuckenschneider",
+            "bigfatlp",
+            "blaber",
+            "broxah",
+            "bwipo",
+            "chauster",
+            "closer-can-celik",
+            "contractz",
+            "dandy",
+            "hai",
+            "hotshotgg",
+            "inspired",
+            "meteos",
+            "pyosik",
+            "river-kim-dong-woo",
+            "ryu",
+            "santorin",
+            "shernfire",
+            "svenskeren",
+            "theoddone",
+            "xmithie"
+          ],
+          "candidate_count": 21,
+          "role_pool": 160,
+          "pool_fraction": 0.131
+        },
+        {
+          "role": "mid",
+          "conditions": [
+            {
+              "condition_type": "worlds_opponent_team",
+              "operator": "eq",
+              "value": "geng",
+              "label_pl": "Zagrał przeciwko Gen.G na Worlds przed 2026 rokiem",
+              "label_en": "Played against Gen.G at Worlds before 2026"
+            }
+          ],
+          "match_context": "Gen.G: oficjalni rywale w zakończonych edycjach Worlds",
+          "audited_candidates": [
+            "abbedagge",
+            "bdd",
+            "bjergsen",
+            "caps",
+            "creme",
+            "faker",
+            "fudge",
+            "huhi",
+            "humanoid",
+            "icon",
+            "jensen",
+            "jiizuke",
+            "kati",
+            "kiaya",
+            "maple-huang-yi-tang",
+            "mission",
+            "nemesis",
+            "perkz",
+            "quad",
+            "scout",
+            "shanks",
+            "showmaker",
+            "xiaohu",
+            "xiye",
+            "yagao",
+            "zeka-kim-geon-woo"
+          ],
+          "candidate_count": 26,
+          "role_pool": 149,
+          "pool_fraction": 0.174
+        },
+        {
+          "role": "adc",
+          "conditions": [
+            {
+              "condition_type": "worlds_final",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Grał w finale Worlds",
+              "label_en": "Played in a Worlds final"
+            }
+          ],
+          "match_context": "",
+          "audited_candidates": [
+            "bang",
+            "bebe-chang-bo-wei",
+            "bwipo",
+            "caps",
+            "corejj",
+            "deft",
+            "deokdam",
+            "elk",
+            "ghost-jang-yong-jun",
+            "gumayusi",
+            "huanfeng",
+            "imp",
+            "jackeylove",
+            "lamiazealot",
+            "light-wang-guang-yu",
+            "lwx",
+            "perkz",
+            "piglet",
+            "pray",
+            "rekkles",
+            "ruler",
+            "uzi-jian-zi-hao",
+            "viper-park-do-hyeon",
+            "woong-jang-gun-woong",
+            "xpeke",
+            "yellowstar"
+          ],
+          "candidate_count": 26,
+          "role_pool": 152,
+          "pool_fraction": 0.171
+        },
+        {
+          "role": "support",
+          "conditions": [
+            {
+              "condition_type": "worlds_teams_min",
+              "operator": "gte",
+              "value": 2,
+              "label_pl": "Grał na Worlds w co najmniej 2 organizacjach",
+              "label_en": "Played for at least 2 organizations at Worlds"
+            },
+            {
+              "condition_type": "worlds_playin_appearance",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Zagrał w play-in Worlds",
+              "label_en": "Played in Worlds play-in"
+            }
+          ],
+          "match_context": "",
+          "audited_candidates": [
+            "aladoric",
+            "alvaro-alvaro-fernandez",
+            "beryl",
+            "bie",
+            "busio",
+            "corejj",
+            "destiny-mitchell-shaw",
+            "edward",
+            "hylissang",
+            "impact",
+            "jesiz",
+            "jojo-gabriel-dzelme",
+            "kaiwing",
+            "keria",
+            "koala-lin-chih-chiang",
+            "labrov",
+            "mark-ling-xu",
+            "meiko",
+            "nisqy",
+            "palette",
+            "redbert",
+            "slow",
+            "snowflower",
+            "taki-dinh-anh-tai",
+            "venus",
+            "vsta",
+            "vulcan-philippe-laflamme",
+            "zero-yoon-kyung-sup",
+            "zven"
+          ],
+          "candidate_count": 29,
+          "role_pool": 161,
+          "pool_fraction": 0.18
+        }
+      ]
+    },
+    {
+      "date": "2026-11-05",
+      "teams": [
+        "dwg",
+        "blg"
+      ],
+      "review_status": "draft",
+      "starts_at": "2026-11-05T23:00:00+01:00",
+      "description_pl": "Ćwierćfinał Worlds 2026: Dplus KIA – Bilibili Gaming",
+      "slots": [
+        {
+          "role": "top",
+          "conditions": [
+            {
+              "condition_type": "league",
+              "operator": "eq",
+              "value": "LCK",
+              "label_pl": "Grał w LCK",
+              "label_en": "Played in LCK"
+            },
+            {
+              "condition_type": "worlds_count_min",
+              "operator": "gte",
+              "value": 2,
+              "label_pl": "Zagrał w co najmniej 2 edycjach Worlds",
+              "label_en": "Played at least 2 editions of Worlds"
+            }
+          ],
+          "match_context": "Dplus KIA: kontekst ligi LCK",
+          "audited_candidates": [
+            "acorn",
+            "canna",
+            "cuvee",
+            "dandy",
+            "doran-choi-hyeon-jun",
+            "duke-lee-ho-seong",
+            "expect",
+            "flame",
+            "hotshotgg",
+            "huni",
+            "impact",
+            "khan",
+            "kiin",
+            "kingen",
+            "looper",
+            "nuguri",
+            "rascal",
+            "score",
+            "smeb",
+            "ssumday",
+            "summit",
+            "wickd",
+            "zeus"
+          ],
+          "candidate_count": 23,
+          "role_pool": 162,
+          "pool_fraction": 0.142
+        },
+        {
+          "role": "jungle",
+          "conditions": [
+            {
+              "condition_type": "birth_country",
+              "operator": "eq",
+              "value": "CN",
+              "label_pl": "Urodzony w Chinach",
+              "label_en": "Born in China"
+            }
+          ],
+          "match_context": "Bilibili Gaming: chiński kontekst meczu",
+          "audited_candidates": [
+            "beichuan",
+            "clearlove",
+            "condi",
+            "haro",
+            "illusion-chen-xin-lin",
+            "jiejie",
+            "kid",
+            "leyan",
+            "loveling",
+            "lucky-liu-jun-jie",
+            "mlxg",
+            "ning",
+            "noname-zhou-qi-lin",
+            "pomelo",
+            "spica",
+            "tbq",
+            "tian",
+            "wei-yan-yang-wei",
+            "weiwei",
+            "xun"
+          ],
+          "candidate_count": 20,
+          "role_pool": 160,
+          "pool_fraction": 0.125
+        },
+        {
+          "role": "mid",
+          "conditions": [
+            {
+              "condition_type": "career_regions_min",
+              "operator": "gte",
+              "value": 2,
+              "label_pl": "Grał w co najmniej 2 regionach",
+              "label_en": "Played in at least 2 regions"
+            },
+            {
+              "condition_type": "worlds_group_escape",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Zagrał w fazie pucharowej Worlds",
+              "label_en": "Played in the Worlds knockout stage"
+            }
+          ],
+          "match_context": "",
+          "audited_candidates": [
+            "alex-ich",
+            "bigfatlp",
+            "bjergsen",
+            "caps",
+            "crown",
+            "dade",
+            "easyhoon",
+            "febiven",
+            "froggen",
+            "fudge",
+            "ggoong",
+            "hongq",
+            "humanoid",
+            "jesiz",
+            "kuro",
+            "maple-huang-yi-tang",
+            "nagne",
+            "pawn",
+            "perkz",
+            "powerofevil",
+            "quad",
+            "rookie",
+            "ryu",
+            "save",
+            "scout",
+            "shushei",
+            "ucal",
+            "xpeke",
+            "zeka-kim-geon-woo",
+            "zero-yoon-kyung-sup"
+          ],
+          "candidate_count": 30,
+          "role_pool": 149,
+          "pool_fraction": 0.201
+        },
+        {
+          "role": "adc",
+          "conditions": [
+            {
+              "condition_type": "worlds_top5_champion",
+              "operator": "eq",
+              "value": "Kai'Sa",
+              "label_pl": "Kai’Sa w TOP 5 postaci według liczby gier na Worlds",
+              "label_en": "Kai’Sa in his top 5 champions by games played at Worlds"
+            },
+            {
+              "condition_type": "worlds_win_rate",
+              "operator": "gt",
+              "value": 50,
+              "label_pl": "Wygrał ponad 50% map na Worlds",
+              "label_en": "Won over 50% of his Worlds games"
+            }
+          ],
+          "match_context": "",
+          "audited_candidates": [
+            "caliste",
+            "deft",
+            "deftly",
+            "easylove",
+            "elk",
+            "gala",
+            "hjarnan",
+            "hope-wang-jie",
+            "iboy",
+            "jackeylove",
+            "kramer",
+            "lwx",
+            "nuclear",
+            "peyz",
+            "slayder",
+            "sneaky",
+            "teddy",
+            "viper-park-do-hyeon"
+          ],
+          "candidate_count": 18,
+          "role_pool": 152,
+          "pool_fraction": 0.118
+        },
+        {
+          "role": "support",
+          "conditions": [
+            {
+              "condition_type": "worlds_group_exit_before",
+              "operator": "eq",
+              "value": 2020,
+              "label_pl": "Odpadł w grupach Worlds w co najmniej jednej edycji przed 2020 rokiem",
+              "label_en": "Eliminated in the Worlds group stage at least once before 2020"
+            }
+          ],
+          "match_context": "",
+          "audited_candidates": [
+            "albis",
+            "aphromoo",
+            "biofrost",
+            "bloodwater",
+            "chauster",
+            "chieh",
+            "corejj",
+            "dans",
+            "dioud",
+            "doublelift",
+            "gibo",
+            "greentea",
+            "hai",
+            "huhi",
+            "impact",
+            "inspirro",
+            "intrigued",
+            "jactroll",
+            "japone",
+            "jesiz",
+            "jinjiao",
+            "jockster",
+            "junie",
+            "k",
+            "kaiwing",
+            "kasing",
+            "kitties",
+            "koala-lin-chih-chiang",
+            "lemonnation",
+            "lustboy",
+            "mata",
+            "meiko",
+            "mikyx",
+            "ming-shi-sen-ming",
+            "mithy",
+            "mor",
+            "moss-sorawat-boonphrom",
+            "nisqy",
+            "nrated",
+            "nyph",
+            "olleh",
+            "palette",
+            "patoy",
+            "pyl-chen-bo",
+            "rekkles",
+            "road-yun-han-gil",
+            "slay",
+            "swordart",
+            "sya",
+            "tgee",
+            "touch",
+            "vulcan-philippe-laflamme",
+            "xpecial",
+            "xpeke",
+            "yellowstar",
+            "ysera",
+            "zeyzal",
+            "zven"
+          ],
+          "candidate_count": 58,
+          "role_pool": 161,
+          "pool_fraction": 0.36
+        }
+      ]
+    },
+    {
+      "date": "2026-11-06",
+      "teams": [
+        "t1",
+        "karmine-corp"
+      ],
+      "review_status": "draft",
+      "starts_at": "2026-11-06T23:00:00+01:00",
+      "description_pl": "Ćwierćfinał Worlds 2026: T1 – Karmine Corp",
+      "slots": [
+        {
+          "role": "top",
+          "conditions": [
+            {
+              "condition_type": "worlds_top5_champion",
+              "operator": "eq",
+              "value": "Gnar",
+              "label_pl": "Gnar w TOP 5 postaci według liczby gier na Worlds",
+              "label_en": "Gnar in his top 5 champions by games played at Worlds"
+            },
+            {
+              "condition_type": "worlds_teams_min",
+              "operator": "gte",
+              "value": 2,
+              "label_pl": "Grał na Worlds w co najmniej 2 organizacjach",
+              "label_en": "Played for at least 2 organizations at Worlds"
+            }
+          ],
+          "match_context": "",
+          "audited_candidates": [
+            "alphari",
+            "amazingj",
+            "armut",
+            "breathe",
+            "brokenblade",
+            "buggax",
+            "cuvee",
+            "doran-choi-hyeon-jun",
+            "duke-lee-ho-seong",
+            "evi",
+            "huni",
+            "kingen",
+            "langx",
+            "liang",
+            "myrwn",
+            "odoamne",
+            "rest",
+            "smeb",
+            "soaz",
+            "steak",
+            "summit",
+            "vizicsacsi"
+          ],
+          "candidate_count": 22,
+          "role_pool": 162,
+          "pool_fraction": 0.136
+        },
+        {
+          "role": "jungle",
+          "conditions": [
+            {
+              "condition_type": "european_masters_played",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Zagrał w EU / EMEA Masters",
+              "label_en": "Played in EU / EMEA Masters"
+            }
+          ],
+          "match_context": "Karmine Corp: droga przez rozgrywki regionalne EU / EMEA Masters",
+          "audited_candidates": [
+            "bwipo",
+            "closer-can-celik",
+            "diamondprox",
+            "elyoya",
+            "ferret",
+            "gilius",
+            "haru",
+            "insec",
+            "inspired",
+            "jankos",
+            "kikis",
+            "maxlore",
+            "mojito",
+            "razork",
+            "selfmade",
+            "shad0w",
+            "sheo",
+            "skewmond",
+            "tierwulf",
+            "xerxe",
+            "yike"
+          ],
+          "candidate_count": 21,
+          "role_pool": 160,
+          "pool_fraction": 0.131
+        },
+        {
+          "role": "mid",
+          "conditions": [
+            {
+              "condition_type": "birth_country",
+              "operator": "eq",
+              "value": "KR",
+              "label_pl": "Urodzony w Korei Południowej",
+              "label_en": "Born in South Korea"
+            },
+            {
+              "condition_type": "worlds_semifinal",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Dotarł co najmniej do półfinału Worlds",
+              "label_en": "Reached at least the Worlds semifinals"
+            }
+          ],
+          "match_context": "T1: koreański kontekst i faza pucharowa Worlds",
+          "audited_candidates": [
+            "ambition",
+            "bdd",
+            "chovy",
+            "crown",
+            "dade",
+            "doinb",
+            "easyhoon",
+            "faker",
+            "kuro",
+            "nagne",
+            "pawn",
+            "rapidstar",
+            "rookie",
+            "ryu",
+            "scout",
+            "showmaker",
+            "zeka-kim-geon-woo",
+            "zero-yoon-kyung-sup"
+          ],
+          "candidate_count": 18,
+          "role_pool": 149,
+          "pool_fraction": 0.121
+        },
+        {
+          "role": "adc",
+          "conditions": [
+            {
+              "condition_type": "worlds_final",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Grał w finale Worlds",
+              "label_en": "Played in a Worlds final"
+            }
+          ],
+          "match_context": "",
+          "audited_candidates": [
+            "bang",
+            "bebe-chang-bo-wei",
+            "bwipo",
+            "caps",
+            "corejj",
+            "deft",
+            "deokdam",
+            "elk",
+            "ghost-jang-yong-jun",
+            "gumayusi",
+            "huanfeng",
+            "imp",
+            "jackeylove",
+            "lamiazealot",
+            "light-wang-guang-yu",
+            "lwx",
+            "perkz",
+            "piglet",
+            "pray",
+            "rekkles",
+            "ruler",
+            "uzi-jian-zi-hao",
+            "viper-park-do-hyeon",
+            "woong-jang-gun-woong",
+            "xpeke",
+            "yellowstar"
+          ],
+          "candidate_count": 26,
+          "role_pool": 152,
+          "pool_fraction": 0.171
+        },
+        {
+          "role": "support",
+          "conditions": [
+            {
+              "condition_type": "worlds_count_min",
+              "operator": "gte",
+              "value": 3,
+              "label_pl": "Zagrał w co najmniej 3 edycjach Worlds",
+              "label_en": "Played at least 3 editions of Worlds"
+            },
+            {
+              "condition_type": "worlds_eliminated_stage",
+              "operator": "eq",
+              "value": "quarterfinal",
+              "label_pl": "Co najmniej raz odpadł w ćwierćfinale Worlds",
+              "label_en": "Eliminated in the Worlds quarterfinals at least once"
+            }
+          ],
+          "match_context": "",
+          "audited_candidates": [
+            "albis",
+            "beryl",
+            "busio",
+            "delight",
+            "gorilla",
+            "hai",
+            "hang",
+            "hylissang",
+            "ignar",
+            "impact",
+            "kaiser",
+            "kaiwing",
+            "keria",
+            "lehends",
+            "lemonnation",
+            "mata",
+            "meiko",
+            "ming-shi-sen-ming",
+            "rekkles",
+            "swordart",
+            "trymbi",
+            "vulcan-philippe-laflamme",
+            "xpecial",
+            "zven"
+          ],
+          "candidate_count": 24,
+          "role_pool": 161,
+          "pool_fraction": 0.149
+        }
+      ]
+    },
+    {
+      "date": "2026-11-07",
+      "teams": [],
+      "review_status": "pending_matchup",
+      "starts_at": "2026-11-07T23:00:00+01:00",
+      "description_pl": "Półfinał Worlds 2026 — oczekiwanie na potwierdzenie pary",
+      "slots": []
+    },
+    {
+      "date": "2026-11-08",
+      "teams": [],
+      "review_status": "pending_matchup",
+      "starts_at": "2026-11-08T23:00:00+01:00",
+      "description_pl": "Półfinał Worlds 2026 — oczekiwanie na potwierdzenie pary",
+      "slots": []
+    },
+    {
+      "date": "2026-11-14",
+      "teams": [],
+      "review_status": "pending_matchup",
+      "starts_at": "2026-11-14T20:00:00+01:00",
+      "description_pl": "Finał Worlds 2026 — oczekiwanie na potwierdzenie pary",
+      "slots": []
+    }
+  ],
+  "editorial_policy": {
+    "minimum_candidates": 18,
+    "preferred_candidates": [
+      20,
+      50
+    ],
+    "single_slots": 2,
+    "match_context_slots": 2
+  }
+}

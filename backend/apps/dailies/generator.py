@@ -21,7 +21,7 @@ from django.utils import timezone
 from apps.players.models import Player
 
 from .models import Daily, DailySlot, DailySlotCondition, SINGLE_REQUIREMENT_TYPES, valid_requirement_count
-from .validators import PlayerFacts, _champion_name, evaluate_condition, player_matches_slot
+from .validators import PlayerFacts, _champion_name, _slug, evaluate_condition, player_matches_slot
 
 ROLE_ORDER = ['top', 'jungle', 'mid', 'adc', 'support']
 
@@ -31,9 +31,12 @@ THEME_MEMORY_DAYS = 14
 
 EASY, MEDIUM, HARD = 'easy', 'medium', 'hard'
 CHAMPION_RANK_TYPES = {'worlds_top5_champion', 'career_top5_champion'}
+WORLDS_OPPONENT_TYPES = {'worlds_opponent_team', 'worlds_opponent_player', 'worlds_beat_team', 'worlds_beat_player'}
 
 
 def single_candidate_limit(condition_type):
+    if condition_type in WORLDS_OPPONENT_TYPES:
+        return 60
     return 25 if condition_type in CHAMPION_RANK_TYPES else 18
 
 # (theme, difficulty, condition_type, operator, value, label_pl, label_en)
@@ -102,6 +105,19 @@ CONDITION_POOL = [
     ('masters', HARD, 'european_masters_played', 'eq', True, 'Zagrał w EU Masters / EMEA Masters', 'Played at EU / EMEA Masters'),
     ('masters', HARD, 'european_masters_won', 'eq', True, 'Wygrał EU Masters / EMEA Masters', 'Won EU / EMEA Masters'),
     ('msi', MEDIUM, 'msi_appearance', 'eq', True, 'Grał na MSI', 'Played at MSI'),
+
+    # --- rywale na zakończonych edycjach Worlds ---
+    ('worlds_opponent', MEDIUM, 'worlds_opponent_team', 'eq', 'geng',
+     'Zagrał przeciwko Gen.G na Worlds przed 2026 rokiem', 'Played against Gen.G at Worlds before 2026'),
+    ('worlds_opponent', MEDIUM, 'worlds_opponent_team', 'eq', 'dwg',
+     'Zagrał przeciwko DAMWON / DWG KIA / Dplus KIA na Worlds przed 2026 rokiem',
+     'Played against DAMWON / DWG KIA / Dplus KIA at Worlds before 2026'),
+    ('worlds_opponent', MEDIUM, 'worlds_opponent_player', 'eq', 'faker',
+     'Zagrał przeciwko Fakerowi na Worlds przed 2026 rokiem', 'Played against Faker at Worlds before 2026'),
+    ('worlds_opponent', HARD, 'worlds_beat_team', 'eq', 'geng',
+     'Wygrał mapę przeciwko Gen.G na Worlds przed 2026 rokiem', 'Won a map against Gen.G at Worlds before 2026'),
+    ('worlds_opponent', HARD, 'worlds_beat_player', 'eq', 'faker',
+     'Wygrał mapę przeciwko Fakerowi na Worlds przed 2026 rokiem', 'Won a map against Faker at Worlds before 2026'),
 
     # --- kariera ---
     ('status', EASY, 'active', 'eq', True, 'Wciąż aktywny', 'Still active'),
@@ -305,6 +321,77 @@ def requirement_key(condition_type, operator, value):
     return condition_type, operator, json.dumps(value, sort_keys=True)
 
 
+ORIGIN_CONDITIONS = {'country', 'birth_country', 'continent', 'birth_continent', 'country_excluded'}
+TEAM_HISTORY_CONDITIONS = {'team', 'team_year', 'worlds_team_year'}
+
+
+def _diversity_parts(condition):
+    if isinstance(condition, dict):
+        return condition['condition_type'], condition.get('operator', 'eq'), condition['value']
+    if hasattr(condition, 'condition_type'):
+        return condition.condition_type, condition.operator, condition.value
+    if isinstance(condition, (tuple, list)):
+        if len(condition) == 7:
+            return condition[2:5]
+        if len(condition) == 3:
+            return condition
+    raise ValueError('Unsupported requirement in board diversity check')
+
+
+def _diversity_identity(kind, operator, value):
+    """Labels and spelling aliases cannot disguise the same player requirement."""
+    if kind in {'region', 'residency', 'league'}:
+        kind = 'league'
+        aliases = {'eulcs': 'lec', 'nalcs': 'lcs'}
+        values = value if isinstance(value, list) else [value]
+        normalized = [aliases.get(_slug(item), _slug(item)) for item in values]
+        value = sorted(set(normalized)) if operator == 'in' else normalized[0]
+    elif kind in {'country', 'birth_country', 'continent', 'birth_continent', 'country_excluded'}:
+        value = sorted(str(item).casefold() for item in value) if isinstance(value, list) else str(value).casefold()
+    elif kind == 'team':
+        value = sorted({_slug(item) for item in value}) if isinstance(value, list) else _slug(value)
+    elif kind in {'team_year', 'worlds_team_year'} and isinstance(value, dict):
+        value = {**value, 'team': _slug(value.get('team'))}
+    elif kind in CHAMPION_RANK_TYPES:
+        value = _champion_name(value)
+    return requirement_key(kind, operator, value)
+
+
+def validate_board_diversity(condition_groups):
+    """Reject repeated clues when preparing a new board, without judging old games.
+
+    Each group contains one slot's model conditions, authored dictionaries, or
+    generator tuples. Origin can appear once; at most two specific team-history
+    clues may appear, and those must refer to different teams.
+    """
+    seen, teams = set(), set()
+    origin_count = team_count = opponent_count = 0
+    for group in condition_groups:
+        for condition in group:
+            kind, operator, value = _diversity_parts(condition)
+            identity = _diversity_identity(kind, operator, value)
+            if identity in seen:
+                raise ValueError('A board cannot repeat the same requirement')
+            seen.add(identity)
+            if kind in WORLDS_OPPONENT_TYPES:
+                opponent_count += 1
+                if opponent_count > 1:
+                    raise ValueError('A board can contain only one opponent requirement')
+            if kind in ORIGIN_CONDITIONS:
+                origin_count += 1
+                if origin_count > 1:
+                    raise ValueError('A board can contain only one origin requirement')
+            if kind in TEAM_HISTORY_CONDITIONS:
+                team_count += 1
+                if team_count > 2:
+                    raise ValueError('A board can contain at most two team-history requirements')
+                raw = value.get('team') if isinstance(value, dict) else value
+                targets = {_slug(item) for item in (raw if isinstance(raw, list) else [raw]) if item}
+                if targets & teams:
+                    raise ValueError('Team-history requirements must refer to different teams')
+                teams.update(targets)
+
+
 def recent_requirements(before_date, days=4):
     return Counter(requirement_key(*row) for row in DailySlotCondition.objects.filter(
         slot__daily__date__gte=before_date - timedelta(days=days), slot__daily__date__lt=before_date, slot__daily__is_current=True,
@@ -325,7 +412,7 @@ def _write_conditions(slot, chosen):
         )
 
 
-def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None, condition_pool=None, board_themes=None, used_requirements=None):
+def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None, condition_pool=None, board_themes=None, used_requirements=None, board_conditions=None):
     """Select a narrow standalone achievement or two materially useful clues."""
     pool = pool if pool is not None else _role_pool(role)
     if not pool:
@@ -355,6 +442,11 @@ def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None
     options = []
 
     def remember(chosen, matching):
+        if board_conditions is not None:
+            try:
+                validate_board_diversity([*board_conditions, chosen])
+            except ValueError:
+                return
         n = len(matching)
         score = abs(n - 18) * 0.25
         # Count prior uses, so a saturated history still favours variety. Use
@@ -370,7 +462,10 @@ def generate_slot(daily, role, position, difficulty, rnd, used_themes, pool=None
 
     for i, c in enumerate(conditions):
         n = len(matches[i])
-        if c[2] in SINGLE_REQUIREMENT_TYPES and MIN_CANDIDATES <= n <= min(single_candidate_limit(c[2]), len(pool) * 0.25):
+        limit = single_candidate_limit(c[2])
+        if c[2] not in WORLDS_OPPONENT_TYPES:
+            limit = min(limit, len(pool) * 0.25)
+        if c[2] in SINGLE_REQUIREMENT_TYPES and MIN_CANDIDATES <= n <= limit:
             remember([c], matches[i])
     for first, second in combinations(range(len(conditions)), 2):
         chosen = [conditions[first], conditions[second]]
@@ -436,12 +531,17 @@ def generate_daily(date=None, seed=None, force=False):
 
     candidate_pools = []
     board_themes = set()
+    board_conditions = []
+    enforce_diversity = date >= timezone.localdate()
     for position, (role, difficulty) in enumerate(zip(ROLE_ORDER, plan), start=1):
         pool = _role_pool(role)
         slot, candidates = generate_slot(daily, role, position, difficulty, rnd, used_themes, pool,
-                                         board_themes=board_themes, used_requirements=used_requirements)
+                                         board_themes=board_themes, used_requirements=used_requirements,
+                                         board_conditions=board_conditions if enforce_diversity else None)
         candidate_pools.append(candidates)
-        for cond in slot.conditions.all():
+        conditions = list(slot.conditions.all())
+        board_conditions.append(conditions)
+        for cond in conditions:
             theme = STAT_THEMES.get(cond.condition_type) or theme_by_condition.get((cond.condition_type, str(cond.value)))
             if theme:
                 used_themes[theme] += 1
