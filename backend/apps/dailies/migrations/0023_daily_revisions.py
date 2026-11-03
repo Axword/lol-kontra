@@ -6,7 +6,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='daily', name='is_current',
-            field=models.BooleanField(default=True, editable=False),
+            field=models.BooleanField(default=True, db_default=True, editable=False),
         ),
         migrations.AlterField(
             model_name='daily', name='date', field=models.DateField(db_index=True),

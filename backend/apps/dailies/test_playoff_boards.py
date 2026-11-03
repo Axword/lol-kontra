@@ -121,6 +121,11 @@ class PlayoffBoardRevisionTests(TestCase):
         self.assertTrue(old.is_current)
         self.assertEqual(Daily.objects.count(), 1)
 
+    def test_schema_only_database_does_not_publish_unanswerable_boards(self):
+        Player.objects.all().delete()
+        self.install()
+        self.assertFalse(Daily.objects.exists())
+
     @patch('django.utils.timezone.localdate', return_value=date(2026, 11, 4))
     @patch('apps.scoring.tasks.score_daily')
     def test_nightly_scoring_finalizes_both_revisions_without_ambiguous_date_lookup(self, score, _date):

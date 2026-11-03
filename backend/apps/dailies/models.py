@@ -38,7 +38,7 @@ class Daily(models.Model):
 
     date = models.DateField(db_index=True)
     # Replacing a published board preserves its slots, answers and result links.
-    is_current = models.BooleanField(default=True, editable=False)
+    is_current = models.BooleanField(default=True, db_default=True, editable=False)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default='draft')
     locale_seed = models.CharField(max_length=64, blank=True)
     reveal_mode = models.CharField(max_length=16, choices=REVEAL_CHOICES, default='instant')

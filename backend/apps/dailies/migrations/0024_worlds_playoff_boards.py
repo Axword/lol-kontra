@@ -35,6 +35,11 @@ def install(apps, schema_editor):
     Slot = apps.get_model('dailies', 'DailySlot')
     Condition = apps.get_model('dailies', 'DailySlotCondition')
     Player = apps.get_model('players', 'Player')
+    # Schema-only databases (including migration tests after a flush) have no
+    # release identities to curate. Production bootstrap separately requires
+    # the complete player pack; a partially missing pack still fails below.
+    if not Player.objects.using(alias).exists():
+        return
     required = {slug for b in source['boards'] for s in b['slots'] for slug in s['audited_candidates']}
     if set(Player.objects.using(alias).filter(slug__in=required).values_list('slug', flat=True)) != required:
         raise ValueError('Playoff board candidate identities are missing')
