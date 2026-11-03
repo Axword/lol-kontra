@@ -271,6 +271,13 @@ class PlayerFacts:
         return (self.player.continent or '').lower()
 
     @property
+    def birth_country(self) -> str:
+        country = self.attr.get('leaguepedia_country_of_birth')
+        if not isinstance(country, str):
+            return ''
+        return COUNTRIES.get(country.strip().casefold(), ('', ''))[0].lower()
+
+    @property
     def birth_continent(self) -> str:
         country = self.attr.get('leaguepedia_country_of_birth')
         if not isinstance(country, str):
@@ -528,6 +535,11 @@ def _c_country(f, operator, value):
 @condition('continent')
 def _c_continent(f, operator, value):
     return _match_scalar(f.continent, operator, value)
+
+
+@condition('birth_country')
+def _c_birth_country(f, operator, value):
+    return _match_scalar(f.birth_country, operator, value)
 
 
 @condition('birth_continent')
@@ -788,6 +800,36 @@ def _c_msi(f, operator, value):
 
 # --- kariera i konteksty ---
 
+@condition('worlds_team_year')
+def _c_worlds_team_year(f, operator, value):
+    """An actual Worlds appearance for a team, in a year or before a year.
+
+    Career team membership never substitutes for the sourced Worlds history.
+    """
+    if operator != 'eq' or f.attr.get('worlds_verified') is not True or not isinstance(value, dict):
+        return False
+    if set(value) not in ({'team', 'year'}, {'team', 'before'}):
+        return False
+    team = value['team']
+    key = 'year' if 'year' in value else 'before'
+    boundary = value[key]
+    if (not isinstance(team, str) or not _slug(team) or type(boundary) is not int
+            or not 2011 <= boundary <= (2101 if key == 'before' else 2100)):
+        return False
+    history = f.attr.get('worlds_team_years')
+    if not isinstance(history, dict):
+        return False
+    years = set()
+    for name, entries in history.items():
+        if not isinstance(name, str) or _slug(name) != _slug(team):
+            continue
+        if (not isinstance(entries, list) or not entries
+                or any(type(year) is not int or not 2011 <= year <= 2100 for year in entries)):
+            return False
+        years.update(entries)
+    return boundary in years if key == 'year' else any(year < boundary for year in years)
+
+
 @condition('team_year')
 def _c_team_year(f, operator, value):
     """
@@ -883,11 +925,11 @@ def evaluate_condition(player, condition_type: str, operator: str, value: Any) -
         logger.warning('Nieznany typ warunku: %s', condition_type)
         return False
     operator = operator or 'eq'
-    scalar_types = {'role', 'country', 'continent', 'birth_continent', 'residency', 'region', 'league', 'team', 'coach', 'champion_played'}
+    scalar_types = {'role', 'country', 'birth_country', 'continent', 'birth_continent', 'residency', 'region', 'league', 'team', 'coach', 'champion_played'}
     boolean_types = {'active', 'worlds_champion', 'worlds_early_era', 'wildcard_region', 'import_player'}
     if condition_type in {'worlds_win_rate', 'worlds_games'}:
         allowed = {'eq', 'gt', 'lt', 'gte', 'lte'}
-    elif condition_type in ('worlds_top5_champion', 'career_top5_champion', 'worlds_eliminated_stage'):
+    elif condition_type in ('worlds_top5_champion', 'career_top5_champion', 'worlds_eliminated_stage', 'worlds_team_year'):
         allowed = {'eq'}
     else:
         allowed = {'eq', 'in', 'any'} if condition_type in scalar_types else (

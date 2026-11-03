@@ -1,0 +1,258 @@
+{
+  "schema_version": 1,
+  "release": "worlds-playoffs-2026-11-03-v2",
+  "player_release_sha256": "2573457fce1cc2ff27e80bb8f900a7d912693a409e8bd52df4a9f133f51267a1",
+  "sources": [
+    "https://lolesports.com/en-GB/leagues/worlds",
+    "https://lol.fandom.com/wiki/Invictus_Gaming/Tournament_Results",
+    "https://lol.fandom.com/wiki/Top_Esports/Tournament_Results"
+  ],
+  "boards": [
+    {
+      "date": "2026-11-03",
+      "locale_seed": "worlds-playoffs-2026-11-03-v2",
+      "author_name": "Axword",
+      "author_url": "https://x.com/AxwordLol",
+      "author_description": "Ćwierćfinał Worlds 2026: TOP Esports – Invictus Gaming",
+      "slots": [
+        {
+          "role": "top",
+          "conditions": [
+            {
+              "condition_type": "worlds_team_year",
+              "operator": "eq",
+              "value": {
+                "team": "invictus-gaming",
+                "before": 2020
+              },
+              "label_pl": "Grał na Worlds w IG przed 2020 rokiem",
+              "label_en": "Played for IG at Worlds before 2020"
+            }
+          ],
+          "audited_candidates": [
+            "duke-lee-ho-seong",
+            "pdd",
+            "theshy",
+            "zz1tai"
+          ]
+        },
+        {
+          "role": "jungle",
+          "conditions": [
+            {
+              "condition_type": "worlds_team_year",
+              "operator": "eq",
+              "value": {
+                "team": "top-esports",
+                "before": 2023
+              },
+              "label_pl": "Grał na Worlds w TES przed 2023 rokiem",
+              "label_en": "Played for TES at Worlds before 2023"
+            }
+          ],
+          "audited_candidates": [
+            "karsa",
+            "tian"
+          ]
+        },
+        {
+          "role": "mid",
+          "conditions": [
+            {
+              "condition_type": "birth_country",
+              "operator": "eq",
+              "value": "CN",
+              "label_pl": "Urodzony w Chinach",
+              "label_en": "Born in China"
+            },
+            {
+              "condition_type": "worlds_final",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Grał w finale Worlds",
+              "label_en": "Played in a Worlds final"
+            }
+          ],
+          "audited_candidates": [
+            "angel-xiang-tao",
+            "corn-lei-wen",
+            "knight-zhuo-ding",
+            "xiaohu"
+          ]
+        },
+        {
+          "role": "adc",
+          "conditions": [
+            {
+              "condition_type": "birth_country",
+              "operator": "eq",
+              "value": "CN",
+              "label_pl": "Urodzony w Chinach",
+              "label_en": "Born in China"
+            },
+            {
+              "condition_type": "worlds_final_lost_to_faker",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Przegrał finał Worlds przeciwko Fakerowi",
+              "label_en": "Lost a Worlds final to Faker"
+            }
+          ],
+          "audited_candidates": [
+            "elk",
+            "light-wang-guang-yu",
+            "uzi-jian-zi-hao"
+          ]
+        },
+        {
+          "role": "support",
+          "conditions": [
+            {
+              "condition_type": "birth_country",
+              "operator": "eq",
+              "value": "CN",
+              "label_pl": "Urodzony w Chinach",
+              "label_en": "Born in China"
+            },
+            {
+              "condition_type": "worlds_titles_exact",
+              "operator": "eq",
+              "value": 1,
+              "label_pl": "Wygrał Worlds dokładnie raz",
+              "label_en": "Won Worlds exactly once"
+            }
+          ],
+          "audited_candidates": [
+            "baolan",
+            "crisp",
+            "meiko"
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-11-04",
+      "locale_seed": "worlds-playoffs-2026-11-04-v2",
+      "author_name": "Axword",
+      "author_url": "https://x.com/AxwordLol",
+      "author_description": "Ćwierćfinał Worlds 2026: Gen.G – LYON",
+      "slots": [
+        {
+          "role": "top",
+          "conditions": [
+            {
+              "condition_type": "worlds_team_year",
+              "operator": "eq",
+              "value": {
+                "team": "gen-g",
+                "before": 2024
+              },
+              "label_pl": "Grał na Worlds w Gen.G przed 2024 rokiem",
+              "label_en": "Played for Gen.G at Worlds before 2024"
+            }
+          ],
+          "audited_candidates": [
+            "burdol",
+            "cuvee",
+            "doran-choi-hyeon-jun",
+            "rascal"
+          ]
+        },
+        {
+          "role": "jungle",
+          "conditions": [
+            {
+              "condition_type": "worlds_team_year",
+              "operator": "eq",
+              "value": {
+                "team": "gen-g",
+                "before": 2026
+              },
+              "label_pl": "Grał na Worlds w Gen.G przed 2026 rokiem",
+              "label_en": "Played for Gen.G at Worlds before 2026"
+            }
+          ],
+          "audited_candidates": [
+            "ambition",
+            "canyon",
+            "clid",
+            "haru",
+            "peanut"
+          ]
+        },
+        {
+          "role": "mid",
+          "conditions": [
+            {
+              "condition_type": "league",
+              "operator": "eq",
+              "value": "LCS",
+              "label_pl": "Grał w LCS / NA LCS",
+              "label_en": "Played in the LCS / NA LCS"
+            },
+            {
+              "condition_type": "worlds_eliminated_stage",
+              "operator": "eq",
+              "value": "semifinal",
+              "label_pl": "Co najmniej raz odpadł w półfinale Worlds",
+              "label_en": "Eliminated in the Worlds semifinals at least once"
+            }
+          ],
+          "audited_candidates": [
+            "alex-ich",
+            "febiven",
+            "froggen",
+            "jensen",
+            "perkz",
+            "ryu"
+          ]
+        },
+        {
+          "role": "adc",
+          "conditions": [
+            {
+              "condition_type": "birth_country",
+              "operator": "eq",
+              "value": "CN",
+              "label_pl": "Urodzony w Chinach",
+              "label_en": "Born in China"
+            },
+            {
+              "condition_type": "league",
+              "operator": "eq",
+              "value": "LCS",
+              "label_pl": "Grał w LCS / NA LCS",
+              "label_en": "Played in the LCS / NA LCS"
+            }
+          ],
+          "audited_candidates": [
+            "chaox",
+            "cody-sun",
+            "vas1lii"
+          ]
+        },
+        {
+          "role": "support",
+          "conditions": [
+            {
+              "condition_type": "worlds_team_year",
+              "operator": "eq",
+              "value": {
+                "team": "gen-g",
+                "before": 2024
+              },
+              "label_pl": "Grał na Worlds w Gen.G przed 2024 rokiem",
+              "label_en": "Played for Gen.G at Worlds before 2024"
+            }
+          ],
+          "audited_candidates": [
+            "corejj",
+            "delight",
+            "lehends",
+            "life"
+          ]
+        }
+      ]
+    }
+  ]
+}

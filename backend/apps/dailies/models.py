@@ -13,11 +13,11 @@ ROLE_CHOICES = [
 ]
 
 SINGLE_REQUIREMENT_TYPES = {
-    'country', 'worlds_final', 'worlds_final_lost', 'worlds_titles_min',
+    'country', 'birth_country', 'worlds_final', 'worlds_final_lost', 'worlds_titles_min',
     'worlds_titles_exact', 'worlds_title_on_debut', 'worlds_final_lost_to_faker',
     'pentakill_worlds', 'european_masters_played', 'european_masters_won',
     'worlds_group_exit_before',
-    'worlds_top5_champion', 'career_top5_champion',
+    'worlds_top5_champion', 'career_top5_champion', 'worlds_team_year',
 }
 
 
@@ -108,10 +108,12 @@ class DailySlotCondition(models.Model):
         ('region', 'Region'),
         ('residency', 'Residency'),
         ('country', 'Kraj'),
+        ('birth_country', 'Kraj urodzenia'),
         ('continent', 'Kontynent'),
         ('birth_continent', 'Kontynent urodzenia'),
         ('team', 'Drużyna'),
         ('team_year', 'Drużyna w konkretnym roku'),
+        ('worlds_team_year', 'Drużyna i rok występu na Worlds'),
         ('league', 'Liga'),
         ('coach', 'Trener'),
         ('active', 'Aktywny / emerytowany'),
