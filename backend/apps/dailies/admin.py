@@ -10,7 +10,7 @@ admin.site.index_title = 'Panel administratora'
 
 @admin.register(Daily)
 class DailyAdmin(admin.ModelAdmin):
-    list_display = ('id', 'date', 'status', 'author_name', 'edit_rules')
+    list_display = ('id', 'date', 'is_current', 'status', 'author_name', 'edit_rules')
     list_filter = ('status', 'reveal_mode')
     date_hierarchy = 'date'
     change_list_template = 'admin/dailies/change_list.html'

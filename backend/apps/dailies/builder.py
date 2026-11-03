@@ -120,7 +120,7 @@ def builder_view(request, model_admin):
                 URLValidator(schemes=['http', 'https'])(author['author_url'])
             except ValidationError as exc:
                 raise ValueError('Podaj poprawny adres strony autora.') from exc
-        existing = Daily.objects.filter(date=target).first()
+        existing = Daily.objects.filter(date=target, is_current=True).first()
         catalog = condition_catalog(existing)
         slots = virtual_slots(data.get('selections'), catalog)
         pools = [count_candidates(slot) for slot in slots]
@@ -138,7 +138,7 @@ def builder_view(request, model_admin):
         if target < timezone.localdate():
             raise ValueError('Nie można zmieniać archiwalnych plansz.')
         with transaction.atomic():
-            daily, _ = Daily.objects.select_for_update().get_or_create(date=target)
+            daily, _ = Daily.objects.select_for_update().get_or_create(date=target, is_current=True)
             if daily.submissions.exists():
                 raise ValueError('Na tej planszy rozpoczęto już grę. Wybierz inny dzień.')
             daily.author_name, daily.author_url, daily.author_description = author.values()

@@ -1,0 +1,307 @@
+{
+  "schema_version": 1,
+  "release": "worlds-playoffs-2026-11-03-v1",
+  "player_release_sha256": "2573457fce1cc2ff27e80bb8f900a7d912693a409e8bd52df4a9f133f51267a1",
+  "sources": [
+    "https://lolesports.com/en-GB/leagues/worlds",
+    "https://lolesports.com/en-GB/news/worlds-2026-primer",
+    "https://esportscentral.co.za/league-of-legends/lol-worlds-2026-playoffs-stage-bracket-set/"
+  ],
+  "boards": [
+    {
+      "date": "2026-11-03",
+      "locale_seed": "worlds-playoffs-2026-11-03-v1",
+      "author_name": "Axword",
+      "author_url": "https://x.com/AxwordLol",
+      "author_description": "Ćwierćfinał Worlds 2026: TOP Esports – Invictus Gaming",
+      "slots": [
+        {
+          "role": "top",
+          "conditions": [
+            {
+              "condition_type": "team",
+              "operator": "eq",
+              "value": "invictus-gaming",
+              "label_pl": "Grał w Invictus Gaming",
+              "label_en": "Played for Invictus Gaming"
+            },
+            {
+              "condition_type": "worlds_semifinal",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Dotarł co najmniej do półfinału Worlds",
+              "label_en": "Reached at least the Worlds semifinals"
+            }
+          ],
+          "audited_candidates": [
+            "breathe",
+            "duke-lee-ho-seong",
+            "theshy"
+          ]
+        },
+        {
+          "role": "jungle",
+          "conditions": [
+            {
+              "condition_type": "team",
+              "operator": "eq",
+              "value": "top-esports",
+              "label_pl": "Grał w TOP Esports",
+              "label_en": "Played for TOP Esports"
+            },
+            {
+              "condition_type": "worlds_semifinal",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Dotarł co najmniej do półfinału Worlds",
+              "label_en": "Reached at least the Worlds semifinals"
+            }
+          ],
+          "audited_candidates": [
+            "kanavi",
+            "karsa",
+            "tian"
+          ]
+        },
+        {
+          "role": "mid",
+          "conditions": [
+            {
+              "condition_type": "league",
+              "operator": "eq",
+              "value": "LPL",
+              "label_pl": "Grał w LPL",
+              "label_en": "Played in the LPL"
+            },
+            {
+              "condition_type": "worlds_titles_exact",
+              "operator": "eq",
+              "value": 1,
+              "label_pl": "Wygrał Worlds dokładnie raz",
+              "label_en": "Won Worlds exactly once"
+            }
+          ],
+          "audited_candidates": [
+            "doinb",
+            "easyhoon",
+            "pawn",
+            "rookie",
+            "scout",
+            "zeka-kim-geon-woo"
+          ]
+        },
+        {
+          "role": "adc",
+          "conditions": [
+            {
+              "condition_type": "league",
+              "operator": "eq",
+              "value": "LPL",
+              "label_pl": "Grał w LPL",
+              "label_en": "Played in the LPL"
+            },
+            {
+              "condition_type": "worlds_final",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Grał w finale Worlds",
+              "label_en": "Played in a Worlds final"
+            }
+          ],
+          "audited_candidates": [
+            "deft",
+            "deokdam",
+            "elk",
+            "huanfeng",
+            "imp",
+            "jackeylove",
+            "light-wang-guang-yu",
+            "lwx",
+            "ruler",
+            "uzi-jian-zi-hao",
+            "viper-park-do-hyeon"
+          ]
+        },
+        {
+          "role": "support",
+          "conditions": [
+            {
+              "condition_type": "league",
+              "operator": "eq",
+              "value": "LPL",
+              "label_pl": "Grał w LPL",
+              "label_en": "Played in the LPL"
+            },
+            {
+              "condition_type": "worlds_final_lost",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Przegrał finał Worlds",
+              "label_en": "Lost a Worlds final"
+            }
+          ],
+          "audited_candidates": [
+            "crisp",
+            "on",
+            "swordart",
+            "tabe",
+            "zero-yoon-kyung-sup"
+          ]
+        }
+      ]
+    },
+    {
+      "date": "2026-11-04",
+      "locale_seed": "worlds-playoffs-2026-11-04-v1",
+      "author_name": "Axword",
+      "author_url": "https://x.com/AxwordLol",
+      "author_description": "Ćwierćfinał Worlds 2026: Gen.G – LYON",
+      "slots": [
+        {
+          "role": "top",
+          "conditions": [
+            {
+              "condition_type": "team",
+              "operator": "eq",
+              "value": "gen-g",
+              "label_pl": "Grał w Gen.G",
+              "label_en": "Played for Gen.G"
+            },
+            {
+              "condition_type": "worlds_eliminated_stage",
+              "operator": "eq",
+              "value": "quarterfinal",
+              "label_pl": "Co najmniej raz odpadł w ćwierćfinale Worlds",
+              "label_en": "Eliminated in the Worlds quarterfinals at least once"
+            }
+          ],
+          "audited_candidates": [
+            "doran-choi-hyeon-jun",
+            "kiin",
+            "rascal",
+            "score"
+          ]
+        },
+        {
+          "role": "jungle",
+          "conditions": [
+            {
+              "condition_type": "team",
+              "operator": "eq",
+              "value": "gen-g",
+              "label_pl": "Grał w Gen.G",
+              "label_en": "Played for Gen.G"
+            },
+            {
+              "condition_type": "worlds_final_lost",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Przegrał finał Worlds",
+              "label_en": "Lost a Worlds final"
+            }
+          ],
+          "audited_candidates": [
+            "ambition",
+            "canyon",
+            "peanut"
+          ]
+        },
+        {
+          "role": "mid",
+          "conditions": [
+            {
+              "condition_type": "league",
+              "operator": "eq",
+              "value": "LCS",
+              "label_pl": "Grał w LCS / NA LCS",
+              "label_en": "Played in the LCS / NA LCS"
+            },
+            {
+              "condition_type": "worlds_semifinal",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Dotarł co najmniej do półfinału Worlds",
+              "label_en": "Reached at least the Worlds semifinals"
+            }
+          ],
+          "audited_candidates": [
+            "alex-ich",
+            "crown",
+            "dyrus",
+            "febiven",
+            "froggen",
+            "jensen",
+            "perkz",
+            "reginald",
+            "ryu"
+          ]
+        },
+        {
+          "role": "adc",
+          "conditions": [
+            {
+              "condition_type": "worlds_final_lost_to_faker",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Przegrał finał Worlds przeciwko Fakerowi",
+              "label_en": "Lost a Worlds final to Faker"
+            }
+          ],
+          "audited_candidates": [
+            "corejj",
+            "deokdam",
+            "elk",
+            "light-wang-guang-yu",
+            "pray",
+            "ruler",
+            "uzi-jian-zi-hao"
+          ]
+        },
+        {
+          "role": "support",
+          "conditions": [
+            {
+              "condition_type": "worlds_teams_min",
+              "operator": "gte",
+              "value": 2,
+              "label_pl": "Grał na Worlds w barwach min. 2 organizacji",
+              "label_en": "Played for at least 2 organizations at Worlds"
+            },
+            {
+              "condition_type": "worlds_semifinal",
+              "operator": "eq",
+              "value": true,
+              "label_pl": "Dotarł co najmniej do półfinału Worlds",
+              "label_en": "Reached at least the Worlds semifinals"
+            }
+          ],
+          "audited_candidates": [
+            "beryl",
+            "cain",
+            "corejj",
+            "crisp",
+            "doublelift",
+            "edward",
+            "ghost-jang-yong-jun",
+            "gorilla",
+            "hang",
+            "hylissang",
+            "impact",
+            "keria",
+            "lehends",
+            "mata",
+            "meiko",
+            "mikyx",
+            "mithy",
+            "swordart",
+            "vander",
+            "xpeke",
+            "yellowstar",
+            "zero-yoon-kyung-sup",
+            "zven"
+          ]
+        }
+      ]
+    }
+  ]
+}

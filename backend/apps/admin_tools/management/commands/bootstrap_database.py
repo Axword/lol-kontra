@@ -63,7 +63,7 @@ class Command(BaseCommand):
             report = check_release_data(database=alias)
             check_runtime_database(connection)
             if not options['skip_today']:
-                today = Daily.objects.filter(date=timezone.localdate()).first()
+                today = Daily.objects.filter(date=timezone.localdate(), is_current=True).first()
                 if today is None:
                     call_command('create_daily', publish=True, verbosity=options['verbosity'])
                 elif today.status != 'draft':

@@ -289,7 +289,7 @@ def recent_themes(before_date, days=THEME_MEMORY_DAYS):
     since = before_date - timedelta(days=days)
     used = Counter()
     conditions = DailySlotCondition.objects.filter(
-        slot__daily__date__gte=since, slot__daily__date__lt=before_date
+        slot__daily__date__gte=since, slot__daily__date__lt=before_date, slot__daily__is_current=True,
     ).values_list('condition_type', 'value')
     by_type = dict(LEGACY_ORIGIN_THEMES)
     for theme, _diff, ctype, _op, value, _pl, _en in CONDITION_POOL:
@@ -307,7 +307,7 @@ def requirement_key(condition_type, operator, value):
 
 def recent_requirements(before_date, days=4):
     return Counter(requirement_key(*row) for row in DailySlotCondition.objects.filter(
-        slot__daily__date__gte=before_date - timedelta(days=days), slot__daily__date__lt=before_date
+        slot__daily__date__gte=before_date - timedelta(days=days), slot__daily__date__lt=before_date, slot__daily__is_current=True,
     ).values_list('condition_type', 'operator', 'value'))
 
 
@@ -407,7 +407,7 @@ def generate_daily(date=None, seed=None, force=False):
         date = timezone.localdate() + timedelta(days=1)
 
     daily, _created = Daily.objects.select_for_update().get_or_create(
-        date=date,
+        date=date, is_current=True,
         defaults={'status': 'draft', 'locale_seed': str(seed or date), 'reveal_mode': 'instant'},
     )
     if daily.slots.exists():

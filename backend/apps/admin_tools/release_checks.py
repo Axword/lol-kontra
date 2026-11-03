@@ -37,7 +37,7 @@ def check_release_data(*, database='default', strict=False):
                 or any(player.career_stats.get(key) != value for key, value in row['career_stats'].items())):
             raise ValueError(f'Fresh player data differs from release: {player.slug}')
     dates = [row['date'] for row in calendar]
-    dailies = list(Daily.objects.using(database).filter(date__in=dates).prefetch_related('slots__conditions'))
+    dailies = list(Daily.objects.using(database).filter(date__in=dates, is_current=True).prefetch_related('slots__conditions'))
     if len(dailies) != 31:
         raise ValueError('October calendar is incomplete: expected all 31 dates')
     for daily in dailies:

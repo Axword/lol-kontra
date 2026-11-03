@@ -21,16 +21,21 @@ class DailyViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.Ge
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        return super().get_queryset().filter(
+        queryset = super().get_queryset().filter(
             date__lte=timezone.localdate(), status__in=['published', 'closed', 'scored'],
         )
+        # Old revisions remain addressable by ID for saved results, while the
+        # calendar and completion markers describe only the active board.
+        if self.action in {'list', 'progress'}:
+            queryset = queryset.filter(is_current=True)
+        return queryset
 
     @action(detail=False, methods=['get'], url_path='today')
     def today(self, request):
         today = timezone.localdate()
         try:
             with transaction.atomic():
-                daily = Daily.objects.select_for_update().filter(date=today).first()
+                daily = Daily.objects.select_for_update().filter(date=today, is_current=True).first()
                 if daily is not None and daily.status == 'draft':
                     raise Http404
                 if daily is None or not daily.slots.exists():

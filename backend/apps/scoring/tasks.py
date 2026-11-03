@@ -8,8 +8,8 @@ def nightly_scoring():
     """Uruchamiane po zamknięciu Daily"""
     today = timezone.localdate()
     yesterday = today - timezone.timedelta(days=1)
-    try:
-        daily = Daily.objects.get(date=yesterday, status__in=['published', 'closed', 'scored'])
+    scored = []
+    for daily in Daily.objects.filter(date=yesterday, status__in=['published', 'closed', 'scored']).order_by('pk'):
         if daily.status == 'published':
             daily.status = 'closed'
             daily.closed_at = timezone.now()
@@ -17,9 +17,10 @@ def nightly_scoring():
         score_daily(daily.id)
         daily.status = 'scored'
         daily.save(update_fields=['status'])
-        return f"Scored daily {daily.id}"
-    except Daily.DoesNotExist:
-        return "No daily to score"
+        scored.append(daily.id)
+    if len(scored) == 1:
+        return f"Scored daily {scored[0]}"
+    return f"Scored dailies {scored}" if scored else "No daily to score"
 
 @shared_task
 def score_daily_task(daily_id: int):

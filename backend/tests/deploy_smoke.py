@@ -92,7 +92,7 @@ def main():
         fresh = psycopg2.connect(**fresh_parameters)
         try:
             with fresh.cursor() as cursor:
-                expected = {'players_player': 882, 'dailies_daily': 31, 'dailies_dailyslot': 155,
+                expected = {'players_player': 882, 'dailies_daily': 33, 'dailies_dailyslot': 165,
                     'submissions_submission': 0,
                     'submissions_submissionanswer': 0, 'submissions_submissionattempt': 0,
                     'scoring_answerstatsdaily': 0}
@@ -199,7 +199,7 @@ with override_settings(CACHES={'default': {'BACKEND': 'django.core.cache.backend
         image_url=shared.data['comments'][0]['roster_image_url']
         image=client.get(image_url)
         assert image.status_code==200 and image['Content-Type']=='image/png'
-print('Fresh API and all 31 board checks: OK')
+print('Fresh API, October calendar and two playoff board checks: OK')
 '''
 
 

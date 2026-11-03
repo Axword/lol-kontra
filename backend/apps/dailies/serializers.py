@@ -17,7 +17,7 @@ class DailySerializer(serializers.ModelSerializer):
     slots = DailySlotSerializer(many=True, read_only=True)
     class Meta:
         model = Daily
-        fields = ['id', 'date', 'status', 'reveal_mode', 'slots']
+        fields = ['id', 'date', 'status', 'reveal_mode', 'slots', 'is_current']
 
     def validate(self, attrs):
         if attrs.get('status') == 'published':

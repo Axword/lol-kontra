@@ -36,7 +36,9 @@ class Daily(models.Model):
         # after_close removed – 2026-07-07 per product decision
     ]
 
-    date = models.DateField(unique=True, db_index=True)
+    date = models.DateField(db_index=True)
+    # Replacing a published board preserves its slots, answers and result links.
+    is_current = models.BooleanField(default=True, editable=False)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default='draft')
     locale_seed = models.CharField(max_length=64, blank=True)
     reveal_mode = models.CharField(max_length=16, choices=REVEAL_CHOICES, default='instant')
@@ -54,6 +56,7 @@ class Daily(models.Model):
         ordering = ['-date']
         verbose_name_plural = 'Dailies'
         constraints = [
+            models.UniqueConstraint(fields=['date'], condition=models.Q(is_current=True), name='daily_one_current_per_date'),
             models.CheckConstraint(check=models.Q(status__in=['draft', 'published', 'closed', 'scored']), name='daily_status_valid'),
             models.CheckConstraint(check=models.Q(reveal_mode='instant'), name='daily_reveal_mode_valid'),
             models.CheckConstraint(check=models.Q(published_at__isnull=True) | models.Q(closed_at__isnull=True) | models.Q(closed_at__gte=models.F('published_at')), name='daily_timestamps_ordered'),
