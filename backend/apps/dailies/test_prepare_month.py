@@ -13,14 +13,18 @@ from apps.players.models import Player
 from apps.scoring.models import AnswerStatsDaily
 from apps.submissions.models import MAX_ERRORS, Submission, SubmissionAnswer, SubmissionAttempt
 
-from .generator import generate_daily
+from .generator import count_candidates, generate_daily
 from .models import Daily, DailySlot, DailySlotCondition
 from .solutions import recommended_roster
 
 
 TEST_POOL = [
     ('origin', 'easy', 'country', 'eq', 'KR', 'Koreańczyk', 'Korean'),
-    ('status', 'medium', 'active', 'eq', True, 'Aktywny', 'Active'),
+    ('final', 'medium', 'worlds_final', 'eq', True, 'Grał w finale Worlds', 'Played a Worlds final'),
+    ('masters', 'hard', 'european_masters_won', 'eq', True, 'Wygrał EMEA Masters', 'Won EMEA Masters'),
+    ('penta', 'hard', 'pentakill_worlds', 'gte', 1, 'Zdobył pentę na Worlds', 'Pentakill at Worlds'),
+    ('group_exit', 'medium', 'worlds_group_exit_before', 'eq', 2020,
+     'Odpadł w grupach Worlds przed 2020', 'Worlds group-stage exit before 2020'),
 ]
 TODAY = date(2026, 10, 18)
 
@@ -30,19 +34,26 @@ class PreparedMonthTests(TestCase):
     def setUpTestData(cls):
         cls.players = [Player.objects.create(
             slug=f'person-{index}', nickname=f'Person {index}', primary_role='top',
-            secondary_roles=['jungle', 'mid', 'adc', 'support'], country_code='KR' if index < 20 else 'CN',
-            is_active=not (10 <= index < 20),
+            secondary_roles=['jungle', 'mid', 'adc', 'support'], country_code='KR' if index < 10 else 'CN',
+            is_active=True,
             attributes={
                 'worlds_verified': True, 'activity_verified': True,
-                'worlds_appearances': [2018, 2020] if index < 10 or index >= 20 else [2020],
-                'worlds_semifinals': [2020] if index >= 10 else [],
-                'worlds_group_escapes': [2020] if 5 <= index < 25 else [],
+                'worlds_appearances': [2018, 2020],
+                'worlds_finals': [2020] if 10 <= index < 20 else [],
+                'worlds_semifinals': [2020] if 10 <= index < 20 else [],
+                'worlds_group_escapes': [2020] if 10 <= index < 20 else [],
+                'pentakills_worlds': 1 if 30 <= index < 40 else 0,
+                'european_masters': {
+                    'source': 'Leaguepedia',
+                    'played': ['2020 Spring'] if 20 <= index < 30 else [],
+                    'titles': ['2020 Spring'] if 20 <= index < 30 else [],
+                },
                 'worlds_eliminations': {
-                    'group': [2020] if index % 3 < 2 else [],
-                    'quarterfinal': [2018] if index >= 10 else [],
+                    'group': [2018] if 40 <= index < 50 else [],
+                    'quarterfinal': [],
                 },
             },
-        ) for index in range(30)]
+        ) for index in range(80)]
 
     def setUp(self):
         # This fixture tests month preparation; canonical role evidence is tested
@@ -51,6 +62,13 @@ class PreparedMonthTests(TestCase):
                       return_value={'top', 'jungle', 'mid', 'adc', 'support'})
         roles.start()
         self.addCleanup(roles.stop)
+        # These tests exercise the legacy month-preparation and API workflow.
+        # Keep that path consistent across the whole synthetic month; the newer
+        # editorial factory and its diversity rules have dedicated integration
+        # tests. Each of these five distinct facts has ten eligible answers.
+        editorial = patch('apps.dailies.board_factory.EDITORIAL_FROM', date(2099, 1, 1))
+        editorial.start()
+        self.addCleanup(editorial.stop)
 
     @patch('django.utils.timezone.localdate', return_value=TODAY)
     @patch('apps.dailies.generator.build_condition_pool', return_value=TEST_POOL)
@@ -58,11 +76,12 @@ class PreparedMonthTests(TestCase):
         human_board = generate_daily(date=date(2026, 10, 7), seed='existing-human-board')
         human = Submission.objects.create(daily=human_board, guest_token='human')
         human_slot = human_board.slots.first()
+        human_player = count_candidates(human_slot)[0]
         human_answer = SubmissionAnswer.objects.create(
-            submission=human, daily_slot=human_slot, player=self.players[0], is_correct=True,
+            submission=human, daily_slot=human_slot, player=human_player, is_correct=True,
         )
         human_attempt = SubmissionAttempt.objects.create(
-            submission=human, daily_slot=human_slot, player=self.players[0], is_correct=True,
+            submission=human, daily_slot=human_slot, player=human_player, is_correct=True,
         )
         original_conditions = list(human_board.slots.values_list('conditions__pk', 'conditions__condition_type', 'conditions__value'))
         for _ in range(2):
@@ -78,8 +97,8 @@ class PreparedMonthTests(TestCase):
             human_answer.refresh_from_db()
             human_attempt.refresh_from_db()
             self.assertEqual((human_answer.submission_id, human_answer.player_id, human_answer.is_correct),
-                             (human.pk, self.players[0].pk, True))
-            self.assertEqual(human_attempt.player_id, self.players[0].pk)
+                             (human.pk, human_player.pk, True))
+            self.assertEqual(human_attempt.player_id, human_player.pk)
             self.assertEqual(list(human_board.slots.values_list('conditions__pk', 'conditions__condition_type', 'conditions__value')),
                              original_conditions)
             snapshot = {
@@ -141,7 +160,8 @@ class PreparedMonthTests(TestCase):
         finished = Submission.objects.create(daily=board, user=user, errors_used=MAX_ERRORS)
         guest = Submission.objects.create(daily=board, guest_token='guest-winner', errors_used=MAX_ERRORS)
         slot = board.slots.first()
-        SubmissionAnswer.objects.create(submission=guest, daily_slot=slot, player=self.players[0], is_correct=True)
+        picked_player = count_candidates(slot)[0]
+        SubmissionAnswer.objects.create(submission=guest, daily_slot=slot, player=picked_player, is_correct=True)
         url = f'/api/v1/dailies/{board.pk}/solutions/'
         client = APIClient()
         client.force_authenticate(other)

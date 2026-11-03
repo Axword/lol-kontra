@@ -15,6 +15,14 @@ from .models import Daily
 
 FINAL = ('final', 'medium', 'worlds_final', 'eq', True, 'Grał w finale Worlds', 'Played a Worlds final')
 COUNTRY = ('origin', 'easy', 'country', 'eq', 'KR', 'Koreańczyk', 'Korean')
+LOST_FINAL = ('lost_final', 'medium', 'worlds_final_lost', 'eq', True,
+              'Przegrał finał Worlds', 'Lost a Worlds final')
+TITLE = ('title', 'medium', 'worlds_titles_min', 'gte', 1, 'Wygrał Worlds', 'Won Worlds')
+DEBUT_TITLE = ('debut_title', 'medium', 'worlds_title_on_debut', 'eq', True,
+               'Wygrał Worlds na debiucie', 'Won Worlds on debut')
+BOARD_CLUES = [FINAL, LOST_FINAL, TITLE, COUNTRY, DEBUT_TITLE]
+PLAYER_FACTS = {'worlds_finals': [2020, 2021], 'worlds_titles': [2020],
+                'worlds_appearances': [2020, 2021]}
 
 
 class BoardBuilderTests(TestCase):
@@ -23,8 +31,9 @@ class BoardBuilderTests(TestCase):
         self.client.force_login(self.user)
         self.url = reverse('admin:dailies_daily_builder')
         self.payload = {'date': str(timezone.localdate() + timedelta(days=1)), 'action': 'preview',
-                        'selections': {role: [condition_key(FINAL)] for role in ROLE_ORDER}}
-        self.catalog = patch('apps.dailies.builder.condition_catalog', return_value={condition_key(FINAL): FINAL, condition_key(COUNTRY): COUNTRY})
+                        'selections': {role: [condition_key(clue)] for role, clue in zip(ROLE_ORDER, BOARD_CLUES)}}
+        self.catalog = patch('apps.dailies.builder.condition_catalog',
+                             return_value={condition_key(clue): clue for clue in BOARD_CLUES})
         self.catalog.start()
         self.addCleanup(self.catalog.stop)
 
@@ -32,7 +41,7 @@ class BoardBuilderTests(TestCase):
         for role in ROLE_ORDER:
             for index in range(count):
                 Player.objects.create(slug=f'{role}-{index}', nickname=f'{role}-{index}', primary_role=role,
-                                      attributes={'worlds_finals': [2020]})
+                                      country_code='KR', attributes=PLAYER_FACTS.copy())
 
     def post(self, **changes):
         return self.client.post(self.url, data=json.dumps({**self.payload, **changes}), content_type='application/json')
@@ -107,5 +116,5 @@ class BoardBuilderTests(TestCase):
 
     def test_distinct_roster_required_even_for_guest(self):
         Player.objects.create(slug='solo', nickname='Solo', primary_role='mid', secondary_roles=ROLE_ORDER,
-                              attributes={'worlds_finals': [2020]})
+                              country_code='KR', attributes=PLAYER_FACTS.copy())
         self.assertEqual(self.post(action='publish', author_name='Guest').status_code, 400)
