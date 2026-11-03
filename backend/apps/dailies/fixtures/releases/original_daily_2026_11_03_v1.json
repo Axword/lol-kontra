@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "release": "original-daily-2026-11-03-v1",
+  "date": "2026-11-03",
+  "source_daily_id": 34,
+  "slots": [
+    {
+      "position": 1,
+      "role": "top",
+      "label_pl": "Top",
+      "label_en": "Top",
+      "conditions": [
+        {
+          "condition_type": "worlds_teams_min",
+          "operator": "gte",
+          "value": 2,
+          "label_pl": "Grał na Worlds w barwach min. 2 organizacji",
+          "label_en": "Played for at least 2 organizations at Worlds",
+          "order": 0
+        },
+        {
+          "condition_type": "worlds_playin",
+          "operator": "eq",
+          "value": true,
+          "label_pl": "Awansował z play-in do głównego turnieju Worlds",
+          "label_en": "Advanced from play-in to the Worlds main event",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "position": 2,
+      "role": "jungle",
+      "label_pl": "Jungle",
+      "label_en": "Jungle",
+      "conditions": [
+        {
+          "condition_type": "worlds_never_escaped",
+          "operator": "gte",
+          "value": 2,
+          "label_pl": "Min. 2 edycje Worlds, nigdy w fazie pucharowej głównego turnieju",
+          "label_en": "At least 2 Worlds editions, never reached main-event knockouts",
+          "order": 0
+        },
+        {
+          "condition_type": "worlds_never_won",
+          "operator": "gte",
+          "value": 3,
+          "label_pl": "Min. 3 edycje Worlds, bez ani jednego tytułu",
+          "label_en": "Played in at least 3 Worlds editions without winning a title",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "position": 3,
+      "role": "mid",
+      "label_pl": "Mid",
+      "label_en": "Mid",
+      "conditions": [
+        {
+          "condition_type": "country",
+          "operator": "eq",
+          "value": "TW",
+          "label_pl": "Tajwańczyk",
+          "label_en": "Taiwanese",
+          "order": 0
+        }
+      ]
+    },
+    {
+      "position": 4,
+      "role": "adc",
+      "label_pl": "Adc",
+      "label_en": "Adc",
+      "conditions": [
+        {
+          "condition_type": "country",
+          "operator": "eq",
+          "value": "TW",
+          "label_pl": "Tajwańczyk",
+          "label_en": "Taiwanese",
+          "order": 0
+        }
+      ]
+    },
+    {
+      "position": 5,
+      "role": "support",
+      "label_pl": "Support",
+      "label_en": "Support",
+      "conditions": [
+        {
+          "condition_type": "worlds_count_min",
+          "operator": "gte",
+          "value": 2,
+          "label_pl": "Zagrał w min. 2 edycjach Worlds",
+          "label_en": "Played in at least 2 editions of Worlds",
+          "order": 0
+        },
+        {
+          "condition_type": "worlds_eliminated_stage",
+          "operator": "eq",
+          "value": "group",
+          "label_pl": "Co najmniej raz odpadł w głównej fazie grupowej / Swiss Worlds",
+          "label_en": "Eliminated in Worlds main-event groups or Swiss at least once",
+          "order": 1
+        }
+      ]
+    }
+  ]
+}
